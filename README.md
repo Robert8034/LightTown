@@ -1,3 +1,4 @@
 # LightTown
 Group Project for FHICT Semester 4
-:trollface:
+
+Project for Philips focused on improving internal communication and collaboration.
