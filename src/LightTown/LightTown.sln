@@ -5,15 +5,15 @@ VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Web", "LightTown.Web\LightTown.Web.csproj", "{17B36429-58FC-4053-8D00-2ECD4FB20D41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightTown.Server", "LightTown.Server\LightTown.Server.csproj", "{402FFA46-69E9-418F-AB0F-64C64CDEB9FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Server", "LightTown.Server\LightTown.Server.csproj", "{402FFA46-69E9-418F-AB0F-64C64CDEB9FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightTown.Core", "LightTown.Core\LightTown.Core.csproj", "{D8FD2A7B-5CE7-472C-BA85-8B0A13FB361A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Core", "LightTown.Core\LightTown.Core.csproj", "{D8FD2A7B-5CE7-472C-BA85-8B0A13FB361A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightTown.Server.Data", "LightTown.Server.Data\LightTown.Server.Data.csproj", "{39788ACE-80D3-452B-882E-347170A49169}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Server.Data", "LightTown.Server.Data\LightTown.Server.Data.csproj", "{39788ACE-80D3-452B-882E-347170A49169}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightTown.Server.Services", "LightTown.Server.Services\LightTown.Server.Services.csproj", "{1F817F4A-A50B-4C44-95C4-86C5F62B3467}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Server.Services", "LightTown.Server.Services\LightTown.Server.Services.csproj", "{1F817F4A-A50B-4C44-95C4-86C5F62B3467}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightTown.Web.Services", "LightTown.Web.Services\LightTown.Web.Services.csproj", "{D0D341FC-B13A-4B1E-ABC0-7F1F93F88033}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Web.Services", "LightTown.Web.Services\LightTown.Web.Services.csproj", "{D0D341FC-B13A-4B1E-ABC0-7F1F93F88033}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

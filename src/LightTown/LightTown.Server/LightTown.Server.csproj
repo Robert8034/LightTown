@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LightTown.Core\LightTown.Core.csproj" />
     <ProjectReference Include="..\LightTown.Server.Data\LightTown.Server.Data.csproj" />
     <ProjectReference Include="..\LightTown.Server.Services\LightTown.Server.Services.csproj" />

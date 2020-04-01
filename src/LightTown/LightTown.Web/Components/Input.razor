@@ -1,0 +1,34 @@
+﻿<div class="input m-2">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <span class="input-title">@Title</span>
+    }
+    <input @onchange="@Change" type="@Type" placeholder="@Placeholder" class="w-50" />
+</div>
+
+@code {
+
+    [Parameter]
+    public string Type { get; set; } = "text";
+
+    [Parameter]
+    public string Placeholder { get; set; } = "";
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public Func<string, Task> OnChange { get; set; }
+
+    public string Text;
+
+    public async Task Change(ChangeEventArgs changeEventArgs)
+    {
+        Text = (string)changeEventArgs.Value;
+        if (OnChange != null)
+        {
+            await OnChange.Invoke((string)changeEventArgs.Value);
+        }
+    }
+
+}

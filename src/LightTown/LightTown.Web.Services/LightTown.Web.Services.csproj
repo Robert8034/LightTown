@@ -4,4 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="NewFile1.txt" />
+    <None Remove="NewFile2.txt" />
+  </ItemGroup>
+
 </Project>

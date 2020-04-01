@@ -1,0 +1,9 @@
+﻿<div class="form text-center">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
+
