@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
+using LightTown.Web.Services.Validation;
 using Microsoft.AspNetCore.Blazor.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LightTown.Web
 {
@@ -9,6 +11,7 @@ namespace LightTown.Web
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
+            builder.Services.AddSingleton<IValidationService, ValidationService>();
 
             await builder.Build().RunAsync();
         }

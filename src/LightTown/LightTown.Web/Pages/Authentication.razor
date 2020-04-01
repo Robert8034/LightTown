@@ -1,4 +1,5 @@
 @page "/authentication"
+@inject IValidationService ValidationService
 @layout FormLayout
 
 @if (IsLoggingIn)
@@ -12,14 +13,14 @@
 }
 else
 {
-<Form>
-    <Input @ref="@RegisterUsername" Type="text" Placeholder="Username" OnChange="@ValidateInput" />
-    <Input @ref="@RegisterPassword" Type="password" Placeholder="Password" OnChange="@ValidateInput" />
-    <Input @ref="@RegisterPasswordConfirm" Type="password" Placeholder="Confirm Password" OnChange="@ValidateInput" />
-    <Input @ref="@RegisterEmail" Type="text" Placeholder="Email" OnChange="@ValidateInput" />
-    <Button @ref="RegisterButton" Title="Register" OnClick="@Register"></Button>
-    <Button Title="Login" OnClick="@Login" Enabled="true"></Button>
-</Form>
+    <Form>
+        <Input @ref="@RegisterUsername" Type="text" Placeholder="Username" OnChange="@ValidateInput" />
+        <Input @ref="@RegisterPassword" Type="password" Placeholder="Password" OnChange="@ValidateInput" />
+        <Input @ref="@RegisterPasswordConfirm" Type="password" Placeholder="Confirm Password" OnChange="@ValidateInput" />
+        <Input @ref="@RegisterEmail" Type="text" Placeholder="Email" OnChange="@ValidateInput" />
+        <Button @ref="RegisterButton" Title="Register" OnClick="@Register"></Button>
+        <Button Title="Login" OnClick="@Login" Enabled="true"></Button>
+    </Form>
 }
 
 @code {
@@ -42,7 +43,7 @@ else
     {
         if (IsLoggingIn)
         {
-           
+
         }
         else
         {
@@ -60,7 +61,7 @@ else
         }
         else
         {
-           
+
         }
     }
 
