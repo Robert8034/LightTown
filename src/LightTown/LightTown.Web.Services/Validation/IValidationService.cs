@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LightTown.Web.Services.Validation
+﻿namespace LightTown.Web.Services.Validation
 {
     public interface IValidationService
     {

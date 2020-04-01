@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace LightTown.Server.Core.Data
+namespace LightTown.Core.Data
 {
     public interface IRepository<TEntity> where TEntity : BaseEntity
     {

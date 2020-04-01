@@ -1,12 +1,9 @@
-﻿using System;
-using LightTown.Core.Data;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace LightTown.Server.Core.Domain.Users
+namespace LightTown.Core.Domain.Users
 {
-    public class User : BaseEntity
+    public class User : IdentityUser<int>
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Email { get; set; }
+
     }
 }

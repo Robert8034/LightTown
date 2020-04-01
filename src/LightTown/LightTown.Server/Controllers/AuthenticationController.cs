@@ -1,10 +1,9 @@
-using LightTown.Server.Core.Domain.Users;
 using LightTown.Server.Models.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LightTown.Core.Domain.Users;
 
 namespace LightTown.Server.Controllers
 {

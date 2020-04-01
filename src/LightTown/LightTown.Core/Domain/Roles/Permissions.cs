@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace LightTown.Server.Core.Domain.Roles
+﻿namespace LightTown.Core.Domain.Roles
 {
     public enum Permissions
     {

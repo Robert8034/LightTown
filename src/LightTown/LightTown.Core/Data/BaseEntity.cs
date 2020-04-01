@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace LightTown.Server.Core.Data
+﻿namespace LightTown.Core.Data
 {
     public class BaseEntity
     {

@@ -1,17 +1,16 @@
 ﻿using LightTown.Core.Domain.Roles;
-using LightTown.Server.Core.Domain.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
+using LightTown.Core.Domain.Users;
+using LightTown.Server.Data.Mapping;
 
 namespace LightTown.Server.Data
 {
     public class LightTownServerContext : IdentityDbContext<User, Role, int>
     {
-
         public LightTownServerContext() { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,7 +30,7 @@ namespace LightTown.Server.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            optionsBuilder.UseSqlite($"Mode=ReadWriteCreate;Data Source={databasePath};Password={password}");
+            optionsBuilder.UseNpgsql("Host=my_host;Database=my_db;Username=my_user;Password=my_pw");
 
             optionsBuilder.EnableDetailedErrors(true);
             optionsBuilder.EnableSensitiveDataLogging(true);

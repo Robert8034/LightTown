@@ -1,8 +1,4 @@
-﻿using LightTown.Server.Core.Domain.Roles;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace LightTown.Core.Domain.Roles
 {

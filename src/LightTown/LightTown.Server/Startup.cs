@@ -1,16 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LightTown.Server.Core.Domain.Users;
+using LightTown.Core.Domain.Roles;
+using LightTown.Core.Domain.Users;
+using LightTown.Server.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace LightTown.Server
 {
@@ -28,8 +25,22 @@ namespace LightTown.Server
         {
             services.AddControllers();
 
+            services.AddDbContext<LightTownServerContext>();
+
             services.AddIdentity<User, Role>()
-                .AddEntityFrameworkStores<LightTownServerContext>(); 
+                .AddEntityFrameworkStores<LightTownServerContext>();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequiredLength = 3;
+                options.Password.RequiredUniqueChars = 2;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(60);
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +54,8 @@ namespace LightTown.Server
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
