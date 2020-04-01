@@ -8,7 +8,7 @@ using LightTown.Core.Domain.Users;
 namespace LightTown.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly SignInManager<User> _signInManager;
@@ -19,6 +19,7 @@ namespace LightTown.Server.Controllers
         }
 
         [HttpPost]
+        [Route("login")]
         public async Task<ApiResult> Login([FromBody] UserPost user)
         {
             if (!ModelState.IsValid)

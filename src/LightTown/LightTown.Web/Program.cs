@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using LightTown.Web.Services.Authentication;
 using LightTown.Web.Services.Validation;
 using Microsoft.AspNetCore.Blazor.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ namespace LightTown.Web
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
             builder.Services.AddSingleton<IValidationService, ValidationService>();
+            builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
             await builder.Build().RunAsync();
         }

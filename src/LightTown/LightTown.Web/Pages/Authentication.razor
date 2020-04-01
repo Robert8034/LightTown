@@ -1,5 +1,6 @@
 @page "/authentication"
 @inject IValidationService ValidationService
+@inject IAuthenticationService AuthenticationService 
 @layout FormLayout
 
 @if (IsLoggingIn)
@@ -61,7 +62,7 @@ else
         }
         else
         {
-
+            AuthenticationService.Login(LoginUsername.Text, LoginPassword.Text);
         }
     }
 

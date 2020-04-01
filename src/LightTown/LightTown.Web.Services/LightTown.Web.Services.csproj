@@ -9,4 +9,8 @@
     <None Remove="NewFile2.txt" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LightTown.Core\LightTown.Core.csproj" />
+  </ItemGroup>
+
 </Project>
