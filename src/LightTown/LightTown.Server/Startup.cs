@@ -61,9 +61,15 @@ namespace LightTown.Server
 
             app.UseAuthorization();
 
+            app.UseStaticFiles();
+
+            app.UseBlazorFrameworkFiles();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                endpoints.MapFallbackToFile("index.html");
             });
 
             app.EnsureMigrated();
