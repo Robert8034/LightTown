@@ -44,7 +44,8 @@ else
     {
         if (IsLoggingIn)
         {
-
+            User result = await AuthenticationService.Login(LoginUsername.Text, LoginPassword.Text);
+            Console.WriteLine(result);
         }
         else
         {
@@ -62,8 +63,7 @@ else
         }
         else
         {
-            User result = await AuthenticationService.Login(LoginUsername.Text, LoginPassword.Text);
-            Console.WriteLine(result);
+
         }
     }
 

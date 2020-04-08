@@ -1,6 +1,7 @@
 ﻿using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ namespace LightTown.Server.Data
                 var dbContext = scope.ServiceProvider.GetService<LightTownServerContext>();
 
                 dbContext.Database.Migrate();
+
             }
         }
 

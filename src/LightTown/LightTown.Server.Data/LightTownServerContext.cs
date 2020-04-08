@@ -29,7 +29,7 @@ namespace LightTown.Server.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-
+            //TODO Add credentials in config file
             optionsBuilder.UseNpgsql("User ID=lighttown;Password=pHmGfPMJ8LpV4CnPxZRy6wKTqAXdxi8nUKHw;Host=localhost;Port=5432;Database=LightTown;");
 
             optionsBuilder.EnableDetailedErrors(true);
