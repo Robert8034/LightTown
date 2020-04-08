@@ -62,7 +62,8 @@ else
         }
         else
         {
-            AuthenticationService.Login(LoginUsername.Text, LoginPassword.Text);
+            User result = await AuthenticationService.Login(LoginUsername.Text, LoginPassword.Text);
+            Console.WriteLine(result);
         }
     }
 
