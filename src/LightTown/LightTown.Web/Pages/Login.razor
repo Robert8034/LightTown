@@ -2,6 +2,7 @@
 @inject NavigationManager NavigationManager
 @inject IValidationService ValidationService
 @inject IAuthenticationService AuthenticationService
+@inject IUserService UserService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
 
 <Form Id="form-login" Class="mt-2">
@@ -30,6 +31,7 @@
         if (result.Id != 0)
         {
             await localStorage.SetItemAsync("userId", result.Id);
+            result = await UserService.GetUserData(result.Id);
         }
     }
 
