@@ -1,0 +1,42 @@
+﻿@if (!Enabled)
+{
+    <button class="button @Class @(Size == ButtonSize.Small ? "button-small" : 
+                                     Size == ButtonSize.Big ? "button-big" :
+                                     Size == ButtonSize.Full ? "button-full" :
+                                     "button-medium")" @onclick="@Click" disabled>@Text</button>
+}
+else
+{
+    <button class="button" @onclick="@Click">@Text</button>
+}
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "";
+
+    [Parameter]
+    public string Class { get; set; } = "";
+
+    [Parameter]
+    public ButtonSize Size { get; set; } = ButtonSize.Medium;
+
+    [Parameter]
+    public Func<Task> OnClick { get; set; }
+
+    [Parameter]
+    public bool Enabled { get; set; } = false;
+
+    private async Task Click()
+    {
+        if (OnClick != null)
+        {
+            await OnClick.Invoke();
+        }
+    }
+
+    public void ToggleEnabled(bool Enable)
+    {
+        this.Enabled = Enable;
+        StateHasChanged();
+    }
+}

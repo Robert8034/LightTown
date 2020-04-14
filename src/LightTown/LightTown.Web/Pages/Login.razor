@@ -1,14 +1,19 @@
 ﻿@page "/login"
 @inject NavigationManager NavigationManager
-@layout FormLayout
 @inject IValidationService ValidationService
 @inject IAuthenticationService AuthenticationService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage;
 
-<Form>
-    <Input @ref="@LoginUsername" Type="text" Placeholder="Username" OnChange="@ValidateInput" />
-    <Input @ref="@LoginPassword" Type="password" Placeholder="Password" OnChange="@ValidateInput" />
-    <Button @ref="@LoginButton" Title="Login" OnClick="@LoginAsync"></Button>
+<Form Id="form-login" Class="mt-2">
+    <FormGroup>
+        <Input @ref="@LoginUsername" Type="text" Placeholder="Username" OnChange="@ValidateInput" />
+    </FormGroup>
+    <FormGroup>
+        <Input @ref="@LoginPassword" Type="password" Placeholder="Password" OnChange="@ValidateInput" />
+    </FormGroup>
+    <FormGroup>
+        <Button  @ref="@LoginButton" Text="Login" OnClick="@LoginAsync"></Button>
+    </FormGroup>
 </Form>
 
 @code {

@@ -1,0 +1,12 @@
+﻿.form-group {
+    display: flex;
+    margin-bottom: 0;
+}
+
+.form-group-content-right {
+    justify-content: end;
+}
+
+.form-group-content-center {
+    justify-content: center;
+}

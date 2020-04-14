@@ -1,8 +1,15 @@
-﻿<div class="form text-center">
+﻿<div id="@Id" class="form @Class">
     @ChildContent
 </div>
 
 @code {
+
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    [Parameter]
+    public string Class { get; set; } = "";
+
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 }
