@@ -3,6 +3,7 @@
 @layout FormLayout
 @inject IValidationService ValidationService
 @inject IAuthenticationService AuthenticationService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
 
 <Form>
     <Input @ref="@LoginUsername" Type="text" Placeholder="Username" OnChange="@ValidateInput" />
@@ -18,10 +19,10 @@
     private Button LoginButton;
 
     private async Task LoginAsync()
-    {  
-        
+    {
+
         User result = await AuthenticationService.Login(LoginUsername.Text, LoginPassword.Text);
-    
+        await localStorage.SetItemAsync("userId", result.Id);
     }
 
     private Task ValidateInput(string value)
@@ -29,5 +30,4 @@
         LoginButton.ToggleEnabled(ValidationService.ValidateLoginInput(LoginUsername.Text, LoginPassword.Text));
         return Task.CompletedTask;
     }
-
 }

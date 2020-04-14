@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Blazored.LocalStorage;
 using LightTown.Web.Services.Authentication;
 using LightTown.Web.Services.Validation;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -13,7 +14,7 @@ namespace LightTown.Web
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
-
+            builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddSingleton<IValidationService, ValidationService>();
             builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
             builder.Services.AddBaseAddressHttpClient();
