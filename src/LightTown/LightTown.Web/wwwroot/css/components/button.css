@@ -1,2 +1,47 @@
-﻿.button {
+﻿:root {
+    /* button colors */
+    --primary-button-color: #298ecc;
+    /* TODO change colors of buttons below */
+    --success-button-color: green;
+    --error-button-color: red;
+    --warning-button-color: orange;
+}
+
+.form-group {
+}
+
+.button {
+    color: var(--primary-text-color);
+    background: var(--primary-button-color);
+    border: 0px;
+    border-radius: 6px;
+    height: 42px;
+}
+
+.button-success {
+    background: var(--success-button-color);
+}
+
+.button-error {
+    background: var(--error-button-color);
+}
+
+.button-warning {
+    background: var(--warning-button-color);
+}
+
+.button-small {
+    width: 64px;
+}
+
+.button-medium {
+    width: 96px;
+}
+
+.button-big {
+    width: 128px;
+}
+
+.button-full {
+    width: 100%;
 }

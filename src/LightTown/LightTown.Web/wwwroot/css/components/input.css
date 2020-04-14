@@ -1,2 +1,20 @@
-﻿.input {
+﻿.input-title {
+    color: var(--primary-text-color);
+    width: 100%;
+    font-size: 24px;
+}
+
+.input-text {
+    color: var(--secondary-text-color);
+    width: 100%;
+    font-size: 16px;
+}
+
+.input {
+    width: 100%;
+    background-color: var(--blending-bg-color);
+    border: 1px solid #646464;
+    border-radius: 6px;
+    padding: 8px;
+    color: var(--primary-text-color);
 }
