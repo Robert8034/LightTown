@@ -1,0 +1,33 @@
+﻿@page "/login"
+@inject NavigationManager NavigationManager
+@layout FormLayout
+@inject IValidationService ValidationService
+@inject IAuthenticationService AuthenticationService
+
+<Form>
+    <Input @ref="@LoginUsername" Type="text" Placeholder="Username" OnChange="@ValidateInput" />
+    <Input @ref="@LoginPassword" Type="password" Placeholder="Password" OnChange="@ValidateInput" />
+    <Button @ref="@LoginButton" Title="Login" OnClick="@LoginAsync"></Button>
+</Form>
+
+@code {
+
+    private Input LoginUsername;
+    private Input LoginPassword;
+
+    private Button LoginButton;
+
+    private async Task LoginAsync()
+    {  
+        
+        User result = await AuthenticationService.Login(LoginUsername.Text, LoginPassword.Text);
+    
+    }
+
+    private Task ValidateInput(string value)
+    {
+        LoginButton.ToggleEnabled(ValidationService.ValidateLoginInput(LoginUsername.Text, LoginPassword.Text));
+        return Task.CompletedTask;
+    }
+
+}
