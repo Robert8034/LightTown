@@ -2,3 +2,25 @@
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background-color: var(--primary-bg-color);
 }
+
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    height: 100%;
+}
+
+.main, .content {
+    min-height: 100%;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+}
+
+#form-login {
+    width: 400px;
+}
