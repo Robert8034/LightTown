@@ -22,7 +22,10 @@
     {
 
         User result = await AuthenticationService.Login(LoginUsername.Text, LoginPassword.Text);
-        await localStorage.SetItemAsync("userId", result.Id);
+        if (result.Id != 0)
+        {
+            await localStorage.SetItemAsync("userId", result.Id);
+        }
     }
 
     private Task ValidateInput(string value)
