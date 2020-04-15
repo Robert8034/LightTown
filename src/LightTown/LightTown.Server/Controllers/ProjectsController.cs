@@ -25,7 +25,28 @@ namespace LightTown.Server.Controllers
 
         [HttpPut]
         [Route("/{projectId}/members/{userId}")]
-        public async Task<ApiResult> GetMember(int projectId, int userId)
+        public async Task<ApiResult> PutMember(int projectId, int userId)
+        {
+            return ApiResult.NoContent();
+        }
+
+        [HttpGet]
+        [Route("")]
+        public async Task<ApiResult> GetProjects()
+        {
+            return ApiResult.NoContent();
+        }
+
+        [HttpGet]
+        [Route("{projectId}")]
+        public async Task<ApiResult> GetProject(int projectId)
+        {
+            return ApiResult.NoContent();
+        }
+
+        [HttpPost]
+        [Route("{projectId}")]
+        public async Task<ApiResult> PostProject(int projectId)
         {
             return ApiResult.NoContent();
         }
