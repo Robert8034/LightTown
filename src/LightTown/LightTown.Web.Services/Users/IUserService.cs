@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LightTown.Web.Services.Authentication
+namespace LightTown.Web.Services.Users
 {
-    public interface IAuthenticationService
+    public interface IUserService
     {
-        Task<bool> Login(string username, string password);
+        Task<User> GetUserData(int userid);
     }
 }

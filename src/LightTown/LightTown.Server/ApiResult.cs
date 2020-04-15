@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace LightTown.Server
 {
-    public class ApiResult : IActionResult
+    public class ApiResult : JsonResult
     {
-        public int StatusCode { get; set; }
+        //public int StatusCode { get; set; }
         public object ResponseObject { get; set; }
 
         private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
@@ -21,15 +21,17 @@ namespace LightTown.Server
             }
         };
 
-        public async Task ExecuteResultAsync(ActionContext context)
-        {
-            context.HttpContext.Response.StatusCode = StatusCode;
+        //public async Task ExecuteResultAsync(ActionContext context)
+        //{
+        //    context.HttpContext.Response.StatusCode = StatusCode;
 
-            if (ResponseObject != null)
-                await context.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(ResponseObject, _serializerSettings));
-        }
+        //    context.HttpContext.Response.ContentType = "application/json";
 
-        public ApiResult(HttpStatusCode statusCode, object value)
+        //    if (ResponseObject != null)
+        //        await context.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(ResponseObject, _serializerSettings));
+        //}
+
+        public ApiResult(HttpStatusCode statusCode, object value) : base(value)
         {
             StatusCode = (int)statusCode;
             ResponseObject = value;

@@ -2,37 +2,63 @@
 @inject NavigationManager NavigationManager
 @inject IValidationService ValidationService
 @inject IAuthenticationService AuthenticationService
+@inject UserSessionService UserSessionService
 
 <Form Id="form-login">
     <FormGroup>
-        <Input @ref="@LoginUsername" Type="text" Placeholder="Username" OnChange="@ValidateInput" />
+        <Input Type="text" Placeholder="Username" OnChange="@OnUsernameChange" />
     </FormGroup>
     <FormGroup>
-        <Input @ref="@LoginPassword" Type="password" Placeholder="Password" OnChange="@ValidateInput" />
+        <Input Type="password" Placeholder="Password" OnChange="@OnPasswordChange" />
     </FormGroup>
     <FormGroup>
-        <Button  @ref="@LoginButton" Text="Login" OnClick="@LoginAsync"></Button>
+        <Button @ref="@LoginButton" Text="Login" OnClick="@LoginAsync"></Button>
     </FormGroup>
 </Form>
 
 @code {
 
-    private Input LoginUsername;
-    private Input LoginPassword;
+    private string _username;
+    private string _password;
 
     private Button LoginButton;
 
     private async Task LoginAsync()
-    {  
-        
-        User result = await AuthenticationService.Login(LoginUsername.Text, LoginPassword.Text);
-    
+    {
+
+        var result = await AuthenticationService.Login(_username, _password);
+        if (result)
+        {
+            await UserSessionService.LoadUser();
+
+            StateHasChanged();
+
+            NavigationManager.NavigateTo("/");
+        }
     }
 
-    private Task ValidateInput(string value)
+    private void ValidateInput()
     {
-        LoginButton.ToggleEnabled(ValidationService.ValidateLoginInput(LoginUsername.Text, LoginPassword.Text));
+        LoginButton.ToggleEnabled(ValidationService.ValidateLoginInput(_username, _password));
+
+        StateHasChanged();
+    }
+
+    public Task OnUsernameChange(string value)
+    {
+        _username = value;
+
+        ValidateInput();
+
         return Task.CompletedTask;
     }
 
+    public Task OnPasswordChange(string value)
+    {
+        _password = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
 }
