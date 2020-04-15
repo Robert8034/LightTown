@@ -1,3 +1,7 @@
 ﻿.navigation {
     background-color: var(--primary-color);
 }
+
+.navigation-user {
+    color: var(--primary-text-color);
+}

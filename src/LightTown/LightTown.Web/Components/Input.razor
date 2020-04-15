@@ -1,7 +1,7 @@
 ﻿<div class="input-group @(Class)">
     <span class="input-title">@Title</span>
     <span class="input-text">@Text</span>
-    <input class="input" @onchange="@Change" type="@Type" placeholder="@Placeholder" />
+    <input class="input" @oninput="@Change" type="@Type" placeholder="@Placeholder" />
 </div>
 
 @code {
@@ -23,14 +23,14 @@
     [Parameter]
     public Func<string, Task> OnChange { get; set; }
 
-    public string Value;
+    private string _value;
 
     public async Task Change(ChangeEventArgs changeEventArgs)
     {
-        Value = (string)changeEventArgs.Value;
+        _value = (string)changeEventArgs.Value;
         if (OnChange != null)
         {
-            await OnChange.Invoke((string)changeEventArgs.Value);
+            await OnChange.Invoke(_value);
         }
     }
 

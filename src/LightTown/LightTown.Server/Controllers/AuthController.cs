@@ -33,7 +33,7 @@ namespace LightTown.Server.Controllers
                 return ApiResult.Success(null);
             }
 
-            return ApiResult.BadRequest(result.ToString());
+            return ApiResult.Forbidden(result.ToString());
         }
     }
 }

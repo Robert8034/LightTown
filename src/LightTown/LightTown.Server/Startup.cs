@@ -1,6 +1,10 @@
 using System;
+using System.Reflection;
+using AutoMapper;
+using LightTown.Core;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
+using LightTown.Core.Models;
 using LightTown.Server.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,6 +33,8 @@ namespace LightTown.Server
 
             services.AddDbContext<LightTownServerContext>();
 
+            services.AddAutoMapper(typeof(AutoMapperProfile));
+
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<LightTownServerContext>();
 
@@ -42,7 +48,6 @@ namespace LightTown.Server
                 options.Password.RequireUppercase = false;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(60);
             });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

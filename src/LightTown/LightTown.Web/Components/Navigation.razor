@@ -1,4 +1,6 @@
-﻿<nav class="navigation navbar navbar-expand-lg navbar-dark">
+﻿@inject UserSessionService UserSessionService
+
+<nav class="navigation navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">LightTown</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -15,9 +17,46 @@
             </li>*@
         </ul>
         @* TODO replace code below with user info OR leave empty if user is not logged in *@
-        @*<form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>*@
-    </div>
+        <ul class="navbar-nav">
+            @if (UserSessionService.IsAuthorized())
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @UserSessionService.GetCurrentUser().Username
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="#">Logout</a>
+                    </div>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <a class="nav-link" href="login">Login</a>
+                </li>
+            }
+        </ul>
+
+            @*<form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>*@
+        </div>
 </nav>
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        UserSessionService.OnAuthorizationChange += Refresh;
+
+        base.OnInitialized();
+    }
+
+    public Task Refresh()
+    {
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+}
