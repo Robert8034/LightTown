@@ -1,12 +1,17 @@
 ﻿@page "/projects"
-
-
+@inject IProjectService ProjectService
 
 @code {
 
     protected override async Task OnInitializedAsync()
     {
+        List<Project> Projects = await ProjectService.GetProjects();
 
+        for (int i = 0; i < Projects.Count; i++)
+        {
+            <p1>Project name: @Projects[i].ProjectName</p1>
+            <p1>Project members: @Projects[i].Members.Count</p1>
+        }
     }
 
 }
