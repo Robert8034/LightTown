@@ -1,7 +1,70 @@
-﻿@page "/project/create"
+﻿@page "/projects/create"
+
+@inject IValidationService ValidationService
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
 
 
+<Form>
+    <FormGroup>
+        <Input Type="text" Placeholder="Project Name" OnChange="@OnProjectNameChange" />
+    </FormGroup>
+    <FormGroup>
+        <Input Type="text" Placeholder="Description" OnChange="@OnDescriptionChange" />
+    </FormGroup>
+    <FormGroup>
+        <Button Enabled="@_buttonEnabled" Text="Create" OnClick="@CreateProjectAsync" Size="ButtonSize.Full"></Button>
+    </FormGroup>
+</Form>
 
 @code {
 
+    private bool _buttonEnabled;
+    private bool _projectCreationSucces = true;
+
+    private string _projectName;
+    private string _description;
+
+    public Task OnProjectNameChange(string value)
+    {
+        _projectName = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
+
+    public Task OnDescriptionChange(string value)
+    {
+        _description = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
+
+    private void ValidateInput()
+    {
+        _buttonEnabled = ValidationService.ValidateProjectCreationInput(_projectName, _description);
+
+        StateHasChanged();
+    }
+
+    private async Task CreateProjectAsync()
+    {
+
+        _projectCreationSucces = await ProjectService.CreateProject(_projectName, _description);
+
+        Console.WriteLine(_projectCreationSucces);
+
+        if (_projectCreationSucces)
+        {
+     
+            NavigationManager.NavigateTo("/projects");
+        }
+        else
+        {
+            StateHasChanged();
+        }
+    }
 }
