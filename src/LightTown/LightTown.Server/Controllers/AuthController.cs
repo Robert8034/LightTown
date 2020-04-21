@@ -26,7 +26,7 @@ namespace LightTown.Server.Controllers
             if (!ModelState.IsValid)
                 return ApiResult.BadRequest(ModelState.First(e => e.Value.Errors.Any()).Value.Errors.First().ErrorMessage);
 
-            var result = await _signInManager.PasswordSignInAsync(user.Username, user.Password, false, false);
+            var result = await _signInManager.PasswordSignInAsync(user.Username, user.Password, user.RememberMe, false);
 
             if (result.Succeeded)
             {

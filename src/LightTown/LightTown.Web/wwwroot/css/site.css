@@ -38,3 +38,7 @@ app {
 #form-login {
     width: 400px;
 }
+
+.text {
+    color: var(--primary-text-color);
+}

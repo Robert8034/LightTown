@@ -5,6 +5,18 @@
     --success-button-color: green;
     --error-button-color: red;
     --warning-button-color: orange;
+    /* button colors when hovered */
+    --primary-button-color-hover: #317caa;
+    /* TODO change colors of buttons below */
+    --success-button-color-hover: green;
+    --error-button-color-hover: red;
+    --warning-button-color-hover: orange;
+    /* button colors when disabled */
+    --primary-button-color-disabled: #2a668a;
+    /* TODO change colors of buttons below */
+    --success-button-color-disabled: green;
+    --error-button-color-disabled: red;
+    --warning-button-color-disabled: orange;
 }
 
 .form-group {
@@ -16,18 +28,61 @@
     border: 0px;
     border-radius: 6px;
     height: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button:hover {
+    cursor: pointer;
+    background: var(--primary-button-color-hover);
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    background: var(--primary-button-color-disabled);
 }
 
 .button-success {
     background: var(--success-button-color);
 }
 
+.button-success:hover {
+    cursor: pointer;
+    background: var(--success-button-color-hover);
+}
+
+.button-success:disabled {
+    cursor: not-allowed;
+    background: var(--success-button-color-disabled);
+}
+
 .button-error {
     background: var(--error-button-color);
 }
 
+.button-error:hover {
+    cursor: pointer;
+    background: var(--error-button-color-hover);
+}
+
+.button-error:disabled {
+    cursor: not-allowed;
+    background: var(--error-button-color-disabled);
+}
+
 .button-warning {
     background: var(--warning-button-color);
+}
+
+.button-warning:hover {
+    cursor: pointer;
+    background: var(--warning-button-color-hover);
+}
+
+.button-warning:disabled {
+    cursor: not-allowed;
+    background: var(--warning-button-color-disabled);
 }
 
 .button-small {

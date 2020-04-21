@@ -1,4 +1,5 @@
 ﻿@page "/login"
+
 @inject NavigationManager NavigationManager
 @inject IValidationService ValidationService
 @inject IAuthenticationService AuthenticationService
@@ -12,21 +13,28 @@
         <Input Type="password" Placeholder="Password" OnChange="@OnPasswordChange" />
     </FormGroup>
     <FormGroup>
-        <Button @ref="@LoginButton" Text="Login" OnClick="@LoginAsync"></Button>
+        <Checkbox Text="Remember Me" OnChange="@OnRememberMeChange" />
+        <div class="d-flex flex-shrink-0">
+            <a class="text" href="recover">Forgot password?</a>
+        </div>
+    </FormGroup>
+    <FormGroup>
+        <Button Enabled="@_buttonEnabled" Text="Login" OnClick="@LoginAsync" Size="ButtonSize.Full"></Button>
     </FormGroup>
 </Form>
 
 @code {
 
+    private bool _buttonEnabled;
+
     private string _username;
     private string _password;
-
-    private Button LoginButton;
+    private bool _rememberMe;
 
     private async Task LoginAsync()
     {
 
-        var result = await AuthenticationService.Login(_username, _password);
+        var result = await AuthenticationService.Login(_username, _password, _rememberMe);
         if (result)
         {
             await UserSessionService.LoadUser();
@@ -39,7 +47,7 @@
 
     private void ValidateInput()
     {
-        LoginButton.ToggleEnabled(ValidationService.ValidateLoginInput(_username, _password));
+        _buttonEnabled = ValidationService.ValidateLoginInput(_username, _password);
 
         StateHasChanged();
     }
@@ -56,6 +64,15 @@
     public Task OnPasswordChange(string value)
     {
         _password = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
+
+    public Task OnRememberMeChange(bool value)
+    {
+        _rememberMe = value;
 
         ValidateInput();
 
