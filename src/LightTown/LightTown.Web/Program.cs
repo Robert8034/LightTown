@@ -1,4 +1,4 @@
-﻿using System.Net.Http;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
@@ -33,7 +33,15 @@ namespace LightTown.Web
             builder.Services.AddSingleton<UserSessionService>();
             builder.Services.AddBaseAddressHttpClient();
 
-            await builder.Build().RunAsync();
+            var host = builder.Build();
+
+            var userSessionService = host.Services.GetRequiredService<UserSessionService>();
+            if (await userSessionService.TryLoadLocalUser())
+            {
+                await userSessionService.LoadUser();
+            }
+
+            await host.RunAsync();
         }
     }
 }

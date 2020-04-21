@@ -38,6 +38,12 @@ namespace LightTown.Server
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<LightTownServerContext>();
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = false;
+                options.ExpireTimeSpan = TimeSpan.FromDays(365);
+            });
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequiredLength = 3;

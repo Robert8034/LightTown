@@ -23,7 +23,7 @@
 }
 
 .button {
-    color: var(--primary-text-color);
+    color: var(--primary-text-color-dark);
     background: var(--primary-button-color);
     border: 0px;
     border-radius: 6px;

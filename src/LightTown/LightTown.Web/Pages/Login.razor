@@ -4,6 +4,7 @@
 @inject IValidationService ValidationService
 @inject IAuthenticationService AuthenticationService
 @inject UserSessionService UserSessionService
+@inject IJSRuntime JsRuntime
 
 <Form Id="form-login">
     @if (!_loginSuccess)
@@ -13,13 +14,13 @@
         </div>
     }
     <FormGroup>
-        <Input Type="text" Placeholder="Username" OnChange="@OnUsernameChange"/>
+        <Input Type="text" Placeholder="Username" OnChange="@OnUsernameChange" />
     </FormGroup>
     <FormGroup>
-        <Input Type="password" Placeholder="Password" OnChange="@OnPasswordChange"/>
+        <Input Type="password" Placeholder="Password" OnChange="@OnPasswordChange" />
     </FormGroup>
     <FormGroup>
-        <Checkbox Text="Remember Me" OnChange="@OnRememberMeChange"/>
+        <Checkbox Text="Remember Me" OnChange="@OnRememberMeChange" />
         <div class="d-flex flex-shrink-0">
             <a class="text" href="recover">Forgot password?</a>
         </div>

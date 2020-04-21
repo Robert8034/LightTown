@@ -8,10 +8,9 @@
     --primary-bg-color-dark: #20262b;
     --secondary-bg-color-dark: #293137;
     --blending-bg-color-dark: #1d2124;
-    /* TODO fix 3 light colors below */
-    --primary-bg-color-light: #20262b;
-    --secondary-bg-color-light: gray;
-    --blending-bg-color-light: lightgray;
+    --primary-bg-color-light: #ffffff;
+    --secondary-bg-color-light: #eeeeee;
+    --blending-bg-color-light: #f2f2f2;
     /* text colors */
     --primary-text-color: var(--primary-text-color-dark);
     --secondary-text-color: var(--secondary-text-color-dark);

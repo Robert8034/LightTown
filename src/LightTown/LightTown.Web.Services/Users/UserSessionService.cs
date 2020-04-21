@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Blazored.LocalStorage;
 using LightTown.Core.Models.Users;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -10,28 +14,24 @@ namespace LightTown.Web.Services.Users
     public class UserSessionService
     {
         private readonly HttpClient _httpClient;
+        private readonly IJSRuntime _ijsRuntime;
+        private readonly NavigationManager _navigationManager;
 
         public Func<Task> OnAuthorizationChange { get; set; }
 
         private User _currentUser;
-        private string _authorizationCookie;
-        private DateTime _cookieExpirationTime;
 
-        public UserSessionService(HttpClient httpClient)
+        public UserSessionService(HttpClient httpClient, IJSRuntime ijsRuntime, NavigationManager navigationManager)
         {
             _httpClient = httpClient;
+            _ijsRuntime = ijsRuntime;
+            _navigationManager = navigationManager;
         }
 
-        public void SetAuthorizationCookie(string cookie)
-        {
-            _authorizationCookie = cookie;
-        }
-
-        public string GetAuthorizationCookie()
-        {
-            return _authorizationCookie;
-        }
-
+        /// <summary>
+        /// Set the current user (or null) and invoke the authorization changed event for the navigation menu to update.
+        /// </summary>
+        /// <param name="user"></param>
         public void SetCurrentUser(User user)
         {
             _currentUser = user;
@@ -44,15 +44,43 @@ namespace LightTown.Web.Services.Users
             return _currentUser;
         }
 
+        /// <summary>
+        /// Returns if a user is authorized and if the cookie is correct. Note that this information is gathered from client sided data.
+        /// </summary>
+        /// <returns></returns>
         public bool IsAuthorized()
         {
-            Console.WriteLine("User is authorized: " + (_currentUser != null));
-
             return _currentUser != null;
-            //todo use cookie expiration check
-            return _cookieExpirationTime > DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Try to load user authorization cookie from local storage.
+        /// </summary>
+        /// <returns>Returns true if valid info has been found.</returns>
+        public async Task<bool> TryLoadLocalUser()
+        {
+            var cookieString = await _ijsRuntime.InvokeAsync<string>("getCookies");
+
+            var cookieContainer = new CookieContainer();
+            cookieContainer.SetCookies(new Uri(_navigationManager.BaseUri), cookieString);
+
+            var cookieCollection = cookieContainer.GetCookies(new Uri(_navigationManager.BaseUri));
+
+            var cookie = cookieCollection[".AspNetCore.Identity.Application"];
+
+            if (cookie == null)
+                return false;
+
+            if (cookie.Expired)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Load current user data from the server into cache.
+        /// </summary>
+        /// <returns></returns>
         public async Task LoadUser()
         {
             var result = await _httpClient.GetStringAsync("api/users/@me");
@@ -62,6 +90,18 @@ namespace LightTown.Web.Services.Users
             User user = jsonObject["data"].ToObject<User>();
 
             SetCurrentUser(user);
+        }
+
+        /// <summary>
+        /// Unload the current user from the cache and removes authentication cookie.
+        /// </summary>
+        public async void UnloadUser()
+        {
+            SetCurrentUser(null);
+
+            await _ijsRuntime.InvokeVoidAsync("unsetCookies");
+
+            OnAuthorizationChange?.Invoke();
         }
     }
 }
