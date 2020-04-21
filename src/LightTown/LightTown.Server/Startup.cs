@@ -2,10 +2,14 @@ using System;
 using System.Reflection;
 using AutoMapper;
 using LightTown.Core;
+using LightTown.Core.Data;
+using LightTown.Core.Domain.Projects;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
 using LightTown.Core.Models;
 using LightTown.Server.Data;
+using LightTown.Server.Services;
+using LightTown.Server.Services.Projects;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -31,7 +35,11 @@ namespace LightTown.Server
         {
             services.AddControllers();
 
+            services.AddSingleton<DbContext, LightTownServerContext>();
             services.AddDbContext<LightTownServerContext>();
+
+            services.AddRepositories();
+            services.AddServices();
 
             services.AddAutoMapper(typeof(AutoMapperProfile));
 
