@@ -17,6 +17,7 @@ namespace LightTown.Server.Data.Migrations
                     Name = table.Column<string>(maxLength: 256, nullable: false),
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
+                    CanBeModified = table.Column<bool>(nullable: false),
                     Permissions = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

@@ -8,7 +8,6 @@ namespace LightTown.Server.Data.Mapping.Users
         public override void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(e => e.Id);
-           
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using LightTown.Core.Domain.Roles;
+﻿using System;
+using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -23,19 +24,24 @@ namespace LightTown.Server.Data
 
                 var relationalDatabaseCreator =
                     (RelationalDatabaseCreator) dbContext.Database.GetService<IDatabaseCreator>();
-                var tablesExists = relationalDatabaseCreator.HasTables();
+
+                var databaseExists = relationalDatabaseCreator.Exists() && relationalDatabaseCreator.HasTables();
                 
                 dbContext.Database.Migrate();
 
-                if (!tablesExists)
+                if (!databaseExists)
                 {
                     RoleManager<Role> roleManager = scope.ServiceProvider.GetService<RoleManager<Role>>();
-                    roleManager.CreateAsync(new Role("Administrator", Permissions.ALL, false));
-                    roleManager.CreateAsync(new Role("Manager", Permissions.ALL));
-                    roleManager.CreateAsync(new Role("Employee", Permissions.ALL));
+                    roleManager.CreateAsync(new Role("Administrator", Permissions.ALL, false)).Wait();
+                    roleManager.CreateAsync(new Role("Manager", Permissions.CREATE_PROJECTS |
+                                                                Permissions.MANAGE_PROJECTS |
+                                                                Permissions.DELETE_PROJECTS |
+                                                                Permissions.MANAGE_USERS |
+                                                                Permissions.VIEW_ALL_PROJECTS)).Wait();
+                    roleManager.CreateAsync(new Role("Employee", Permissions.VIEW_ALL_PROJECTS)).Wait();
 
                     UserManager<User> userManager = scope.ServiceProvider.GetService<UserManager<User>>();
-                    userManager.CreateAsync(new User("admin"), "admin");
+                    userManager.CreateAsync(new User("admin"), "admin").Wait();
                 }
             }
         }
