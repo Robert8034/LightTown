@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LightTown.Core.Domain.Projects;
 using LightTown.Core.Domain.Users;
 
 namespace LightTown.Core
@@ -8,6 +9,7 @@ namespace LightTown.Core
         public AutoMapperProfile()
         {
             CreateMap<User, Models.Users.User>();
+            CreateMap<Project, Models.Projects.Project>();
         }
     }
 }
