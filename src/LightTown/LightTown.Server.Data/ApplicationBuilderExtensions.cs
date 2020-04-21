@@ -44,7 +44,7 @@ namespace LightTown.Server.Data
                     userManager.CreateAsync(new User("admin"), "admin").Wait();
 
                     var admin = userManager.FindByNameAsync("admin").Result;
-                    userManager.AddToRoleAsync(admin, "Administrator");
+                    userManager.AddToRoleAsync(admin, "Administrator").Wait();
                 }
             }
         }
