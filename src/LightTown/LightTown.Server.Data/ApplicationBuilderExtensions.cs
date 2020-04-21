@@ -42,6 +42,9 @@ namespace LightTown.Server.Data
 
                     UserManager<User> userManager = scope.ServiceProvider.GetService<UserManager<User>>();
                     userManager.CreateAsync(new User("admin"), "admin").Wait();
+
+                    var admin = userManager.FindByNameAsync("admin").Result;
+                    userManager.AddToRoleAsync(admin, "Administrator");
                 }
             }
         }

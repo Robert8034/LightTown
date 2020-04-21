@@ -6,14 +6,20 @@
 @inject UserSessionService UserSessionService
 
 <Form Id="form-login">
+    @if (!_loginSuccess)
+    {
+        <div class="alert alert-danger">
+            Error logging in, make sure your credentials are correct.
+        </div>
+    }
     <FormGroup>
-        <Input Type="text" Placeholder="Username" OnChange="@OnUsernameChange" />
+        <Input Type="text" Placeholder="Username" OnChange="@OnUsernameChange"/>
     </FormGroup>
     <FormGroup>
-        <Input Type="password" Placeholder="Password" OnChange="@OnPasswordChange" />
+        <Input Type="password" Placeholder="Password" OnChange="@OnPasswordChange"/>
     </FormGroup>
     <FormGroup>
-        <Checkbox Text="Remember Me" OnChange="@OnRememberMeChange" />
+        <Checkbox Text="Remember Me" OnChange="@OnRememberMeChange"/>
         <div class="d-flex flex-shrink-0">
             <a class="text" href="recover">Forgot password?</a>
         </div>
@@ -26,6 +32,7 @@
 @code {
 
     private bool _buttonEnabled;
+    private bool _loginSuccess = true;
 
     private string _username;
     private string _password;
@@ -34,14 +41,21 @@
     private async Task LoginAsync()
     {
 
-        var result = await AuthenticationService.Login(_username, _password, _rememberMe);
-        if (result)
+        _loginSuccess = await AuthenticationService.Login(_username, _password, _rememberMe);
+
+        Console.WriteLine(_loginSuccess);
+
+        if (_loginSuccess)
         {
             await UserSessionService.LoadUser();
 
             StateHasChanged();
 
             NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            StateHasChanged();
         }
     }
 
