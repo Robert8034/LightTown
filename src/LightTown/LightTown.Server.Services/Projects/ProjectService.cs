@@ -13,7 +13,7 @@ namespace LightTown.Server.Services.Projects
         private readonly IRepository<Project> _projectRepository;
         public ProjectService(IRepository<Project> projectRepository)
         {
-            this._projectRepository = projectRepository;
+            _projectRepository = projectRepository;
         }
 
         public async Task<List<Project>> GetProjects()

@@ -34,8 +34,8 @@ namespace LightTown.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped<IProjectService, ProjectService>();
 
+            services.AddSingleton<DbContext, LightTownServerContext>();
             services.AddDbContext<LightTownServerContext>();
 
             services.AddRepositories();
