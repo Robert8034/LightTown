@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using LightTown.Core.Data;
+using LightTown.Core.Domain.Projects;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LightTown.Server.Data
 {
@@ -6,7 +8,7 @@ namespace LightTown.Server.Data
     {
         public static void AddRepositories(this IServiceCollection serviceCollection)
         {
-            //serviceCollection.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            serviceCollection.AddScoped(typeof(IRepository<Project>), typeof(Repository<Project>));
         }
     }
 }

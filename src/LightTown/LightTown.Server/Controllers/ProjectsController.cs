@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LightTown.Core.Domain.Projects;
+using LightTown.Core.Domain.Roles;
+using LightTown.Server.Services.Projects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +14,10 @@ namespace LightTown.Server.Controllers
     [Route("api/[controller]")]
     public class ProjectsController : ControllerBase
     {
-        public ProjectsController()
+        private readonly IProjectService _projectService;
+        public ProjectsController(IProjectService projectService)
         {
-
+            _projectService = projectService;
         }
 
         [HttpGet]
@@ -32,9 +36,12 @@ namespace LightTown.Server.Controllers
 
         [HttpGet]
         [Route("")]
+        [Authorization(Permissions.VIEW_ALL_PROJECTS)]
         public async Task<ApiResult> GetProjects()
         {
-            return ApiResult.NoContent();
+            List<Project> projects = await _projectService.GetProjects();
+
+            return ApiResult.Success(null);
         }
 
         [HttpGet]
@@ -45,8 +52,8 @@ namespace LightTown.Server.Controllers
         }
 
         [HttpPost]
-        [Route("{projectId}")]
-        public async Task<ApiResult> PostProject(int projectId)
+        [Route("")]
+        public async Task<ApiResult> PostProject()
         {
             return ApiResult.NoContent();
         }
