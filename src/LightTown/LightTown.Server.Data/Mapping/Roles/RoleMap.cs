@@ -10,6 +10,7 @@ namespace LightTown.Server.Data.Mapping.Roles
             builder.HasKey(e => e.Id);
             builder.Property(e => e.Name).IsRequired();
             builder.Property(e => e.Permissions).IsRequired();
+            builder.Property(e => e.CanBeModified).IsRequired();
             //builder.HasMany(e => e.Users);
         }
     }

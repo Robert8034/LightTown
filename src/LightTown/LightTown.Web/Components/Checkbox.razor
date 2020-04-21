@@ -1,0 +1,46 @@
+﻿<div class="input-group">
+    <span class="input-title">@Title</span>
+    <div class="checkbox">
+        <label class="@(Disabled ? "checkbox-disabled" : "")">
+            @if (Checked)
+            {
+                <input type="checkbox" @onchange="@(async eventArgs => { await OnChange((bool)eventArgs.Value); })" disabled="@Disabled" checked/>
+            }
+            else
+            {
+                <input type="checkbox" @onchange="@(async eventArgs => { await OnChange((bool)eventArgs.Value); })" disabled="@Disabled" />
+            }
+            <span class="checkbox-box">
+                <svg class="bi bi-check" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 010 .708l-7 7a.5.5 0 01-.708 0l-3.5-3.5a.5.5 0 11.708-.708L6.5 10.293l6.646-6.647a.5.5 0 01.708 0z" clip-rule="evenodd"/>
+                </svg>
+            </span>
+            <span class="text">@Text</span>
+        </label>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public bool Checked { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public Func<bool, Task> OnChange { get; set; }
+
+    public async Task Change(bool isChecked)
+    {
+        Checked = isChecked;
+
+        if(OnChange != null)
+            await OnChange(Checked);
+    }
+}

@@ -19,12 +19,13 @@ namespace LightTown.Web.Services.Authentication
             _userSessionService = userSessionService;
         }
 
-        public async Task<bool> Login(string username, string password)
+        public async Task<bool> Login(string username, string password, bool rememberMe)
         {
             string jsonPost = JsonConvert.SerializeObject(new
             {
                 username,
-                password
+                password,
+                rememberMe
             });
 
             var response = await _httpClient.PostAsync("api/auth/login", 
@@ -35,7 +36,7 @@ namespace LightTown.Web.Services.Authentication
 
             JObject jsonObject = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            if (!jsonObject["isSuccess"].Value<bool>())
+            if (!jsonObject["isSuccess"]?.Value<bool>() ?? false)
                 return false;
 
             return true;

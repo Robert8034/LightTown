@@ -1,13 +1,30 @@
 ﻿@if (!Enabled)
 {
-    <button class="button @Class @(Size == ButtonSize.Small ? "button-small" : 
-                                     Size == ButtonSize.Big ? "button-big" :
-                                     Size == ButtonSize.Full ? "button-full" :
-                                     "button-medium")" @onclick="@Click" disabled>@Text</button>
+    <button class="button @Class @(Size == ButtonSize.Small ? "button-small" : Size == ButtonSize.Big ? "button-big" : Size == ButtonSize.Full ? "button-full" : "button-medium")" @onclick="@Click" disabled>
+        @if (_loading)
+        {
+            <div class="spinner-border" role="status">
+            </div>
+        }
+        else
+        {
+            @Text
+        }
+    </button>
 }
 else
 {
-    <button class="button" @onclick="@Click">@Text</button>
+    <button class="button @Class @(Size == ButtonSize.Small ? "button-small" : Size == ButtonSize.Big ? "button-big" : Size == ButtonSize.Full ? "button-full" : "button-medium")" @onclick="@Click">
+        @if (_loading)
+        {
+            <div class="spinner-border" role="status">
+            </div>
+        }
+        else
+        {
+            @Text
+        }
+    </button>
 }
 
 @code {
@@ -26,17 +43,21 @@ else
     [Parameter]
     public bool Enabled { get; set; } = false;
 
+    private bool _loading;
+
     private async Task Click()
     {
         if (OnClick != null)
         {
-            await OnClick.Invoke();
-        }
-    }
+            _loading = true;
 
-    public void ToggleEnabled(bool Enable)
-    {
-        this.Enabled = Enable;
-        StateHasChanged();
+            StateHasChanged();
+
+            await OnClick.Invoke();
+
+            _loading = false;
+
+            StateHasChanged();
+        }
     }
 }

@@ -17,6 +17,7 @@ namespace LightTown.Web.Services.Users
             _httpClient = httpClient;
         }
 
+        [Obsolete]
         public async Task<User> GetUserData(int userid)
         {
             return await _httpClient.PostJsonAsync<User>("api/auth/login", new
