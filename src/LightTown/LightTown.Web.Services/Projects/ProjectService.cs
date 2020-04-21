@@ -14,13 +14,12 @@ namespace LightTown.Web.Services.Projects
 
         public ProjectService(HttpClient httpClient)
         {
-
+            _httpClient = httpClient;
         }
 
         public async Task<List<Project>> GetProjects()
         {
-            return await _httpClient.PostJsonAsync<List<Project>>("api/projects", null); 
-            
+            return await _httpClient.PostJsonAsync<List<Project>>("api/projects", null);
         }
     }
 }
