@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using LightTown.Core;
 using LightTown.Core.Models.Projects;
 
 namespace LightTown.Client.Services.Projects
@@ -16,9 +17,9 @@ namespace LightTown.Client.Services.Projects
 
         public async Task<List<Project>> GetProjects()
         {
-            //var 
+            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects");
 
-            return await _httpClient.GetJsonAsync<List<Project>>("api/projects");
+            return result.GetData<List<Project>>();
         }
 
         public async Task<bool> CreateProject(string projectName, string description)

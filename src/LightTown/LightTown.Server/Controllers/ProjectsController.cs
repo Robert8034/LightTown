@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using LightTown.Core;
 using LightTown.Core.Data;
 using LightTown.Core.Domain.Projects;
@@ -17,10 +18,13 @@ namespace LightTown.Server.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IProjectService _projectService;
-        public ProjectsController(IProjectService projectService, UserManager<User> userManager)
+        private readonly IMapper _mapper;
+
+        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper)
         {
             _userManager = userManager;
             _projectService = projectService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -42,13 +46,11 @@ namespace LightTown.Server.Controllers
         [Authorization(Permissions.NONE)]
         public async Task<ApiResult> GetProjects()
         {
-            //TODO: add mapping + remove hardcoded project when permissions works.
-            //List<Project> projects = await _projectService.GetProjects();
-            List<Project> projects = new List<Project>();
-            Project project = new Project();
-            project.ProjectName = "test";
-            projects.Add(project);
-            return ApiResult.Success(projects);
+            List<Project> projects = await _projectService.GetProjects();
+
+            var projectsModel = _mapper.Map<List<Core.Models.Projects.Project>>(projects);
+
+            return ApiResult.Success(projectsModel);
         }
 
         [HttpGet]
