@@ -1,4 +1,5 @@
  version: 2.1
+ working_directory: src/lightTown
 
  orbs:
   win: circleci/windows@2.2.0
@@ -10,5 +11,3 @@
      steps:
        - checkout
        - run: dotnet build
-       - run: dotnet test
-       
