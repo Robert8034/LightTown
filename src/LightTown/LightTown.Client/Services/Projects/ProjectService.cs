@@ -17,9 +17,11 @@ namespace LightTown.Client.Services.Projects
 
         public async Task<List<Project>> GetProjects()
         {
+
             ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects");
 
             return result.GetData<List<Project>>();
+
         }
 
         public async Task<bool> CreateProject(string projectName, string description)

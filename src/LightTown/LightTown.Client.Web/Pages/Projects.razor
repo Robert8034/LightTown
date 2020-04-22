@@ -3,19 +3,26 @@
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
 
-@for (int i = 0; i < projects.Count; i++)
-{
-    Console.WriteLine(projects[i].Id);
-    <FormGroup>
-        <p1>Project name: @projects[i].ProjectName</p1>
-    </FormGroup>
-    <FormGroup>
-        <p1>Project members: @projects[i].ProjectDescription</p1>
-    </FormGroup>
-    <FormGroup>
-        <Button Enabled="@true" Text="View Project" OnClick="@(() => ViewProject(projects[i].Id))" Size="ButtonSize.Full"></Button>
-    </FormGroup>
-}
+<Form>
+    @foreach (var project in projects)
+    {
+        <div class="row flex-column">
+            <FormGroup>
+                <p1>Project name: @project.ProjectName</p1>
+            </FormGroup>
+            <FormGroup>
+                <p1>Project members: @project.ProjectDescription</p1>
+            </FormGroup>
+            <FormGroup>
+                <Button Enabled="@true" Text="View Project" OnClick="@(() => ViewProject(project.Id))" Size="ButtonSize.Full"></Button>
+            </FormGroup>
+
+        </div>
+        <br />
+
+    }
+</Form>
+
 
 @code {
 
