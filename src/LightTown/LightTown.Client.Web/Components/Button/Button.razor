@@ -41,19 +41,27 @@ else
     public Func<Task> OnClick { get; set; }
 
     [Parameter]
-    public bool Enabled { get; set; } = false;
+    public bool Enabled { get; set; }
 
     private bool _loading;
 
     private async Task Click()
     {
-        if (OnClick != null)
+        if (OnClick != null && Enabled)
         {
+            Enabled = false;
+
+            StateHasChanged();
+
             _loading = true;
 
             StateHasChanged();
 
             await OnClick.Invoke();
+
+            Enabled = true;
+
+            StateHasChanged();
 
             _loading = false;
 

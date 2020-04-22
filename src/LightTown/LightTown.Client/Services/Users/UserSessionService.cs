@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using LightTown.Core.Models.Users;
+using LightTown.Core;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json.Linq;
@@ -81,13 +82,9 @@ namespace LightTown.Client.Services.Users
         /// <returns></returns>
         public async Task LoadUser()
         {
-            var result = await _httpClient.GetStringAsync("api/users/@me");
+            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/users/@me");
 
-            JObject jsonObject = JObject.Parse(result);
-
-            User user = jsonObject["data"].ToObject<User>();
-
-            SetCurrentUser(user);
+            SetCurrentUser(result.GetData<User>());
         }
 
         /// <summary>

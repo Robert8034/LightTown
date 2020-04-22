@@ -1,40 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
-namespace LightTown.Core.Data
+namespace LightTown.Core
 {
     public class ApiResult : JsonResult
     {
-        //public int StatusCode { get; set; }
-        public object ResponseObject { get; set; }
-
-        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
-        {
-            Converters = new List<JsonConverter>
-            {
-                new StringEnumConverter()
-            }
-        };
-
-        //public async Task ExecuteResultAsync(ActionContext context)
-        //{
-        //    context.HttpContext.Response.StatusCode = StatusCode;
-
-        //    context.HttpContext.Response.ContentType = "application/json";
-
-        //    if (ResponseObject != null)
-        //        await context.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(ResponseObject, _serializerSettings));
-        //}
+        public bool IsSuccess { get; set; }
+        public string Message { get; set; }
+        public JToken Data { get; set; }
 
         public ApiResult(HttpStatusCode statusCode, object value) : base(value)
         {
             StatusCode = (int)statusCode;
-            ResponseObject = value;
+            Data = value == null ? null : JToken.FromObject(value);
+        }
+
+        public T GetData<T>()
+        {
+            return Data != null ? Data.ToObject<T>() : default;
         }
 
         public static ApiResult Success(object data, string message = null)
