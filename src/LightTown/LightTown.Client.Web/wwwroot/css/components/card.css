@@ -1,0 +1,4 @@
+﻿.card {
+    background: var(--secondary-bg-color);
+    padding: 16px;
+}

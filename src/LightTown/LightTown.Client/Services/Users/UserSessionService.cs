@@ -6,7 +6,6 @@ using LightTown.Core.Models.Users;
 using LightTown.Core;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Newtonsoft.Json.Linq;
 
 namespace LightTown.Client.Services.Users
 {
