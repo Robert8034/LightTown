@@ -1,11 +1,20 @@
 ﻿@page "/projects"
 @using LightTown.Client.Services.Projects
 @inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
 
 @for (int i = 0; i < projects.Count; i++)
 {
-    <p1>Project name: @projects[i].ProjectName</p1>
-    <p1>Project members: @projects[i].ProjectDescription</p1>
+    Console.WriteLine(projects[i].Id);
+    <FormGroup>
+        <p1>Project name: @projects[i].ProjectName</p1>
+    </FormGroup>
+    <FormGroup>
+        <p1>Project members: @projects[i].ProjectDescription</p1>
+    </FormGroup>
+    <FormGroup>
+        <Button Enabled="@true" Text="View Project" OnClick="@(() => ViewProject(projects[i].Id))" Size="ButtonSize.Full"></Button>
+    </FormGroup>
 }
 
 @code {
@@ -15,6 +24,12 @@
     protected override async Task OnInitializedAsync()
     {
         projects = await ProjectService.GetProjects();
+    }
+
+    private async Task ViewProject(int projectId)
+    {
+
+        NavigationManager.NavigateTo("/projects/" + projectId);
     }
 
 }
