@@ -1,4 +1,4 @@
-﻿namespace LightTown.Web.Components.Button
+﻿namespace LightTown.Client.Web.Components.Button
 {
     public enum ButtonSize
     {

@@ -14,8 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LightTown.Core\LightTown.Core.csproj" />
     <ProjectReference Include="..\LightTown.Server.Data\LightTown.Server.Data.csproj" />
-    <ProjectReference Include="..\LightTown.Server.Services\LightTown.Server.Services.csproj" />
-    <ProjectReference Include="..\LightTown.Web\LightTown.Web.csproj" />
+    <ProjectReference Include="..\LightTown.Client.Web\LightTown.Client.Web.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

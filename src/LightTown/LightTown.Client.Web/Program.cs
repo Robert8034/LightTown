@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using LightTown.Web.Services.Authentication;
@@ -10,7 +9,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LightTown.Web
+namespace LightTown.Client.Web
 {
     public class Program
     {

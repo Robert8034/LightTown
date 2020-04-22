@@ -1,4 +1,4 @@
-﻿namespace LightTown.Web.Components.FormGroup
+﻿namespace LightTown.Client.Web.Components.FormGroup
 {
     public enum AlignContent
     {
