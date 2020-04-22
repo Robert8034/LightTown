@@ -1,5 +1,5 @@
  version: 2.1
- working_directory: LightTown/src/lightTown
+ working_directory: LightTown/src/LightTown/
 
  orbs:
   win: circleci/windows@2.2.0
