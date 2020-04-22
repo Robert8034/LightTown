@@ -17,9 +17,10 @@
     <FormGroup>
         <Button Enabled="@_buttonEnabled" Text="Create" OnClick="@CreateProjectAsync" Size="ButtonSize.Full"></Button>
     </FormGroup>
+    <FormGroup>
+        <p1>@_creationResult</p1>
+    </FormGroup>
 </Form>
-
-<p1>@_creationResult</p1>
 
 @code {
 
