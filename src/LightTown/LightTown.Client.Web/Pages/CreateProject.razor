@@ -19,6 +19,8 @@
     </FormGroup>
 </Form>
 
+<p1>@_creationResult</p1>
+
 @code {
 
     private bool _buttonEnabled;
@@ -26,6 +28,7 @@
 
     private string _projectName;
     private string _description;
+    private string _creationResult;
 
     public Task OnProjectNameChange(string value)
     {
@@ -61,11 +64,13 @@
 
         if (_projectCreationSucces)
         {
-     
-            NavigationManager.NavigateTo("/projects");
+            _creationResult = "Successfully created the new project";
+            StateHasChanged();
+            //NavigationManager.NavigateTo("/projects");
         }
         else
         {
+            _creationResult = "Something went wrong during creation";
             StateHasChanged();
         }
     }

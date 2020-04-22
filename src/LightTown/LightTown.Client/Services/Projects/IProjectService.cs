@@ -7,6 +7,6 @@ namespace LightTown.Client.Services.Projects
     public interface IProjectService
     {
         Task<List<Project>> GetProjects();
-        Task<bool> CreateProject(string projectName, string description);
+        Task<bool> CreateProject(string projectName, string projectDescription);
     }
 }
