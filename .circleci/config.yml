@@ -10,3 +10,4 @@
      steps:
        - checkout
        - run: dotnet build src/LightTown
+       - run: dotnet test src/LightTown
