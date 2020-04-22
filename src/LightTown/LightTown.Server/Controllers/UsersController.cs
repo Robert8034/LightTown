@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using AutoMapper;
+using LightTown.Core.Data;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
 using Microsoft.AspNetCore.Identity;

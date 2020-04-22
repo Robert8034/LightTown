@@ -16,6 +16,8 @@ namespace LightTown.Client.Services.Projects
 
         public async Task<List<Project>> GetProjects()
         {
+            var 
+
             return await _httpClient.GetJsonAsync<List<Project>>("api/projects");
         }
 

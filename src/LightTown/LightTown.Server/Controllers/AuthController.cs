@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
+using LightTown.Core.Data;
 using LightTown.Core.Domain.Users;
 
 namespace LightTown.Server.Controllers
