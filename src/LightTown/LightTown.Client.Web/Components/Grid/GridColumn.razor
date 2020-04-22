@@ -1,0 +1,12 @@
+﻿<div class="grid-column @(ColumnSize == ColumnSize.Small ? "grid-column-1" : ColumnSize == ColumnSize.Medium ? "grid-column-2" : "grid-column-3")">
+    @ChildContent
+</div>
+
+@code {
+
+    [Parameter]
+    public ColumnSize ColumnSize { get; set; } = ColumnSize.Small;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

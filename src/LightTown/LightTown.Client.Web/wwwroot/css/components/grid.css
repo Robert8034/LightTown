@@ -1,0 +1,23 @@
+﻿.grid {
+    display: flex;
+    flex-grow: 1;
+}
+
+.grid-column {
+}
+
+.grid-column-1 {
+    width: 33%;
+}
+
+.grid-column-2 {
+    width: 66%;
+}
+
+.grid-column-3 {
+    width: 100%;
+}
+
+.grid-item {
+    margin: 8px;
+}
