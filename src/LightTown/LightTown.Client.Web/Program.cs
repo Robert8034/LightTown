@@ -1,10 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
-using LightTown.Web.Services.Authentication;
-using LightTown.Web.Services.Projects;
-using LightTown.Web.Services.Users;
-using LightTown.Web.Services.Validation;
+using LightTown.Client.Services.Authentication;
+using LightTown.Client.Services.Projects;
+using LightTown.Client.Services.Users;
+using LightTown.Client.Services.Validation;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.Extensions.DependencyInjection;

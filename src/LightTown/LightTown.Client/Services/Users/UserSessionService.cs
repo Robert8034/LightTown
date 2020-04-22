@@ -2,14 +2,12 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Blazored.LocalStorage;
 using LightTown.Core.Models.Users;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LightTown.Web.Services.Users
+namespace LightTown.Client.Services.Users
 {
     public class UserSessionService
     {

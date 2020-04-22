@@ -1,11 +1,11 @@
 ﻿using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using LightTown.Web.Services.Users;
+using LightTown.Client.Services.Users;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LightTown.Web.Services.Authentication
+namespace LightTown.Client.Services.Authentication
 {
     public class AuthenticationService : IAuthenticationService
     {

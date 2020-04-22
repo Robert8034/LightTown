@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using LightTown.Core.Domain.Projects;
 using LightTown.Core.Domain.Roles;

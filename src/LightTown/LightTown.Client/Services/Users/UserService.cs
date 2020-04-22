@@ -1,12 +1,9 @@
-﻿using LightTown.Core;
-using LightTown.Core.Domain.Users;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using LightTown.Core.Domain.Users;
 
-namespace LightTown.Web.Services.Users
+namespace LightTown.Client.Services.Users
 {
     public class UserService : IUserService
     {

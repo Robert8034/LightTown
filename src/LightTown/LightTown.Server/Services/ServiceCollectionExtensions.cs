@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using LightTown.Core.Data;
-using LightTown.Server.Services.Projects;
+﻿using LightTown.Server.Services.Projects;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LightTown.Server.Services

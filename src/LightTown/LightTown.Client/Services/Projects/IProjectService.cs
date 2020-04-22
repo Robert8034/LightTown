@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using LightTown.Core.Models.Projects;
 
-namespace LightTown.Web.Services.Projects
+namespace LightTown.Client.Services.Projects
 {
     public interface IProjectService
     {

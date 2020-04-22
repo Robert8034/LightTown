@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LightTown.Core\LightTown.Core.csproj" />
-    <ProjectReference Include="..\LightTown.Client.Services\LightTown.Client.Services.csproj" />
+    <ProjectReference Include="..\LightTown.Client\LightTown.Client.csproj" />
   </ItemGroup>
 
 </Project>

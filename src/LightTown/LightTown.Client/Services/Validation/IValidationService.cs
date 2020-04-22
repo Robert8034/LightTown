@@ -1,4 +1,4 @@
-﻿namespace LightTown.Web.Services.Validation
+﻿namespace LightTown.Client.Services.Validation
 {
     public interface IValidationService
     {

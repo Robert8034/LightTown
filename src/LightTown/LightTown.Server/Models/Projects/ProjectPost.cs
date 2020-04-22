@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace LightTown.Server.Models.Projects
+﻿namespace LightTown.Server.Models.Projects
 {
     public class ProjectPost
     {
