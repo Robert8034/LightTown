@@ -24,15 +24,16 @@ namespace LightTown.Client.Services.Projects
 
         }
 
-        public async Task<bool> CreateProject(string projectName, string description)
+        public async Task<bool> CreateProject(string projectName, string projectDescription)
         {
-
-            return await _httpClient.PostJsonAsync<bool>("api/projects", new
-            {
-                projectName,
-                description
-            }
+            ApiResult result = await _httpClient.PostJsonAsync<ApiResult>("api/projects", new
+                {
+                    projectName,
+                    projectDescription
+                }
             );
+
+            return result.GetData<bool>();
         }
     }
 }

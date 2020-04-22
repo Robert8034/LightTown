@@ -6,6 +6,7 @@ using LightTown.Core.Data;
 using LightTown.Core.Domain.Projects;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
+using LightTown.Server.Models.Projects;
 using LightTown.Server.Services.Projects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -62,9 +63,11 @@ namespace LightTown.Server.Controllers
 
         [HttpPost]
         [Route("")]
-        public async Task<ApiResult> PostProject()
+        public async Task<ApiResult> PostProject([FromBody] ProjectPost project)
         {
-            return ApiResult.NoContent();
+            var result = await _projectService.PostProject(project);
+
+            return result ? ApiResult.Success(result) : ApiResult.BadRequest();
         }
     }
 }

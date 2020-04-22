@@ -1,8 +1,10 @@
-﻿using LightTown.Core.Domain.Projects;
+﻿using System;
+using LightTown.Core.Domain.Projects;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LightTown.Core.Data;
+using LightTown.Server.Models.Projects;
 
 namespace LightTown.Server.Services.Projects
 {
@@ -17,6 +19,20 @@ namespace LightTown.Server.Services.Projects
         public async Task<List<Project>> GetProjects()
         {
             return _projectRepository.Table.ToList();
+        }
+
+        public async Task<bool> PostProject(ProjectPost project)
+        {
+            Project newProject = new Project
+            {
+                ProjectName = project.ProjectName,
+                ProjectDescription = project.ProjectDescription,
+                CreationDateTime = DateTime.Now
+            };
+
+            newProject = _projectRepository.Insert(newProject);
+
+            return newProject.ProjectName.Equals(project.ProjectName);
         }
     }
 }
