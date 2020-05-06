@@ -35,5 +35,12 @@ namespace LightTown.Client.Services.Projects
 
             return result.GetData<bool>();
         }
+
+        public async Task<Project> GetProject(int projectId)
+        {
+            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId);
+
+            return result.GetData<Project>();
+        }
     }
 }

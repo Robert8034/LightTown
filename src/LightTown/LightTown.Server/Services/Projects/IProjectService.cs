@@ -9,5 +9,6 @@ namespace LightTown.Server.Services.Projects
     {
         Task<List<Project>> GetProjects();
         Task<bool> PostProject(ProjectPost project);
+        Project GetProject(int projectId);
     }
 }

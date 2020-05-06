@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightTown.Core;
@@ -48,7 +49,7 @@ namespace LightTown.Server.Controllers
         public async Task<ApiResult> GetProjects()
         {
             List<Project> projects = await _projectService.GetProjects();
-
+          
             var projectsModel = _mapper.Map<List<Core.Models.Projects.Project>>(projects);
 
             return ApiResult.Success(projectsModel);
@@ -58,7 +59,13 @@ namespace LightTown.Server.Controllers
         [Route("{projectId}")]
         public async Task<ApiResult> GetProject(int projectId)
         {
-            return ApiResult.NoContent();
+            Project project = _projectService.GetProject(projectId);
+
+            var projectModel = _mapper.Map<Core.Models.Projects.Project>(project);
+
+            if (projectModel != null) return ApiResult.Success(projectModel);
+
+            return ApiResult.BadRequest();
         }
 
         [HttpPost]

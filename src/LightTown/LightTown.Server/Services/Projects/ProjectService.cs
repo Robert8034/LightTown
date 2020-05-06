@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LightTown.Core.Data;
 using LightTown.Server.Models.Projects;
+using Microsoft.EntityFrameworkCore;
 
 namespace LightTown.Server.Services.Projects
 {
@@ -27,12 +28,18 @@ namespace LightTown.Server.Services.Projects
             {
                 ProjectName = project.ProjectName,
                 ProjectDescription = project.ProjectDescription,
-                CreationDateTime = DateTime.Now
+                CreationDateTime = DateTime.Now,
+                Members = new List<Core.Domain.Users.User>()
             };
 
             newProject = _projectRepository.Insert(newProject);
 
             return newProject.ProjectName.Equals(project.ProjectName);
+        }
+
+        public Project GetProject(int projectId)
+        {
+            return _projectRepository.Table.Include(e => e.Members).SingleOrDefault(e => e.Id == projectId);
         }
     }
 }

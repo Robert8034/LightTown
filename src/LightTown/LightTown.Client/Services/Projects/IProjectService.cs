@@ -8,5 +8,6 @@ namespace LightTown.Client.Services.Projects
     {
         Task<List<Project>> GetProjects();
         Task<bool> CreateProject(string projectName, string projectDescription);
+        Task<Project> GetProject(int projectId);
     }
 }
