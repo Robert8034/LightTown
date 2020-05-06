@@ -1,9 +1,50 @@
 ﻿@page "/projects/{Id:int}"
+@using LightTown.Client.Services.Projects
+@inject IProjectService ProjectService
 
 <h3>ProjectPage</h3>
+
+<p1>Name: @project.ProjectName</p1><br/>
+<p1>Description: @project.ProjectDescription</p1><br/>
+<p1>Creation Date: @project.CreationDateTime</p1>
+
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Full">
+        @foreach (var member in project.Members)
+        {
+            <GridItem>
+
+                <Card>
+                    <FormGroup>
+                        <p1>Name: @member.Username</p1>
+                    </FormGroup>
+                    <FormGroup>
+                        <p1>Email: @member.Email</p1>
+                    </FormGroup>
+                    <FormGroup>
+                        <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
+                    </FormGroup>
+                </Card>
+            </GridItem>
+
+        }
+    </GridColumn>
+</Grid>
 
 @code {
     [Parameter]
     public int Id { get; set; }
 
+    private Project project;
+
+    protected override async Task OnInitializedAsync()
+    {
+        project = await ProjectService.GetProject(Id);
+    }
+
+    private async Task RemoveMemberFromProject(int userId)
+    {
+
+        
+    }
 }
