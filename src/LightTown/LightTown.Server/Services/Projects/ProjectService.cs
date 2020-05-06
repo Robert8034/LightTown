@@ -41,5 +41,10 @@ namespace LightTown.Server.Services.Projects
         {
             return _projectRepository.Table.Include(e => e.Members).SingleOrDefault(e => e.Id == projectId);
         }
+
+        public async Task<bool> AddMember(int projectId, int userId)
+        {
+            return true;
+        }
     }
 }

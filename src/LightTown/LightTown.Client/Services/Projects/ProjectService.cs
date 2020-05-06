@@ -42,5 +42,12 @@ namespace LightTown.Client.Services.Projects
 
             return result.GetData<Project>();
         }
+
+        public async Task<bool> RemoveMember(int Id, int userId)
+        {
+            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + userId + "/" + Id + "/remove");
+
+            return result.GetData<bool>();
+        }
     }
 }

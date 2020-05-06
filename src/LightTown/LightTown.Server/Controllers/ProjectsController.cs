@@ -37,10 +37,29 @@ namespace LightTown.Server.Controllers
         }
 
         [HttpPut]
-        [Route("/{projectId}/members")]
-        public async Task<ApiResult> PutMember(int projectId)
+        [Route("/{projectId}/members/{userId}")]
+        public async Task<ApiResult> PutMember(int projectId, int userId)
         {
+            var result = await _projectService.AddMember(projectId, userId);
+
             return ApiResult.NoContent();
+        }
+
+        [HttpGet]
+        [Route("/{projectId}/{userId}/remove")]
+        public async Task<ApiResult> RemoveMember(int projectId, int userId)
+        {
+            var project = _projectService.GetProject(projectId);
+
+            var projectModel = _mapper.Map<Core.Models.Projects.Project>(project);
+
+            Core.Models.Users.User user = projectModel.Members.Find(e => e.Id == userId);
+
+            projectModel.Members.Remove(user);
+
+            bool result = projectModel.Members.Contains(user);
+
+            return !result ? ApiResult.Success(result) : ApiResult.BadRequest();
         }
 
         [HttpGet]

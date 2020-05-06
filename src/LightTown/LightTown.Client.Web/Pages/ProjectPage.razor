@@ -44,7 +44,6 @@
 
     private async Task RemoveMemberFromProject(int userId)
     {
-
-        
+        await ProjectService.RemoveMember(Id, userId);
     }
 }
