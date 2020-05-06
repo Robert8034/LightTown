@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using AutoMapper;
 using LightTown.Core;
 using LightTown.Core.Domain.Roles;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 
 namespace LightTown.Server
 {
@@ -27,7 +29,14 @@ namespace LightTown.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    //null values are ignored for faster networking
+                    //self referencing objects are ignored
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                });
 
             services.AddSingleton<DbContext, LightTownServerContext>();
             services.AddDbContext<LightTownServerContext>();

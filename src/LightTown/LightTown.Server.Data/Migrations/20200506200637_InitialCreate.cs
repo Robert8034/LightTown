@@ -52,23 +52,6 @@ namespace LightTown.Server.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Project",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProjectName = table.Column<string>(nullable: true),
-                    ProjectDescription = table.Column<string>(nullable: true),
-                    CreatorId = table.Column<int>(nullable: false),
-                    CreationDateTime = table.Column<DateTime>(nullable: false),
-                    LastModifiedDateTime = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Project", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -175,13 +158,36 @@ namespace LightTown.Server.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Project",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProjectName = table.Column<string>(nullable: true),
+                    ProjectDescription = table.Column<string>(nullable: true),
+                    CreatorId = table.Column<int>(nullable: false),
+                    CreationDateTime = table.Column<DateTime>(nullable: false),
+                    LastModifiedDateTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Project", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Project_AspNetUsers_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProjectMember",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProjectId = table.Column<int>(nullable: false),
-                    MemberId = table.Column<int>(nullable: false)
+                    ProjectId = table.Column<int>(nullable: true),
+                    MemberId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -191,13 +197,13 @@ namespace LightTown.Server.Data.Migrations
                         column: x => x.MemberId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProjectMember_Project_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Project",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -238,6 +244,11 @@ namespace LightTown.Server.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Project_CreatorId",
+                table: "Project",
+                column: "CreatorId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectMember_MemberId",
                 table: "ProjectMember",
                 column: "MemberId");
@@ -272,10 +283,10 @@ namespace LightTown.Server.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Project");
 
             migrationBuilder.DropTable(
-                name: "Project");
+                name: "AspNetUsers");
         }
     }
 }

@@ -2,11 +2,8 @@
 using LightTown.Core.Domain.Projects;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using LightTown.Core.Data;
 using LightTown.Core.Domain.Users;
-using LightTown.Server.Models.Projects;
-using Microsoft.EntityFrameworkCore;
 
 namespace LightTown.Server.Services.Projects
 {
@@ -18,35 +15,53 @@ namespace LightTown.Server.Services.Projects
             _projectRepository = projectRepository;
         }
 
-        public async Task<List<Project>> GetProjects()
+        /// <summary>
+        /// Get all projects.
+        /// </summary>
+        /// <returns>A list of all projects.</returns>
+        public List<Project> GetProjects()
         {
-            return _projectRepository.Table.Include(e => e.Members).ToList();
+            return _projectRepository.TableNoTracking.ToList();
         }
 
-        public async Task<bool> PostProject(ProjectPost project, User user)
+        /// <summary>
+        /// Create a project and add the creator as a member of the project.
+        /// <para>
+        /// The user is 
+        /// </para>
+        /// </summary>
+        /// <param name="projectName">Name of the project, required.</param>
+        /// <param name="projectDescription">Description of the project, optional.</param>
+        /// <param name="creatorId">The creator of the project's user id, required. The creator will also become a member of the project.</param>
+        /// <returns>Returns the created project.</returns>
+        public Project CreateProject(string projectName, string projectDescription, int creatorId)
         {
-            Project newProject = new Project
+            Project project = new Project
             {
-                ProjectName = project.ProjectName,
-                ProjectDescription = project.ProjectDescription,
+                ProjectName = projectName,
+                ProjectDescription = projectDescription ?? "",
                 CreationDateTime = DateTime.Now,
-                CreatorId = user.Id,
-                Members = new List<ProjectMember>()
+                CreatorId = creatorId,
+                ProjectMembers = new List<ProjectMember>(new []
+                {
+                    new ProjectMember
+                    {
+                        MemberId = creatorId
+                    }
+                })
             };
 
-            newProject.Members.Add(new ProjectMember{
-                ProjectId = newProject.Id,
-                MemberId = user.Id
-            });
-
-            newProject = _projectRepository.Insert(newProject);
-
-            return newProject.ProjectName.Equals(project.ProjectName);
+            return _projectRepository.Insert(project);
         }
 
+        /// <summary>
+        /// Get a project based on the project id.
+        /// </summary>
+        /// <param name="projectId">The id of the project.</param>
+        /// <returns>The project, <see langword="null"/> if no project with the id exists.</returns>
         public Project GetProject(int projectId)
         {
-            return _projectRepository.Table.Include(e => e.Members).SingleOrDefault(e => e.Id == projectId);
+            return _projectRepository.TableNoTracking.SingleOrDefault(e => e.Id == projectId);
         }
     }
 }

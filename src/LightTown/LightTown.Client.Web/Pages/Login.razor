@@ -29,7 +29,7 @@
         </div>
     </FormGroup>
     <FormGroup>
-        <Button Enabled="@_buttonEnabled" Text="Login" OnClick="@LoginAsync" Size="ButtonSize.Full"></Button>
+        <Button Enabled="@_buttonEnabled" Text="Login" OnClick="@(async () => await LoginAsync())" Size="ButtonSize.Full"></Button>
     </FormGroup>
 </Form>
 

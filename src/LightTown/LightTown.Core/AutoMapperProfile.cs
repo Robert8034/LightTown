@@ -10,6 +10,7 @@ namespace LightTown.Core
         {
             CreateMap<User, Models.Users.User>();
             CreateMap<Project, Models.Projects.Project>();
+            CreateMap<ProjectMember, Models.Projects.ProjectMember>();
         }
     }
 }

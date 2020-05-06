@@ -1,9 +1,11 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace LightTown.Core
 {
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ApiResult : JsonResult
     {
         public bool IsSuccess { get; set; }

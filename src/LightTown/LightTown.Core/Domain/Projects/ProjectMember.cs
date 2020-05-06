@@ -9,6 +9,7 @@ namespace LightTown.Core.Domain.Projects
     public class ProjectMember : BaseEntity
     {
         public int ProjectId { get; set; }
+        public Project Project { get; set; }
         public int MemberId { get; set; }
         public User Member { get; set; }
     }
