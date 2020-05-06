@@ -49,7 +49,7 @@ namespace LightTown.Server.Controllers
         public async Task<ApiResult> GetProjects()
         {
             List<Project> projects = await _projectService.GetProjects();
-          
+            
             var projectsModel = _mapper.Map<List<Core.Models.Projects.Project>>(projects);
 
             return ApiResult.Success(projectsModel);
@@ -72,7 +72,9 @@ namespace LightTown.Server.Controllers
         [Route("")]
         public async Task<ApiResult> PostProject([FromBody] ProjectPost project)
         {
-            var result = await _projectService.PostProject(project);
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var result = await _projectService.PostProject(project, currentUser);
 
             return result ? ApiResult.Success(result) : ApiResult.BadRequest();
         }
