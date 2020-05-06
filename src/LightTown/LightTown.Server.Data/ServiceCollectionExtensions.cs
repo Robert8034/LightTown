@@ -10,6 +10,7 @@ namespace LightTown.Server.Data
         {
             serviceCollection.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             serviceCollection.AddScoped(typeof(IRepository<Project>), typeof(Repository<Project>));
+            serviceCollection.AddScoped(typeof(IRepository<ProjectMember>), typeof(Repository<ProjectMember>));
         }
     }
 }
