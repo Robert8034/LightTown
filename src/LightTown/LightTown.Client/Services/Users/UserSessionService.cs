@@ -37,6 +37,10 @@ namespace LightTown.Client.Services.Users
             OnAuthorizationChange?.Invoke();
         }
 
+        /// <summary>
+        /// Get the current user object or <see langword="null"/> if no user is authorized.
+        /// </summary>
+        /// <returns></returns>
         public User GetCurrentUser()
         {
             return _currentUser;
@@ -54,10 +58,13 @@ namespace LightTown.Client.Services.Users
         /// <summary>
         /// Try to load user authorization cookie from local storage.
         /// </summary>
-        /// <returns>Returns true if valid info has been found.</returns>
+        /// <returns>Returns <see langword="true"/> if valid info has been found.</returns>
         public async Task<bool> TryLoadLocalUser()
         {
             var cookieString = await _ijsRuntime.InvokeAsync<string>("getCookies");
+
+            if (string.IsNullOrEmpty(cookieString))
+                return false;
 
             var cookieContainer = new CookieContainer();
             cookieContainer.SetCookies(new Uri(_navigationManager.BaseUri), cookieString);

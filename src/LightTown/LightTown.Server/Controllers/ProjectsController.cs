@@ -65,37 +65,42 @@ namespace LightTown.Server.Controllers
         [HttpGet]
         [Route("")]
         [Authorization(Permissions.NONE)]
-        public async Task<ApiResult> GetProjects()
+        public ApiResult GetProjects()
         {
-            List<Project> projects = await _projectService.GetProjects();
+            List<Project> projects = _projectService.GetProjects();
             
-            var projectsModel = _mapper.Map<List<Core.Models.Projects.Project>>(projects);
+            var projectModels = _mapper.Map<List<Core.Models.Projects.Project>>(projects);
 
-            return ApiResult.Success(projectsModel);
+            return ApiResult.Success(projectModels);
         }
 
         [HttpGet]
         [Route("{projectId}")]
-        public async Task<ApiResult> GetProject(int projectId)
+        [Authorization(Permissions.NONE)]
+        public ApiResult GetProject(int projectId)
         {
             Project project = _projectService.GetProject(projectId);
 
+            if(project == null)
+                return ApiResult.BadRequest();
+
             var projectModel = _mapper.Map<Core.Models.Projects.Project>(project);
 
-            if (projectModel != null) return ApiResult.Success(projectModel);
-
-            return ApiResult.BadRequest();
+            return ApiResult.Success(projectModel);
         }
 
         [HttpPost]
         [Route("")]
-        public async Task<ApiResult> PostProject([FromBody] ProjectPost project)
+        [Authorization(Permissions.CREATE_PROJECTS)]
+        public async Task<ApiResult> CreateProject([FromBody] ProjectPost projectPost)
         {
             var currentUser = await _userManager.GetUserAsync(User);
 
-            var result = await _projectService.PostProject(project, currentUser);
+            var project = _projectService.CreateProject(projectPost.ProjectName, projectPost.ProjectDescription, currentUser.Id);
 
-            return result ? ApiResult.Success(result) : ApiResult.BadRequest();
+            var projectModel = _mapper.Map<Core.Models.Projects.Project>(project);
+
+            return ApiResult.Success(projectModel);
         }
     }
 }

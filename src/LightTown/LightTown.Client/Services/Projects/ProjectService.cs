@@ -24,7 +24,7 @@ namespace LightTown.Client.Services.Projects
 
         }
 
-        public async Task<bool> CreateProject(string projectName, string projectDescription)
+        public async Task<Project> CreateProject(string projectName, string projectDescription)
         {
             ApiResult result = await _httpClient.PostJsonAsync<ApiResult>("api/projects", new
                 {
@@ -33,7 +33,7 @@ namespace LightTown.Client.Services.Projects
                 }
             );
 
-            return result.GetData<bool>();
+            return result.GetData<Project>();
         }
 
         public async Task<Project> GetProject(int projectId)

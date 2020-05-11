@@ -25,7 +25,7 @@
 @code {
 
     private bool _buttonEnabled;
-    private bool _projectCreationSucces = true;
+    private bool _projectCreationSuccess = true;
 
     private string _projectName;
     private string _description;
@@ -58,12 +58,12 @@
 
     private async Task CreateProjectAsync()
     {
+        //TODO better error handling
+        var project = await ProjectService.CreateProject(_projectName, _description);
 
-        _projectCreationSucces = await ProjectService.CreateProject(_projectName, _description);
-
-        Console.WriteLine(_projectCreationSucces);
-
-        if (_projectCreationSucces)
+        _projectCreationSuccess = project != null;
+        
+        if (_projectCreationSuccess)
         {
             _creationResult = "Successfully created the new project";
             StateHasChanged();
