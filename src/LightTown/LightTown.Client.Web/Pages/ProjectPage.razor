@@ -31,31 +31,7 @@
     </GridColumn>
 </Grid>
 
-@if (active)
-{
-<Grid>
-    <GridColumn ColumnSize="ColumnSize.Full">
-        @foreach (var member in project.Members)
-        {
-            <GridItem>
 
-                <Card>
-                    <FormGroup>
-                        <p1>Name: @member.Username</p1>
-                    </FormGroup>
-                    <FormGroup>
-                        <p1>Email: @member.Email</p1>
-                    </FormGroup>
-                    <FormGroup>
-                        <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
-                    </FormGroup>
-                </Card>
-            </GridItem>
-
-        }
-    </GridColumn>
-</Grid>
-}
 
 @code {
     [Parameter]
