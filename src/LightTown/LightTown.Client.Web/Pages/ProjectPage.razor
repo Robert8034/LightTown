@@ -1,5 +1,7 @@
 ﻿@page "/projects/{ProjectId:int}"
 @using LightTown.Client.Services.Projects
+@using Newtonsoft.Json
+@using User = LightTown.Core.Models.Users.User
 @inject IProjectService ProjectService
 
 <h3>ProjectPage</h3>
@@ -10,23 +12,25 @@
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Full">
-        @foreach (var member in project.Members)
+        @if (project?.Members != null)
         {
-            <GridItem>
+            foreach (var member in project.Members)
+            {
+                <GridItem>
 
-                <Card>
-                    <FormGroup>
-                        <p1>Name: @member.Username</p1>
-                    </FormGroup>
-                    <FormGroup>
-                        <p1>Email: @member.Email</p1>
-                    </FormGroup>
-                    <FormGroup>
-                        <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
-                    </FormGroup>
-                </Card>
-            </GridItem>
-
+                    <Card>
+                        <FormGroup>
+                            <p1>Name: @member.Username</p1>
+                        </FormGroup>
+                        <FormGroup>
+                            <p1>Email: @member.Email</p1>
+                        </FormGroup>
+                        <FormGroup>
+                            <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
+                        </FormGroup>
+                    </Card>
+                </GridItem>
+            }
         }
     </GridColumn>
 </Grid>
@@ -43,8 +47,6 @@
     protected override async Task OnInitializedAsync()
     {
         project = await ProjectService.GetProject(ProjectId);
-
-        StateHasChanged();
     }
 
     private async Task RemoveMemberFromProject(int userId)

@@ -34,10 +34,10 @@
         projects = await ProjectService.GetProjects();
     }
 
-    private async Task ViewProject(int projectId)
+    private Task ViewProject(int projectId)
     {
-
         NavigationManager.NavigateTo("/projects/" + projectId);
-    }
 
+        return Task.CompletedTask;
+    }
 }
