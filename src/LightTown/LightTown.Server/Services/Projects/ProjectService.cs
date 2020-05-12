@@ -14,10 +14,13 @@ namespace LightTown.Server.Services.Projects
     {
         private readonly IRepository<Project> _projectRepository;
         private readonly UserManager<User> _userManager;
-        public ProjectService(IRepository<Project> projectRepository, UserManager<User> userManager)
+        private readonly IRepository<ProjectMember> _projectMemberRepository;
+
+        public ProjectService(IRepository<Project> projectRepository, UserManager<User> userManager, IRepository<ProjectMember> projectMemberRepository)
         {
             _projectRepository = projectRepository;
             _userManager = userManager;
+            _projectMemberRepository = projectMemberRepository;
         }
 
         /// <summary>
@@ -26,7 +29,21 @@ namespace LightTown.Server.Services.Projects
         /// <returns>A list of all projects.</returns>
         public List<Project> GetProjects()
         {
-            return _projectRepository.TableNoTracking.ToList();
+            var projects = _projectRepository.TableNoTracking.ToList();
+
+            return projects;
+        }
+
+        /// <summary>
+        /// Get all projects with their member count.
+        /// </summary>
+        /// <returns>A list of all projects with their member count.</returns>
+        public List<(Project, int)> GetProjectsWithMemberCount()
+        {
+            var projects = _projectRepository.TableNoTracking.Select(e =>
+                new Tuple<Project, int>(e, e.ProjectMembers.Count(e2 => e2.ProjectId == e.Id)).ToValueTuple()).ToList();
+
+            return projects;
         }
 
         /// <summary>
@@ -77,20 +94,18 @@ namespace LightTown.Server.Services.Projects
         /// <returns>If successful in adding, this method will return <see langword="true"></see>, if not it will return <see langword="false"></see>. </returns>
         /// </para>
         /// </summary>
-        public async Task<bool> AddMemberAsync(int projectId, int userId)
+        public bool AddMember(int projectId, int userId)
         {
-            Project project = _projectRepository.TableNoTracking.Include(e => e.ProjectMembers).SingleOrDefault(e => e.Id == projectId);
-            if (project.ProjectMembers.Find(e => e.Id == userId) == null)
+            if (_projectMemberRepository.TableNoTracking.Any(e => e.ProjectId == projectId && e.MemberId == userId))
+                return false;
+
+            _projectMemberRepository.Insert(new ProjectMember
             {
-                User user = await _userManager.FindByIdAsync(userId.ToString());
-                project.ProjectMembers.Add(new ProjectMember
-                {
-                    MemberId = userId
-                });
-                _projectRepository.Update(project);
-                return true;
-            }
-            return false;
+                ProjectId = projectId,
+                MemberId = userId
+            });
+
+            return true;
         }
 
         /// <summary>

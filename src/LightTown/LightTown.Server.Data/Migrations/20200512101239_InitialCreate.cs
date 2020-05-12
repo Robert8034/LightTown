@@ -186,8 +186,8 @@ namespace LightTown.Server.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProjectId = table.Column<int>(nullable: true),
-                    MemberId = table.Column<int>(nullable: true)
+                    ProjectId = table.Column<int>(nullable: false),
+                    MemberId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -197,13 +197,13 @@ namespace LightTown.Server.Data.Migrations
                         column: x => x.MemberId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProjectMember_Project_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Project",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
