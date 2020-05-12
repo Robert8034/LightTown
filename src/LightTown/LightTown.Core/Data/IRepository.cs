@@ -16,5 +16,4 @@ namespace LightTown.Core.Data
         void Delete(TEntity entity);
         void Delete(IEnumerable<TEntity> entities);
     }
-
 }
