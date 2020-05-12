@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightTown.Core;
@@ -38,11 +39,14 @@ namespace LightTown.Server.Controllers
 
         [HttpPut]
         [Route("/{projectId}/members/{userId}")]
-        public async Task<ApiResult> PutMember(int projectId, int userId)
+        [Authorization(Permissions.MANAGE_PROJECTS)]
+        public ApiResult PutMember(int projectId, int userId)
         {
-            var result = await _projectService.AddMemberAsync(projectId, userId);
+            //TODO: add checks for existence of project and user
 
-            return result ? ApiResult.Success(result) : ApiResult.BadRequest();
+            var result = _projectService.AddMember(projectId, userId);
+
+            return result ? ApiResult.NoContent() : ApiResult.BadRequest();
         }
 
         [HttpGet]
@@ -66,12 +70,19 @@ namespace LightTown.Server.Controllers
 
         [HttpGet]
         [Route("")]
-        [Authorization(Permissions.NONE)]
+        [Authorization(Permissions.VIEW_ALL_PROJECTS)]
         public ApiResult GetProjects()
         {
-            List<Project> projects = _projectService.GetProjects();
-            
-            var projectModels = _mapper.Map<List<Core.Models.Projects.Project>>(projects);
+            var projects = _projectService.GetProjectsWithMemberCount();
+
+            var projectModels = new List<Core.Models.Projects.Project>();
+
+            foreach (var project in projects)
+            {
+                var projectModel = _mapper.Map<Core.Models.Projects.Project>(project.Item1);
+                projectModel.MemberCount = project.Item2;
+                projectModels.Add(projectModel);
+            }
 
             return ApiResult.Success(projectModels);
         }
@@ -87,6 +98,12 @@ namespace LightTown.Server.Controllers
                 return ApiResult.BadRequest();
 
             var projectModel = _mapper.Map<Core.Models.Projects.Project>(project);
+            projectModel.Members = new List<Core.Models.Users.User>(); //TODO: add cache functions so this isn't needed anymore
+
+            foreach (var projectMember in project.ProjectMembers)
+            {
+                projectModel.Members.Add(_mapper.Map<Core.Models.Users.User>(projectMember.Member));
+            }
 
             return ApiResult.Success(projectModel);
         }

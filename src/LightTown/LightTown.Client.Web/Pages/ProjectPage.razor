@@ -31,15 +31,20 @@
     </GridColumn>
 </Grid>
 
+
+
 @code {
     [Parameter]
     public int ProjectId { get; set; }
 
-    private Project project;
+    private Project project = new Project();
+    private bool active;
 
     protected override async Task OnInitializedAsync()
     {
         project = await ProjectService.GetProject(ProjectId);
+
+        StateHasChanged();
     }
 
     private async Task RemoveMemberFromProject(int userId)
