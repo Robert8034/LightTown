@@ -74,7 +74,7 @@ namespace LightTown.Server.Services.Projects
         /// <param name="projectId"></param>
         /// <param name="userId"></param>
         /// <para>
-        /// <returns>If successfull in adding, this method will return <see langword="true"></see>, if not it will return <see langword="false"></see>. </returns>
+        /// <returns>If successful in adding, this method will return <see langword="true"></see>, if not it will return <see langword="false"></see>. </returns>
         /// </para>
         /// </summary>
         public async Task<bool> AddMemberAsync(int projectId, int userId)
@@ -92,6 +92,14 @@ namespace LightTown.Server.Services.Projects
             }
             return false;
         }
+
+        /// <summary>
+        /// Updates a project
+        /// <param name="project"></param>
+        /// <para>
+        /// <returns>Returns <see langword="true"></see></returns>
+        /// </para>
+        /// </summary>
 
         public bool PutProject(Project project)
         {
