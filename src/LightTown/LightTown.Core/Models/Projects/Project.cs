@@ -13,6 +13,7 @@ namespace LightTown.Core.Models.Projects
         public string ProjectDescription { get; set; }
         //public List<Post> ProjectPosts { get; set; }
         public List<User> Members { get; set; }
+        public int? MemberCount { get; set; }
         //public List<Tag> Tags { get; set; }
         public DateTime CreationDateTime { get; set; }
         public DateTime LastModifiedDateTime { get; set; }

@@ -9,8 +9,6 @@ namespace LightTown.Server.Data
         public static void AddRepositories(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            serviceCollection.AddScoped(typeof(IRepository<Project>), typeof(Repository<Project>));
-            serviceCollection.AddScoped(typeof(IRepository<ProjectMember>), typeof(Repository<ProjectMember>));
         }
     }
 }
