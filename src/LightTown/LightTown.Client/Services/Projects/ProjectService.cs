@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using LightTown.Core;
@@ -43,9 +44,20 @@ namespace LightTown.Client.Services.Projects
             return result.GetData<Project>();
         }
 
-        public async Task<bool> RemoveMember(int Id, int userId)
+        public async Task<bool> RemoveMember(int projectId, int userId)
         {
-            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + userId + "/" + Id + "/remove");
+            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId + "/" + userId + "/remove");
+
+            return result.GetData<bool>();
+        }
+
+        public async Task<bool> AddMember(int userId, int projectId)
+        {
+            ApiResult result = await _httpClient.PutJsonAsync<ApiResult>("api/projects/" + projectId + "/" + userId, new
+            {
+                userId,
+                projectId
+            });
 
             return result.GetData<bool>();
         }

@@ -4,15 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using LightTown.Core.Data;
 using LightTown.Core.Domain.Users;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace LightTown.Server.Services.Projects
 {
     public class ProjectService : IProjectService
     {
         private readonly IRepository<Project> _projectRepository;
-        public ProjectService(IRepository<Project> projectRepository)
+        private readonly UserManager<User> _userManager;
+        public ProjectService(IRepository<Project> projectRepository, UserManager<User> userManager)
         {
             _projectRepository = projectRepository;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -64,8 +69,34 @@ namespace LightTown.Server.Services.Projects
             return _projectRepository.TableNoTracking.SingleOrDefault(e => e.Id == projectId);
         }
 
-        public async Task<bool> AddMember(int projectId, int userId)
+        /// <summary>
+        /// Adds a member to a project based on the target user's ID and project ID
+        /// <param name="projectId"></param>
+        /// <param name="userId"></param>
+        /// <para>
+        /// <returns>If successfull in adding, this method will return <see langword="true"></see>, if not it will return <see langword="false"></see>. </returns>
+        /// </para>
+        /// </summary>
+        public async Task<bool> AddMemberAsync(int projectId, int userId)
         {
+            Project project = _projectRepository.TableNoTracking.Include(e => e.ProjectMembers).SingleOrDefault(e => e.Id == projectId);
+            if (project.ProjectMembers.Find(e => e.Id == userId) == null)
+            {
+                User user = await _userManager.FindByIdAsync(userId.ToString());
+                project.ProjectMembers.Add(new ProjectMember
+                {
+                    MemberId = userId
+                });
+                _projectRepository.Update(project);
+                return true;
+            }
+            return false;
+        }
+
+        public bool PutProject(Project project)
+        {
+            _projectRepository.Update(project);
+
             return true;
         }
     }
