@@ -83,7 +83,18 @@ namespace LightTown.Server.Services.Projects
         /// <returns>The project, <see langword="null"/> if no project with the id exists.</returns>
         public Project GetProject(int projectId)
         {
-            return _projectRepository.TableNoTracking.SingleOrDefault(e => e.Id == projectId);
+            var project = _projectRepository.TableNoTracking.SingleOrDefault(e => e.Id == projectId);
+
+            if (project == null) return null;
+
+            project.ProjectMembers = GetProjectMembers(projectId);
+
+            return project;
+        }
+
+        public List<ProjectMember> GetProjectMembers(int projectId)
+        {
+            return _projectMemberRepository.Table.Where(e => e.ProjectId == projectId).Include(e => e.Member).ToList();
         }
 
         /// <summary>

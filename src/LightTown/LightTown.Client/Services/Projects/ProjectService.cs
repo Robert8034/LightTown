@@ -42,6 +42,10 @@ namespace LightTown.Client.Services.Projects
         {
             ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId);
 
+            Project test = result.GetData<Project>();
+
+            Console.WriteLine(test.Members[0].Username);
+
             return result.GetData<Project>();
         }
 

@@ -98,6 +98,12 @@ namespace LightTown.Server.Controllers
                 return ApiResult.BadRequest();
 
             var projectModel = _mapper.Map<Core.Models.Projects.Project>(project);
+            projectModel.Members = new List<Core.Models.Users.User>(); //TODO: add cache functions so this isn't needed anymore
+
+            foreach (var projectMember in project.ProjectMembers)
+            {
+                projectModel.Members.Add(_mapper.Map<Core.Models.Users.User>(projectMember.Member));
+            }
 
             return ApiResult.Success(projectModel);
         }
