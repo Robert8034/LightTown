@@ -43,8 +43,8 @@ namespace LightTown.Server
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
-            services.AddSingleton<DbContext, LightTownServerContext>();
-            services.AddDbContext<LightTownServerContext>();
+            services.AddSingleton<DbContext, LightTownContext>();
+            services.AddDbContext<LightTownContext>();
 
             services.AddRepositories();
             services.AddServices();
@@ -52,7 +52,7 @@ namespace LightTown.Server
             services.AddAutoMapper(typeof(AutoMapperProfile));
 
             services.AddIdentity<User, Role>()
-                .AddEntityFrameworkStores<LightTownServerContext>();
+                .AddEntityFrameworkStores<LightTownContext>();
 
             services.ConfigureApplicationCookie(options =>
             {

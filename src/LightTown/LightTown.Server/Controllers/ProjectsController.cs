@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightTown.Core;
-using LightTown.Core.Data;
 using LightTown.Core.Domain.Projects;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
@@ -22,50 +20,84 @@ namespace LightTown.Server.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IProjectService _projectService;
         private readonly IMapper _mapper;
+        private readonly IProjectMemberService _projectMemberService;
 
-        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper)
+        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IProjectMemberService projectMemberService)
         {
             _userManager = userManager;
             _projectService = projectService;
             _mapper = mapper;
+            _projectMemberService = projectMemberService;
         }
 
+        /// <summary>
+        /// Get a list of members (User objects) of a project.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("/{projectId}/members")]
-        public async Task<ApiResult> GetMembers(int projectId)
+        [Authorization(Permissions.NONE)]
+        public ApiResult GetMembers(int projectId)
         {
+            bool projectExists = _projectService.ProjectExists(projectId);
+
+            if (!projectExists)
+                return ApiResult.BadRequest();
+
+            var members = _projectService.GetMembers(projectId);
+
+            var memberModels = _mapper.Map<List<Core.Models.Users.User>>(members);
+
+            return ApiResult.Success(memberModels);
+        }
+
+        /// <summary>
+        /// Add a user to a project.
+        /// </summary>
+        /// <param name="projectId">The project id of the project to add the user to.</param>
+        /// <param name="userId">The user id of the user to add.</param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("/{projectId}/members/{userId}")]
+        [Authorization(Permissions.MANAGE_PROJECTS)]
+        public async Task<ApiResult> AddMember(int projectId, int userId)
+        {
+            bool projectExists = _projectService.ProjectExists(projectId);
+
+            if(!projectExists)
+                return ApiResult.BadRequest();
+
+            //HACK: this works but is bad for performance since it gets the entire user object just to check if it exists
+            bool userExists = await _userManager.FindByIdAsync(userId.ToString()) != null;
+
+            if (!userExists)
+                return ApiResult.BadRequest();
+
+            _projectService.AddMember(projectId, userId);
+
             return ApiResult.NoContent();
         }
 
-        [HttpPut]
-        [Route("/{projectId}/{userId}")]
+        /// <summary>
+        /// Remove a member from a project.
+        /// </summary>
+        /// <param name="projectId">The project id of the project to remove the member from.</param>
+        /// <param name="memberId">The user id of the member to remove.</param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("/{projectId}/members/{memberId}")]
         [Authorization(Permissions.MANAGE_PROJECTS)]
-        public ApiResult PutMember(int projectId, int userId)
+        public ApiResult RemoveMember(int projectId, int memberId)
         {
-            //TODO: add checks for existence of project and user
+            var projectMember = _projectMemberService.GetProjectMember(projectId, memberId);
 
-            var result = _projectService.AddMember(projectId, userId);
+            if (projectMember == null)
+                return ApiResult.BadRequest();
 
-            return result ? ApiResult.Success(result) : ApiResult.BadRequest();
-        }
+            _projectMemberService.RemoveProjectMember(projectMember);
 
-        [HttpGet]
-        [Route("/{projectId}/{userId}/remove")]
-        public ApiResult RemoveMember(int projectId, int userId)
-        {
-            bool result = false;
-
-            var project = _projectService.GetProject(projectId);
-
-            var member = project.ProjectMembers.Find(e => e.MemberId == userId);
-
-            if (member != null)
-            {
-                project.ProjectMembers.Remove(member);
-                result = _projectService.PutProject(project);
-            }
-
-            return result ? ApiResult.Success(result) : ApiResult.BadRequest();
+            return ApiResult.NoContent();
         }
 
         [HttpGet]

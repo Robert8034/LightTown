@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace LightTown.Server.Data.Migrations
 {
-    [DbContext(typeof(LightTownServerContext))]
+    [DbContext(typeof(LightTownContext))]
     partial class LightTownServerContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

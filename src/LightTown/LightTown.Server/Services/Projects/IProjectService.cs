@@ -7,11 +7,13 @@ namespace LightTown.Server.Services.Projects
 {
     public interface IProjectService
     {
-        List<Project> GetProjects();
+        IEnumerable<Project> GetProjects();
         Project CreateProject(string projectName, string projectDescription, int creatorId);
         Project GetProject(int projectId);
-        List<(Project, int, IEnumerable<int>)> GetProjectsWithTagIdsAndMemberCount();
-        bool AddMember(int projectId, int userId);
+        IEnumerable<(Project, int, IEnumerable<int>)> GetProjectsWithTagIdsAndMemberCount();
+        void AddMember(int projectId, int userId);
         bool PutProject(Project project);
+        bool ProjectExists(int projectId);
+        IEnumerable<User> GetMembers(int projectId);
     }
 }

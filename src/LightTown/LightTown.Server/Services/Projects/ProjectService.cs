@@ -27,7 +27,7 @@ namespace LightTown.Server.Services.Projects
         /// Get all projects.
         /// </summary>
         /// <returns>A list of all projects.</returns>
-        public List<Project> GetProjects()
+        public IEnumerable<Project> GetProjects()
         {
             var projects = _projectRepository.TableNoTracking.ToList();
 
@@ -38,7 +38,7 @@ namespace LightTown.Server.Services.Projects
         /// Get all projects with their member count and list of tag ids.
         /// </summary>
         /// <returns>A list of all projects with their member count.</returns>
-        public List<(Project, int, IEnumerable<int>)> GetProjectsWithTagIdsAndMemberCount()
+        public IEnumerable<(Project, int, IEnumerable<int>)> GetProjectsWithTagIdsAndMemberCount()
         {
             var projects = _projectRepository.TableNoTracking.Select(project =>
                 new Tuple<Project, int, IEnumerable<int>>(project, 
@@ -87,38 +87,35 @@ namespace LightTown.Server.Services.Projects
         {
             var project = _projectRepository.TableNoTracking.SingleOrDefault(e => e.Id == projectId);
 
-            if (project == null) return null;
-
-            project.ProjectMembers = GetProjectMembers(projectId);
-
             return project;
         }
 
-        public List<ProjectMember> GetProjectMembers(int projectId)
+        /// <summary>
+        /// Get a list of ProjectMember objects for a project.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        public IEnumerable<ProjectMember> GetProjectMembers(int projectId)
         {
             return _projectMemberRepository.Table.Where(e => e.ProjectId == projectId).Include(e => e.Member).ToList();
         }
 
         /// <summary>
-        /// Adds a member to a project based on the target user's ID and project ID
+        /// Add a user to a project.
+        /// <para>
+        /// The <paramref name="projectId"/> and <paramref name="userId"/> parameters are expected to be valid.
+        /// </para>
         /// <param name="projectId"></param>
         /// <param name="userId"></param>
-        /// <para>
-        /// <returns>If successful in adding, this method will return <see langword="true"></see>, if not it will return <see langword="false"></see>. </returns>
-        /// </para>
         /// </summary>
-        public bool AddMember(int projectId, int userId)
+        /// <returns>If successful in adding, this method will return <see langword="true"></see>, if not it will return <see langword="false"></see>. </returns>
+        public void AddMember(int projectId, int userId)
         {
-            if (_projectMemberRepository.TableNoTracking.Any(e => e.ProjectId == projectId && e.MemberId == userId))
-                return false;
-
             _projectMemberRepository.Insert(new ProjectMember
             {
                 ProjectId = projectId,
                 MemberId = userId
             });
-
-            return true;
         }
 
         /// <summary>
@@ -134,6 +131,29 @@ namespace LightTown.Server.Services.Projects
             _projectRepository.Update(project);
 
             return true;
+        }
+
+        /// <summary>
+        /// Check whether a project with the project id exists.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns>Returns <see langword="true"></see> if a project exists, <see langword="false"></see> otherwise.</returns>
+        public bool ProjectExists(int projectId)
+        {
+            return _projectRepository.Table.Any(e => e.Id == projectId);
+        }
+
+        /// <summary>
+        /// Get a list of members (User objects) of a certain project, assuming <paramref name="projectId"/> is a valid project id.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        public IEnumerable<User> GetMembers(int projectId)
+        {
+            return _projectMemberRepository.TableNoTracking
+                .Where(projectMember => projectMember.ProjectId == projectId)
+                .Select(projectMember => projectMember.Member)
+                .ToList();
         }
     }
 }

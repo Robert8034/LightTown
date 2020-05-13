@@ -9,6 +9,7 @@ namespace LightTown.Server.Services
         public static void AddServices(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IProjectService, ProjectService>();
+            serviceCollection.AddScoped<IProjectMemberService, ProjectMemberService>();
             serviceCollection.AddScoped<ITagService, TagService>();
         }
     }

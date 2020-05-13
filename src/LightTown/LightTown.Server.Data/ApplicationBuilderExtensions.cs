@@ -20,7 +20,7 @@ namespace LightTown.Server.Data
         {
             using (var scope = applicationBuilder.ApplicationServices.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetService<LightTownServerContext>();
+                var dbContext = scope.ServiceProvider.GetService<LightTownContext>();
 
                 var relationalDatabaseCreator =
                     (RelationalDatabaseCreator) dbContext.Database.GetService<IDatabaseCreator>();
