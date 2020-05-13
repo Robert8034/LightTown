@@ -1,37 +1,41 @@
 ﻿@page "/projects"
 @using LightTown.Client.Services.Projects
-@inject IProjectService ProjectService
+@using LightTown.Client.Services.Users
+@inject IUserDataService UserDataService
 @inject NavigationManager NavigationManager
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Full">
-        @foreach (var project in projects)
+        @if (projects != null)
         {
-            <GridItem>
+            @foreach (var project in projects)
+            {
+                <GridItem>
 
-                <Card>
-                    <FormGroup>
-                        <p1>Project name: @project.ProjectName</p1>
-                    </FormGroup>
-                    <FormGroup>
-                        <p1>Project members: @project.MemberCount</p1>
-                    </FormGroup>
-                    <FormGroup>
-                        <Button Enabled="@true" Text="View Project" OnClick="@(() => ViewProject(project.Id))" Size="ButtonSize.Full"></Button>
-                    </FormGroup>
-                </Card>
-            </GridItem>
+                    <Card>
+                        <FormGroup>
+                            <p1>Project name: @project.ProjectName</p1>
+                        </FormGroup>
+                        <FormGroup>
+                            <p1>Project members: @project.MemberCount</p1>
+                        </FormGroup>
+                        <FormGroup>
+                            <Button Enabled="@true" Text="View Project" OnClick="@(() => ViewProject(project.Id))" Size="ButtonSize.Full"></Button>
+                        </FormGroup>
+                    </Card>
+                </GridItem>
+            }
         }
     </GridColumn>
 </Grid>
 
 @code {
 
-    List<Project> projects = new List<Project>();
+    List<Project> projects;
 
     protected override async Task OnInitializedAsync()
     {
-        projects = await ProjectService.GetProjects();
+        projects = await UserDataService.GetProjects();
     }
 
     private Task ViewProject(int projectId)

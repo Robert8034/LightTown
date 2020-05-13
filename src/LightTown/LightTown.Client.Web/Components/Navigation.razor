@@ -1,5 +1,7 @@
 ﻿@using LightTown.Client.Services.Users
-@inject UserSessionService UserSessionService
+@using User = LightTown.Core.Models.Users.User
+@inject IUserDataService UserDataService
+@inject IUserAuthService UserAuthService
 @inject IJSRuntime JsRuntime
 
 <nav class="navigation navbar navbar-expand-lg navbar-dark">
@@ -20,11 +22,12 @@
         </ul>
         @* TODO replace code below with user info OR leave empty if user is not logged in *@
         <ul class="navbar-nav">
-            @if (UserSessionService.IsAuthorized())
+            @if (UserAuthService.IsAuthorized())
             {
+                User currentUser = UserDataService.GetCurrentUser();
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        @UserSessionService.GetCurrentUser().Username
+                        @currentUser.Username
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <a class="dropdown-item" href="profile">Profile</a>
@@ -59,7 +62,7 @@
 {
     protected override void OnInitialized()
     {
-        UserSessionService.OnAuthorizationChange += Refresh;
+        UserAuthService.OnAuthorizationChange += Refresh;
 
         base.OnInitialized();
     }
@@ -78,6 +81,6 @@
 
     private void OnLogout()
     {
-        UserSessionService.UnloadUser();
+        UserDataService.UnloadData();
     }
 }

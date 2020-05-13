@@ -12,6 +12,7 @@ namespace LightTown.Core.Domain.Projects
         public string ProjectDescription { get; set; }
         //public List<Post> ProjectPosts { get; set; }
         public List<ProjectMember> ProjectMembers { get; set; }
+        public List<ProjectTag> ProjectTags { get; set; }
         public int CreatorId { get; set; }
         public User Creator { get; set; }
         //public List<Tag> Tags { get; set; }

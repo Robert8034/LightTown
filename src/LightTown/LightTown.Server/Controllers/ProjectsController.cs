@@ -73,7 +73,7 @@ namespace LightTown.Server.Controllers
         [Authorization(Permissions.VIEW_ALL_PROJECTS)]
         public ApiResult GetProjects()
         {
-            var projects = _projectService.GetProjectsWithMemberCount();
+            var projects = _projectService.GetProjectsWithTagIdsAndMemberCount();
 
             var projectModels = new List<Core.Models.Projects.Project>();
 
@@ -81,6 +81,7 @@ namespace LightTown.Server.Controllers
             {
                 var projectModel = _mapper.Map<Core.Models.Projects.Project>(project.Item1);
                 projectModel.MemberCount = project.Item2;
+                projectModel.Tags = project.Item3.ToList();
                 projectModels.Add(projectModel);
             }
 

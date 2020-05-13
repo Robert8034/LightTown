@@ -10,7 +10,7 @@ namespace LightTown.Server.Services.Projects
         List<Project> GetProjects();
         Project CreateProject(string projectName, string projectDescription, int creatorId);
         Project GetProject(int projectId);
-        List<(Project, int)> GetProjectsWithMemberCount();
+        List<(Project, int, IEnumerable<int>)> GetProjectsWithTagIdsAndMemberCount();
         bool AddMember(int projectId, int userId);
         bool PutProject(Project project);
     }
