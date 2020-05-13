@@ -34,7 +34,7 @@ namespace LightTown.Server.Tests.Services.Projects
                 options.Insert(project3);
             });
             
-            var projectService = new ProjectService(_projectRepositoryMock.Object, null, null);
+            var projectService = new ProjectService(_projectRepositoryMock.Object, null);
 
             //Act
             var actualProject = projectService.GetProject(2);

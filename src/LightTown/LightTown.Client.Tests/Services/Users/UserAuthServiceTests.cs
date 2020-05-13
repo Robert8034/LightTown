@@ -1,84 +1,17 @@
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 using LightTown.Client.Services.Users;
-using LightTown.Core;
-using LightTown.Core.Models.Users;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Moq;
-using Moq.Protected;
 using Newtonsoft.Json;
 using Xunit;
 using Xunit.Sdk;
 
 namespace LightTown.Client.Tests.Services.Users
 {
-    public class UserDataServiceTests
-    {
-        private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
-        private readonly HttpClient _httpClient;
-
-        public UserDataServiceTests()
-        {
-            _httpMessageHandlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-
-            _httpClient = new HttpClient(_httpMessageHandlerMock.Object)
-            {
-                BaseAddress = new Uri("https://localhost:5001/")
-            };
-        }
-
-        /// <summary>
-        /// Test if LoadData loads all data correctly. This method also tests <see cref="UserDataService.GetCurrentUser"/>.
-        /// </summary>
-        /// <returns></returns>
-        [Fact]
-        public async Task LoadDataTest()
-        {
-            //ARRANGE
-            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.OK, new ApiResult(HttpStatusCode.OK, new User
-            {
-                Username = "TestUser"
-            }));
-
-            var userDataService = new UserDataService(_httpClient);
-
-            //ACT
-            await userDataService.LoadData();
-
-            //ASSERT
-            _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(1),
-                ItExpr.Is<HttpRequestMessage>(req =>
-                    req.Method == HttpMethod.Get
-                    && req.RequestUri == new Uri("https://localhost:5001/api/users/@me")
-                ),
-                ItExpr.IsAny<CancellationToken>()
-            );
-
-            Assert.Equal("TestUser", userDataService.GetCurrentUser().Username);
-        }
-
-        /// <summary>
-        /// Tests whether <see cref="UserDataService.UnloadData"/> unloads all data.
-        /// </summary>
-        [Fact]
-        public void UnloadDataTest()
-        {
-            //ARRANGE
-            var userSessionService = new UserDataService(_httpClient);
-
-            //ACT
-            userSessionService.UnloadData();
-
-            //ASSERT
-            Assert.Null(userSessionService.GetCurrentUser());
-        }
-    }
-
     public class UserAuthServiceTests
     {
         private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;

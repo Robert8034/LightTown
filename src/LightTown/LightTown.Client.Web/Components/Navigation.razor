@@ -62,7 +62,7 @@
 {
     protected override void OnInitialized()
     {
-        UserAuthService.OnAuthorizationChange += Refresh;
+        UserDataService.OnUserDataChange += Refresh;
 
         base.OnInitialized();
     }
@@ -81,6 +81,6 @@
 
     private void OnLogout()
     {
-        UserDataService.UnloadData();
+        UserAuthService.UnloadAuthentication();
     }
 }

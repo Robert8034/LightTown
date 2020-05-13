@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using LightTown.Core;
-using LightTown.Core.Data;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +21,11 @@ namespace LightTown.Server.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Get the current user.
+        /// </summary>
+        /// <response code="200">Valid response with a user object.</response>
+        /// <response code="401">The user isn't authorized.</response>
         [HttpGet]
         [Route("@me")]
         [Authorization(Permissions.NONE)]

@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using LightTown.Client.Services.Users;
@@ -26,16 +27,19 @@ namespace LightTown.Client.Services.Authentication
                 rememberMe
             });
 
-            var response = await _httpClient.PostAsync("api/auth/login", 
-                new StringContent(jsonPost, Encoding.UTF8, "application/json"));
+            try
+            {
+                var response = await _httpClient.PostAsync("api/auth/login",
+                    new StringContent(jsonPost, Encoding.UTF8, "application/json"));
 
-            if (!response.IsSuccessStatusCode)
-                return false;
-
-            JObject jsonObject = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            if (!jsonObject["isSuccess"]?.Value<bool>() ?? false)
-                return false;
+                if (!response.IsSuccessStatusCode)
+                    return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
 
             return true;
         }

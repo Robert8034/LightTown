@@ -20,9 +20,16 @@ namespace LightTown.Server.Controllers
             _signInManager = signInManager;
         }
 
+        /// <summary>
+        /// Login as a user.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <response code="204">Login successful.</response>
+        /// <response code="400">Invalid request data given.</response>
+        /// <response code="403">Invalid credentials.</response>
         [HttpPost]
         [Route("login")]
-        public async Task<ApiResult> Login([FromBody] UserPost user)
+        public async Task<ActionResult> Login([FromBody] UserPost user)
         {
             if (!ModelState.IsValid)
                 return ApiResult.BadRequest(ModelState.First(e => e.Value.Errors.Any()).Value.Errors.First().ErrorMessage);
@@ -31,7 +38,7 @@ namespace LightTown.Server.Controllers
 
             if (result.Succeeded)
             {
-                return ApiResult.Success(null);
+                return ApiResult.NoContent();
             }
 
             return ApiResult.Forbidden(result.ToString());

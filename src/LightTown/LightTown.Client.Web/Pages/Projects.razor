@@ -1,14 +1,15 @@
 ﻿@page "/projects"
-@using LightTown.Client.Services.Projects
+
 @using LightTown.Client.Services.Users
+
 @inject IUserDataService UserDataService
 @inject NavigationManager NavigationManager
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Full">
-        @if (projects != null)
+        @if (_projects != null)
         {
-            @foreach (var project in projects)
+            @foreach (var project in _projects)
             {
                 <GridItem>
 
@@ -31,11 +32,11 @@
 
 @code {
 
-    List<Project> projects;
+    List<Core.Models.Projects.Project> _projects;
 
     protected override async Task OnInitializedAsync()
     {
-        projects = await UserDataService.GetProjects();
+        _projects = await UserDataService.GetProjects();
     }
 
     private Task ViewProject(int projectId)

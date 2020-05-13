@@ -5,8 +5,6 @@ namespace LightTown.Client.Services.Users
 {
     public interface IUserAuthService
     {
-        Func<Task> OnAuthorizationChange { get; set; }
-
         /// <summary>
         /// Returns if a user is authorized and if the cookie is correct. Note that this information is gathered from client sided data.
         /// </summary>
@@ -22,6 +20,6 @@ namespace LightTown.Client.Services.Users
         /// <summary>
         /// Unload the current user from the <see cref="UserDataService"/> cache and removes authentication cookie.
         /// </summary>
-        void UnloadAuthentication();
+        Task UnloadAuthentication();
     }
 }

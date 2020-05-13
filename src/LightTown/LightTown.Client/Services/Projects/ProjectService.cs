@@ -56,22 +56,22 @@ namespace LightTown.Client.Services.Projects
             return result.GetData<Project>();
         }
 
-        /// <summary>
-        /// Gets one specific project based on <paramref name="projectId"/>.
-        /// <param name="projectId"></param>
-        /// <para></para>
-        /// <returns>Returns the target <see cref="Project"></see> or <see langword="null"></see> if not found.</returns>
-        /// </summary>
-        public async Task<Project> GetProject(int projectId)
-        {
-            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId);
+        ///// <summary>
+        ///// Gets one specific project based on <paramref name="projectId"/>.
+        ///// <param name="projectId"></param>
+        ///// <para></para>
+        ///// <returns>Returns the target <see cref="Project"></see> or <see langword="null"></see> if not found.</returns>
+        ///// </summary>
+        //public async Task<Project> GetProject(int projectId)
+        //{
+        //    ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId);
 
-            Project test = result.GetData<Project>();
+        //    Project test = result.GetData<Project>();
 
-            Console.WriteLine(test.Members[0].Username);
+        //    Console.WriteLine(test.Members[0].Username);
 
-            return result.GetData<Project>();
-        }
+        //    return result.GetData<Project>();
+        //}
 
         /// <summary>
         /// Removes target <see cref="User"/> using <paramref name="userId"/> of the target <see cref="Project"/> using <paramref name="projectId"/>.

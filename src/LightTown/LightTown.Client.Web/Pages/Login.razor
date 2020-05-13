@@ -1,4 +1,5 @@
 ﻿@page "/login"
+
 @using LightTown.Client.Services.Validation
 @using LightTown.Client.Services.Authentication
 @using LightTown.Client.Services.Users
@@ -6,7 +7,7 @@
 @inject NavigationManager NavigationManager
 @inject IValidationService ValidationService
 @inject IAuthenticationService AuthenticationService
-@inject UserDataService UserDataService
+@inject IUserDataService UserDataService
 @inject IJSRuntime JsRuntime
 
 <Form Id="form-login">
@@ -45,8 +46,6 @@
     private async Task LoginAsync()
     {
         _loginSuccess = await AuthenticationService.Login(_username, _password, _rememberMe);
-
-        Console.WriteLine(_loginSuccess);
 
         if (_loginSuccess)
         {

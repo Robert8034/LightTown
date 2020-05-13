@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,8 +21,10 @@ namespace LightTown.Client.Services.Users
     {
         private readonly HttpClient _httpClient;
 
+        public Func<Task> OnUserDataChange { get; set; }
+
         private User _currentUser;
-        private List<Project> _projects;
+        private Dictionary<int, Project> _projects;
         private List<Tag> _tags;
 
         //lock objects so a second thread cant access the object when it is being loaded (using httpclient) by another thread.
@@ -55,14 +58,20 @@ namespace LightTown.Client.Services.Users
             {
                 _userLock.Release();
             }
+
+            if(OnUserDataChange != null)
+                await OnUserDataChange.Invoke();
         }
 
         /// <summary>
         /// Unload all data including the current user.
         /// </summary>
-        public void UnloadData()
+        public async Task UnloadData()
         {
             _currentUser = null;
+
+            if (OnUserDataChange != null)
+                await OnUserDataChange.Invoke();
         }
 
         /// <summary>
@@ -82,13 +91,14 @@ namespace LightTown.Client.Services.Users
         {
             if (_projects == null)
             {
-                await _projectsLock.WaitAsync(TimeSpan.FromSeconds(5));
+                await _projectsLock.WaitAsync();
 
                 try
                 {
                     ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects");
 
-                    _projects = result.GetData<List<Project>>();
+                    _projects = result.GetData<List<Project>>()
+                        .ToDictionary(project => project.Id, project => project);
                 }
                 catch (Exception e)
                 {
@@ -101,7 +111,41 @@ namespace LightTown.Client.Services.Users
                 }
             }
             
-            return _projects;
+            return _projects.Values.ToList();
+        }
+
+        /// <summary>
+        /// Get a project, will get it from the server if it doesn't exist in the cache.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        public async Task<Project> GetProject(int projectId)
+        {
+            if (_projects?[projectId] == null)
+            {
+                await _projectsLock.WaitAsync();
+
+                if(_projects == null)
+                    _projects = new Dictionary<int, Project>();
+
+                try
+                {
+                    ApiResult result = await _httpClient.GetJsonAsync<ApiResult>($"api/projects/{projectId}");
+
+                    _projects[projectId] = result.GetData<Project>();
+                }
+                catch (Exception e)
+                {
+                    //TODO use ErrorService to show error
+                    throw e;
+                }
+                finally
+                {
+                    _projectsLock.Release();
+                }
+            }
+
+            return _projects[projectId];
         }
     }
 }

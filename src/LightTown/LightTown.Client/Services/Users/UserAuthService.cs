@@ -12,8 +12,6 @@ namespace LightTown.Client.Services.Users
         private readonly NavigationManager _navigationManager;
         private readonly IUserDataService _userDataService;
 
-        public Func<Task> OnAuthorizationChange { get; set; }
-
         public UserAuthService(IJSRuntime ijsRuntime, NavigationManager navigationManager, IUserDataService userDataService)
         {
             _ijsRuntime = ijsRuntime;
@@ -60,13 +58,11 @@ namespace LightTown.Client.Services.Users
         /// <summary>
         /// Unload the current user from the <see cref="UserDataService"/> cache and removes authentication cookie.
         /// </summary>
-        public async void UnloadAuthentication()
+        public async Task UnloadAuthentication()
         {
-            _userDataService.UnloadData();
+            await _userDataService.UnloadData();
 
             await _ijsRuntime.InvokeVoidAsync("unsetCookies");
-
-            OnAuthorizationChange?.Invoke();
         }
     }
 }

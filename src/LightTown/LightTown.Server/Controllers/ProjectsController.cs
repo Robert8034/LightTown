@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightTown.Core;
@@ -21,20 +22,24 @@ namespace LightTown.Server.Controllers
         private readonly IProjectService _projectService;
         private readonly IMapper _mapper;
         private readonly IProjectMemberService _projectMemberService;
+        private readonly RoleManager<Role> _roleManager;
 
-        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IProjectMemberService projectMemberService)
+        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IProjectMemberService projectMemberService, RoleManager<Role> roleManager)
         {
             _userManager = userManager;
             _projectService = projectService;
             _mapper = mapper;
             _projectMemberService = projectMemberService;
+            _roleManager = roleManager;
         }
 
         /// <summary>
         /// Get a list of members (User objects) of a project.
         /// </summary>
         /// <param name="projectId"></param>
-        /// <returns></returns>
+        /// <response code="200">Valid response with the list of members.</response>
+        /// <response code="400">Project doesn't exist.</response>
+        /// <response code="401">The user isn't authorized.</response>
         [HttpGet]
         [Route("/{projectId}/members")]
         [Authorization(Permissions.NONE)]
@@ -57,7 +62,10 @@ namespace LightTown.Server.Controllers
         /// </summary>
         /// <param name="projectId">The project id of the project to add the user to.</param>
         /// <param name="userId">The user id of the user to add.</param>
-        /// <returns></returns>
+        /// <response code="204">User has been added to the project.</response>
+        /// <response code="400">Project or user doesn't exist.</response>
+        /// <response code="401">The user isn't authorized.</response>
+        /// <response code="403">The user is authorized but doesn't have permission to this endpoint or to manage this project.</response>
         [HttpPut]
         [Route("/{projectId}/members/{userId}")]
         [Authorization(Permissions.MANAGE_PROJECTS)]
@@ -84,7 +92,10 @@ namespace LightTown.Server.Controllers
         /// </summary>
         /// <param name="projectId">The project id of the project to remove the member from.</param>
         /// <param name="memberId">The user id of the member to remove.</param>
-        /// <returns></returns>
+        /// <response code="204">User has been removed from the project.</response>
+        /// <response code="400">Project or user doesn't exist or the user is not a member of the project.</response>
+        /// <response code="401">The user isn't authorized.</response>
+        /// <response code="403">The user is authorized but doesn't have permission to this endpoint or to manage this project.</response>
         [HttpDelete]
         [Route("/{projectId}/members/{memberId}")]
         [Authorization(Permissions.MANAGE_PROJECTS)]
@@ -100,12 +111,30 @@ namespace LightTown.Server.Controllers
             return ApiResult.NoContent();
         }
 
+        /// <summary>
+        /// Get a list of projects that the user has view access to that include their member count and tag ids.
+        /// </summary>
+        /// <response code="200">Valid response with the list of projects.</response>
+        /// <response code="401">The user isn't authorized.</response>
+        /// <response code="403">The user is authorized but doesn't have permission to this endpoint.</response>
         [HttpGet]
         [Route("")]
-        [Authorization(Permissions.VIEW_ALL_PROJECTS)]
-        public ApiResult GetProjects()
+        [Authorization(Permissions.NONE)]
+        public async Task<ApiResult> GetProjects()
         {
-            var projects = _projectService.GetProjectsWithTagIdsAndMemberCount();
+            bool hasAccessToAllProjects = true;
+
+            //get the roles of the current user.
+            var roles = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User)))
+                .Select(async roleName => await _roleManager.FindByNameAsync(roleName))
+                .Select(e => e.Result);
+
+            //if none of the roles has the VIEW_ALL_PROJECTS permission we will only return the projects the user has access to.
+            if (!roles.Any(role => role.Permissions.HasFlag(Permissions.VIEW_ALL_PROJECTS)))
+                hasAccessToAllProjects = false;
+
+            var projects = _projectService
+                .GetProjectsWithTagIdsAndMemberCount(hasAccessToAllProjects ? (int?) null : int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)));
 
             var projectModels = new List<Core.Models.Projects.Project>();
 
@@ -120,32 +149,55 @@ namespace LightTown.Server.Controllers
             return ApiResult.Success(projectModels);
         }
 
+        /// <summary>
+        /// Get a project that the user has view access to.
+        /// </summary>
+        /// <response code="200">Valid response with the project.</response>
+        /// <response code="400">Project doesn't exist.</response>
+        /// <response code="401">The user isn't authorized.</response>
+        /// <response code="403">The user is authorized but doesn't have the <see cref="Permissions.VIEW_ALL_PROJECTS"/> permission and isn't a member of this project.</response>
         [HttpGet]
         [Route("{projectId}")]
         [Authorization(Permissions.NONE)]
-        public ApiResult GetProject(int projectId)
+        public async Task<ApiResult> GetProject(int projectId)
         {
+            //get the roles of the current user.
+            var roles = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User)))
+                .Select(async roleName => await _roleManager.FindByNameAsync(roleName))
+                .Select(e => e.Result);
+
+            //if none of the roles has the VIEW_ALL_PROJECTS permission and the current user is not a member of the project we return a 403 forbidden result.
+            if (!roles.Any(role => role.Permissions.HasFlag(Permissions.VIEW_ALL_PROJECTS)))
+            {
+                if (!_projectService.UserIsMember(projectId, int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))))
+                    return ApiResult.Forbidden("You do not have access to this project.");
+            }
+
             Project project = _projectService.GetProject(projectId);
 
-            if(project == null)
+            if (project == null)
                 return ApiResult.BadRequest();
 
             var projectModel = _mapper.Map<Core.Models.Projects.Project>(project);
-            projectModel.Members = new List<Core.Models.Users.User>(); //TODO: add cache functions so this isn't needed anymore
-
-            foreach (var projectMember in project.ProjectMembers)
-            {
-                projectModel.Members.Add(_mapper.Map<Core.Models.Users.User>(projectMember.Member));
-            }
 
             return ApiResult.Success(projectModel);
         }
 
+        /// <summary>
+        /// Create a project and return the created project.
+        /// </summary>
+        /// <response code="200">Valid response with the created project.</response>
+        /// <response code="400">Invalid request data given.</response>
+        /// <response code="401">The user isn't authorized.</response>
+        /// <response code="403">The user is authorized but doesn't have permission to this endpoint.</response>
         [HttpPost]
         [Route("")]
         [Authorization(Permissions.CREATE_PROJECTS)]
         public async Task<ApiResult> CreateProject([FromBody] ProjectPost projectPost)
         {
+            if (!ModelState.IsValid)
+                return ApiResult.BadRequest(ModelState.First(e => e.Value.Errors.Any()).Value.Errors.First().ErrorMessage);
+
             var currentUser = await _userManager.GetUserAsync(User);
 
             var project = _projectService.CreateProject(projectPost.ProjectName, projectPost.ProjectDescription, currentUser.Id);

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using AutoMapper;
 using LightTown.Core;
 using LightTown.Core.Domain.Roles;
-using LightTown.Core.Models.Tags;
 using LightTown.Server.Services.Tags;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Tag = LightTown.Core.Domain.Tags.Tag;
 
 namespace LightTown.Server.Controllers
 {
@@ -24,11 +21,16 @@ namespace LightTown.Server.Controllers
             _tagService = tagService;
         }
 
+        /// <summary>
+        /// Get a list of tags.
+        /// </summary>
+        /// <response code="200">Valid response with the list of tags.</response>
+        /// <response code="401">The user isn't authorized.</response>
         [HttpGet]
         [Authorization(Permissions.NONE)]
         public ApiResult GetTags()
         {
-            var tags = _tagService.GetTags();
+            IEnumerable<Tag> tags = _tagService.GetTags();
 
             var tagModels = _mapper.Map<Core.Models.Tags.Tag>(tags);
 

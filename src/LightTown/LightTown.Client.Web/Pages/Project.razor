@@ -1,20 +1,22 @@
 ﻿@page "/projects/{ProjectId:int}"
+
 @using LightTown.Client.Services.Projects
-@using Newtonsoft.Json
-@using User = LightTown.Core.Models.Users.User
+@using LightTown.Client.Services.Users
+
+@inject IUserDataService UserDataService
 @inject IProjectService ProjectService
 
 <h3>ProjectPage</h3>
 
-<p1>Name: @project.ProjectName</p1><br/>
-<p1>Description: @project.ProjectDescription</p1><br/>
-<p1>Creation Date: @project.CreationDateTime</p1>
+<p1>Name: @_project?.ProjectName</p1><br/>
+<p1>Description: @_project?.ProjectDescription</p1><br/>
+<p1>Creation Date: @_project?.CreationDateTime</p1>
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Full">
-        @if (project?.Members != null)
+        @if (_project?.Members != null)
         {
-            foreach (var member in project.Members)
+            foreach (var member in _project.Members)
             {
                 <GridItem>
 
@@ -35,13 +37,13 @@
     </GridColumn>
 </Grid>
 
-<Popup Hidden=@false>Hello</Popup>
+<Popup Hidden="@false">Hello</Popup>
 
 @code {
     [Parameter]
     public int ProjectId { get; set; }
 
-    private Project project = new Project();
+    private LightTown.Core.Models.Projects.Project _project;
 
     private bool active;
 
@@ -49,7 +51,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        project = await ProjectService.GetProject(ProjectId);
+        _project = await UserDataService.GetProject(ProjectId);
     }
 
     private async Task RemoveMemberFromProject(int userId)
