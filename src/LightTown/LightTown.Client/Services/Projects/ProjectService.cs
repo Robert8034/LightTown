@@ -1,37 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using LightTown.Client.Services.Users;
 using LightTown.Core;
 using LightTown.Core.Models.Projects;
 using LightTown.Core.Models.Users;
 
 namespace LightTown.Client.Services.Projects
 {
+    //TODO add error handling in methods
     public class ProjectService : IProjectService
     {
         private readonly HttpClient _httpClient;
+        private readonly IUserDataService _userDataService;
 
-        public ProjectService(HttpClient httpClient)
+        public ProjectService(HttpClient httpClient, IUserDataService userDataService)
         {
             _httpClient = httpClient;
+            _userDataService = userDataService;
         }
 
-        /// <summary>
-        /// Gets all projects that excist in the database.
-        /// <para>
-        /// <returns>Returns a list of <see cref="Project"></see>.</returns>
-        /// </para>
-        /// </summary>
-        public async Task<List<Project>> GetProjects()
-        {
+        ///// <summary>
+        ///// Gets all projects that exist in the database.
+        ///// <para>
+        ///// <returns>Returns a list of <see cref="Project"></see>.</returns>
+        ///// </para>
+        ///// </summary>
+        //public async Task<List<Project>> GetProjects()
+        //{
 
-            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects");
+        //    ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects");
 
-            return result.GetData<List<Project>>();
+        //    return result.GetData<List<Project>>();
 
-        }
+        //}
 
         /// <summary>
         /// Creates a new project.

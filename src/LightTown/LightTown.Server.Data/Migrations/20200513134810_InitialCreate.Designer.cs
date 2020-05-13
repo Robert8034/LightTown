@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightTown.Server.Data.Migrations
 {
     [DbContext(typeof(LightTownServerContext))]
-    [Migration("20200512124939_InitialCreate")]
+    [Migration("20200513134810_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,6 +72,28 @@ namespace LightTown.Server.Data.Migrations
                     b.ToTable("ProjectMember");
                 });
 
+            modelBuilder.Entity("LightTown.Core.Domain.Projects.ProjectTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("ProjectTag");
+                });
+
             modelBuilder.Entity("LightTown.Core.Domain.Roles.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -105,6 +127,21 @@ namespace LightTown.Server.Data.Migrations
                         .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
+                });
+
+            modelBuilder.Entity("LightTown.Core.Domain.Tags.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("LightTown.Core.Domain.Users.User", b =>
@@ -294,6 +331,21 @@ namespace LightTown.Server.Data.Migrations
                     b.HasOne("LightTown.Core.Domain.Projects.Project", "Project")
                         .WithMany("ProjectMembers")
                         .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LightTown.Core.Domain.Projects.ProjectTag", b =>
+                {
+                    b.HasOne("LightTown.Core.Domain.Projects.Project", "Project")
+                        .WithMany("ProjectTags")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LightTown.Core.Domain.Tags.Tag", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

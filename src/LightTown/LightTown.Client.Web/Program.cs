@@ -28,16 +28,17 @@ namespace LightTown.Client.Web
             builder.Services.AddSingleton<IValidationService, ValidationService>();
             builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
             builder.Services.AddSingleton<IProjectService, ProjectService>();
-            builder.Services.AddSingleton<IUserService, UserService>();
-            builder.Services.AddSingleton<UserSessionService>();
+            builder.Services.AddSingleton<IUserAuthService, UserAuthService>();
+            builder.Services.AddSingleton<IUserDataService, UserDataService>();
             builder.Services.AddBaseAddressHttpClient();
 
             var host = builder.Build();
 
-            var userSessionService = host.Services.GetRequiredService<UserSessionService>();
-            if (await userSessionService.TryLoadLocalUser())
+            var userAuthService = host.Services.GetRequiredService<IUserAuthService>();
+            var userDataService = host.Services.GetRequiredService<IUserDataService>();
+            if (await userAuthService.TryLoadAuthentication())
             {
-                await userSessionService.LoadUser();
+                await userDataService.LoadData();
             }
 
             await host.RunAsync();

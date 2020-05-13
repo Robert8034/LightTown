@@ -1,4 +1,5 @@
 ﻿using LightTown.Server.Services.Projects;
+using LightTown.Server.Services.Tags;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LightTown.Server.Services
@@ -7,7 +8,8 @@ namespace LightTown.Server.Services
     {
         public static void AddServices(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddScoped(typeof(IProjectService), typeof(ProjectService));
+            serviceCollection.AddScoped<IProjectService, ProjectService>();
+            serviceCollection.AddScoped<ITagService, TagService>();
         }
     }
 }

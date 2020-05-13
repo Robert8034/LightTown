@@ -35,13 +35,15 @@ namespace LightTown.Server.Services.Projects
         }
 
         /// <summary>
-        /// Get all projects with their member count.
+        /// Get all projects with their member count and list of tag ids.
         /// </summary>
         /// <returns>A list of all projects with their member count.</returns>
-        public List<(Project, int)> GetProjectsWithMemberCount()
+        public List<(Project, int, IEnumerable<int>)> GetProjectsWithTagIdsAndMemberCount()
         {
-            var projects = _projectRepository.TableNoTracking.Select(e =>
-                new Tuple<Project, int>(e, e.ProjectMembers.Count(e2 => e2.ProjectId == e.Id)).ToValueTuple()).ToList();
+            var projects = _projectRepository.TableNoTracking.Select(project =>
+                new Tuple<Project, int, IEnumerable<int>>(project, 
+                    project.ProjectMembers.Count(projectMember => projectMember.ProjectId == project.Id), 
+                    project.ProjectTags.Select(projectTag => projectTag.TagId)).ToValueTuple()).ToList();
 
             return projects;
         }

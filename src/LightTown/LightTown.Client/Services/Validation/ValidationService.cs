@@ -22,8 +22,8 @@
 
         /// <summary>
         /// Validates if <paramref name="projectName"/> and <paramref name="description"/> are not <see langword="null"/> or empty.
-        /// <param name="username"></param>
-        /// <param name="password"></param>
+        /// <param name="projectName"></param>
+        /// <param name="description"></param>
         /// <para></para>
         /// <returns>Returns <see langword="true"/> when not <see langword="null"/> or empty, otherwise returns <see langword="false"/>.</returns>
         /// </summary>

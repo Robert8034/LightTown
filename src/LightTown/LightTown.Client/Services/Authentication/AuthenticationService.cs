@@ -11,12 +11,10 @@ namespace LightTown.Client.Services.Authentication
     {
 
         private readonly HttpClient _httpClient;
-        private readonly UserSessionService _userSessionService;
 
-        public AuthenticationService(HttpClient httpClient, UserSessionService userSessionService)
+        public AuthenticationService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _userSessionService = userSessionService;
         }
 
         public async Task<bool> Login(string username, string password, bool rememberMe)

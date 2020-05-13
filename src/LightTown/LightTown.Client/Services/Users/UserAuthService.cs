@@ -1,49 +1,24 @@
 ﻿using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using LightTown.Core.Models.Users;
-using LightTown.Core;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace LightTown.Client.Services.Users
 {
-    public class UserSessionService
+    public class UserAuthService : IUserAuthService
     {
-        private readonly HttpClient _httpClient;
         private readonly IJSRuntime _ijsRuntime;
         private readonly NavigationManager _navigationManager;
+        private readonly IUserDataService _userDataService;
 
         public Func<Task> OnAuthorizationChange { get; set; }
 
-        private User _currentUser;
-
-        public UserSessionService(HttpClient httpClient, IJSRuntime ijsRuntime, NavigationManager navigationManager)
+        public UserAuthService(IJSRuntime ijsRuntime, NavigationManager navigationManager, IUserDataService userDataService)
         {
-            _httpClient = httpClient;
             _ijsRuntime = ijsRuntime;
             _navigationManager = navigationManager;
-        }
-
-        /// <summary>
-        /// Set the current user (or null) and invoke the authorization changed event for the navigation menu to update.
-        /// </summary>
-        /// <param name="user"></param>
-        public void SetCurrentUser(User user)
-        {
-            _currentUser = user;
-
-            OnAuthorizationChange?.Invoke();
-        }
-
-        /// <summary>
-        /// Get the current user object or <see langword="null"/> if no user is authorized.
-        /// </summary>
-        /// <returns></returns>
-        public User GetCurrentUser()
-        {
-            return _currentUser;
+            _userDataService = userDataService;
         }
 
         /// <summary>
@@ -52,14 +27,14 @@ namespace LightTown.Client.Services.Users
         /// <returns></returns>
         public bool IsAuthorized()
         {
-            return _currentUser != null;
+            return _userDataService.GetCurrentUser() != null;
         }
 
         /// <summary>
         /// Try to load user authorization cookie from local storage.
         /// </summary>
         /// <returns>Returns <see langword="true"/> if valid info has been found.</returns>
-        public async Task<bool> TryLoadLocalUser()
+        public async Task<bool> TryLoadAuthentication()
         {
             var cookieString = await _ijsRuntime.InvokeAsync<string>("getCookies");
 
@@ -83,22 +58,11 @@ namespace LightTown.Client.Services.Users
         }
 
         /// <summary>
-        /// Load current user data from the server into cache.
+        /// Unload the current user from the <see cref="UserDataService"/> cache and removes authentication cookie.
         /// </summary>
-        /// <returns></returns>
-        public async Task LoadUser()
+        public async void UnloadAuthentication()
         {
-            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/users/@me");
-
-            SetCurrentUser(result.GetData<User>());
-        }
-
-        /// <summary>
-        /// Unload the current user from the cache and removes authentication cookie.
-        /// </summary>
-        public async void UnloadUser()
-        {
-            SetCurrentUser(null);
+            _userDataService.UnloadData();
 
             await _ijsRuntime.InvokeVoidAsync("unsetCookies");
 
