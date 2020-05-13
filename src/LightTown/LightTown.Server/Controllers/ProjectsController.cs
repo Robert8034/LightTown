@@ -38,7 +38,7 @@ namespace LightTown.Server.Controllers
         }
 
         [HttpPut]
-        [Route("/{projectId}/members/{userId}")]
+        [Route("/{projectId}/{userId}")]
         [Authorization(Permissions.MANAGE_PROJECTS)]
         public ApiResult PutMember(int projectId, int userId)
         {
@@ -46,7 +46,7 @@ namespace LightTown.Server.Controllers
 
             var result = _projectService.AddMember(projectId, userId);
 
-            return result ? ApiResult.NoContent() : ApiResult.BadRequest();
+            return result ? ApiResult.Success(result) : ApiResult.BadRequest();
         }
 
         [HttpGet]
