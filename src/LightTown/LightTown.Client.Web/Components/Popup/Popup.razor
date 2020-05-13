@@ -1,0 +1,19 @@
+﻿@if (!Hidden)
+{
+    <div class="popup">
+        @ChildContent
+    </div>
+
+}
+@if (Hidden)
+{
+}
+
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool Hidden { get; set; } = true;
+}

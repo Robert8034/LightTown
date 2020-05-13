@@ -35,14 +35,17 @@
     </GridColumn>
 </Grid>
 
-
+<Popup Hidden=@false>Hello</Popup>
 
 @code {
     [Parameter]
     public int ProjectId { get; set; }
 
     private Project project = new Project();
+
     private bool active;
+
+    private List<User> users = new List<User>();
 
     protected override async Task OnInitializedAsync()
     {
