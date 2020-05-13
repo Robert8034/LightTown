@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Client", "LightTo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Server.Tests", "LightTown.Server.Tests\LightTown.Server.Tests.csproj", "{966A4054-BD6F-4E98-840C-E8118D7406AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightTown.Client.Tests", "LightTown.Client.Tests\LightTown.Client.Tests.csproj", "{6A854A2B-9495-457D-9590-F8A8028044FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Client.Tests", "LightTown.Client.Tests\LightTown.Client.Tests.csproj", "{6A854A2B-9495-457D-9590-F8A8028044FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
