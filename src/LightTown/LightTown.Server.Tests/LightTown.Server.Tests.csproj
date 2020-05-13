@@ -8,9 +8,16 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Moq" Version="4.14.1" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LightTown.Core\LightTown.Core.csproj" />
+    <ProjectReference Include="..\LightTown.Server.Data\LightTown.Server.Data.csproj" />
+    <ProjectReference Include="..\LightTown.Server\LightTown.Server.csproj" />
   </ItemGroup>
 
 </Project>
