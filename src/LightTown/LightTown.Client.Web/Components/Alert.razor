@@ -43,17 +43,14 @@
         {
             if (AlertData.ClosesAfter.HasValue)
             {
-                Thread closeThread = new Thread(async () =>
+                Task closeTask = new Task(async () =>
                 {
                     await Task.Delay((int) AlertData.ClosesAfter.Value.TotalMilliseconds);
 
                     await CloseAlert();
-                })
-                {
-                    IsBackground = true
-                };
+                });
 
-                closeThread.Start();
+                closeTask.Start();
             }
 
             await Task.Delay(1000);

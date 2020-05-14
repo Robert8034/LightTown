@@ -1,47 +1,5 @@
 ﻿@page "/"
 
-@using LightTown.Client.Services.Users
-@using LightTown.Client.Services.Abstraction
-@using LightTown.Client.Web.Services
-
-@inject IAlertService<AlertService.Alert> AlertService
-
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
-
-<Button Text="Error" OnClick="@(() => OnErrorBtnClick())"></Button>
-<Button Text="Success" OnClick="@(() => OnSuccessBtnClick())"></Button>
-<Button Text="Warning" OnClick="@(() => OnWarningBtnClick())"></Button>
-<Button Text="Standard" OnClick="@(() => OnStandardBtnClick())"></Button>
-
-@code
-{
-    private Task OnErrorBtnClick()
-    {
-        AlertService.ShowErrorAlert(true, null, DateTime.Now.ToString("F"), "Geile error alert");
-
-        return Task.CompletedTask;
-    }
-
-    private Task OnSuccessBtnClick()
-    {
-        AlertService.ShowSuccessAlert(true, null, DateTime.Now.ToString("F"), "Geile error alert");
-
-        return Task.CompletedTask;
-    }
-
-    private Task OnStandardBtnClick()
-    {
-        AlertService.ShowStandardAlert(true, null, DateTime.Now.ToString("F"), "Geile error alert");
-
-        return Task.CompletedTask;
-    }
-
-    private Task OnWarningBtnClick()
-    {
-        AlertService.ShowWarningAlert(true, null, DateTime.Now.ToString("F"), "Geile error alert");
-
-        return Task.CompletedTask;
-    }
-}
