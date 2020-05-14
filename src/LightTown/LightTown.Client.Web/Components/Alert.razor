@@ -1,0 +1,86 @@
+﻿@using LightTown.Client.Web.Services
+@using LightTown.Client.Services.Abstraction
+@using System.Threading
+
+@inject IAlertService<AlertService.Alert> AlertService
+
+<div class="alert-outer">
+    <div class="alert @(Showing ? "alert-showing" : "") @(_hiding ? "alert-hiding" : "")
+         @(AlertData.AlertType == AlertType.Error ? "alert-error" :
+            AlertData.AlertType == AlertType.Success ? "alert-success" :
+            AlertData.AlertType == AlertType.Warning ? "alert-warning" :
+            "alert-standard")">
+        <div class="alert-text @(Showing ? "alert-text-showing" : "") @(_hiding ? "alert-text-hiding" : "")">
+            @if (!string.IsNullOrEmpty(AlertData.Title))
+            {
+                <span class="alert-title font-weight-bold @(Showing ? "alert-texts-showing" : "") @(_hiding ? "alert-texts-hiding" : "")">@AlertData.Title</span>
+            }
+            <span class="alert-body @(Showing ? "alert-texts-showing" : "") @(_hiding ? "alert-texts-hiding" : "")">@AlertData.Body</span>
+        </div>
+        @if (AlertData.Closable)
+        {
+            <div class="alert-close @(Showing ? "alert-texts-showing" : "") @(_hiding ? "alert-texts-hiding" : "")" @onclick="CloseAlert">
+                <span aria-hidden="true">&times;</span>
+            </div>
+        }
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public bool Showing { get; set; }
+
+    [Parameter]
+    public AlertService.Alert AlertData { get; set; }
+
+    private bool _hiding;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (AlertData.ClosesAfter.HasValue)
+            {
+                Thread closeThread = new Thread(async () =>
+                {
+                    await Task.Delay((int) AlertData.ClosesAfter.Value.TotalMilliseconds);
+
+                    await CloseAlert();
+                })
+                {
+                    IsBackground = true
+                };
+
+                closeThread.Start();
+            }
+
+            await Task.Delay(1000);
+
+            Showing = false;
+
+            StateHasChanged();
+        }
+        else
+        {
+            await base.OnAfterRenderAsync(firstRender);
+        }
+    }
+
+    private async Task CloseAlert()
+    {
+        if(_hiding)
+            return;
+
+        _hiding = true;
+
+        StateHasChanged();
+
+        await Task.Delay(1000);
+
+        AlertService.Alerts.Remove(AlertData);
+
+        AlertService.OnCloseAlert.Invoke(AlertData);
+    }
+}

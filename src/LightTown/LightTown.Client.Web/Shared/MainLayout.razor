@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using LightTown.Client.Services.Abstraction
+@using LightTown.Client.Web.Services
+@inherits LayoutComponentBase
+
+@inject IAlertService<AlertService.Alert> AlertService
 
 <Navigation />
 
@@ -7,3 +11,50 @@
         @Body
     </div>
 </div>
+
+@for (int i = 0; i < _alerts.Count; i++)
+{
+    var alert = _alerts.ElementAt(i);
+
+    //if "already shown" is true, we set isShowing to false, if isShowing is true it will do the animation in the Alert component.
+    bool isShowing = !alert.Value;
+
+    <Alert AlertData="@alert.Key" Showing="@isShowing"></Alert>
+    
+    //set "already shown" to true
+    _alerts[alert.Key] = true;
+}
+
+@code
+{
+    //cache of alerts and a bool whether they are already shown (animated).
+    private Dictionary<AlertService.Alert, bool> _alerts;
+
+
+    public MainLayout()
+    {
+        _alerts = new Dictionary<AlertService.Alert, bool>();
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        AlertService.OnShowAlert = OnShowAlert;
+        AlertService.OnCloseAlert = OnCloseAlert;
+
+        return base.OnInitializedAsync();
+    }
+
+    private void OnCloseAlert(AlertService.Alert alert)
+    {
+        _alerts.Remove(alert);
+
+        StateHasChanged();
+    }
+
+    private void OnShowAlert(AlertService.Alert alert)
+    {
+        _alerts[alert] = false;
+
+        StateHasChanged();
+    }
+}

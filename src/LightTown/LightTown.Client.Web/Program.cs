@@ -1,10 +1,13 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
+using LightTown.Client.Services.Abstraction;
 using LightTown.Client.Services.Authentication;
 using LightTown.Client.Services.Projects;
 using LightTown.Client.Services.Users;
 using LightTown.Client.Services.Validation;
+using LightTown.Client.Web.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +33,7 @@ namespace LightTown.Client.Web
             builder.Services.AddSingleton<IProjectService, ProjectService>();
             builder.Services.AddSingleton<IUserAuthService, UserAuthService>();
             builder.Services.AddSingleton<IUserDataService, UserDataService>();
+            builder.Services.AddSingleton<IAlertService<AlertService.Alert>, AlertService>();
             builder.Services.AddBaseAddressHttpClient();
 
             var host = builder.Build();
