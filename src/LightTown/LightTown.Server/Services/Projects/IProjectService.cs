@@ -46,17 +46,6 @@ namespace LightTown.Server.Services.Projects
         IEnumerable<ProjectMember> GetProjectMembers(int projectId);
 
         /// <summary>
-        /// Add a user to a project.
-        /// <para>
-        /// The <paramref name="projectId"/> and <paramref name="userId"/> parameters are expected to be valid.
-        /// </para>
-        /// <param name="projectId"></param>
-        /// <param name="userId"></param>
-        /// </summary>
-        /// <returns>If successful in adding, this method will return <see langword="true"></see>, if not it will return <see langword="false"></see>. </returns>
-        void AddMember(int projectId, int userId);
-
-        /// <summary>
         /// Updates a project
         /// <param name="project"></param>
         /// <para>

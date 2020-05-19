@@ -33,5 +33,14 @@ namespace LightTown.Server.Services.Projects
         {
             _projectMemberRepository.Delete(projectMember);
         }
+
+        public void CreateProjectMember(int projectId, int userId)
+        {
+            _projectMemberRepository.Insert(new ProjectMember
+            {
+                ProjectId = projectId,
+                MemberId = userId
+            });
+        }
     }
 }

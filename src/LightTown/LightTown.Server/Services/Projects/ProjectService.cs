@@ -82,15 +82,6 @@ namespace LightTown.Server.Services.Projects
             return _projectMemberRepository.Table.Where(e => e.ProjectId == projectId).Include(e => e.Member).ToList();
         }
 
-        public void AddMember(int projectId, int userId)
-        {
-            _projectMemberRepository.Insert(new ProjectMember
-            {
-                ProjectId = projectId,
-                MemberId = userId
-            });
-        }
-
         public bool PutProject(Project project)
         {
             _projectRepository.Update(project);

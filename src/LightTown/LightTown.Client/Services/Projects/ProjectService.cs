@@ -82,7 +82,7 @@ namespace LightTown.Client.Services.Projects
         /// </summary>
         public async Task<bool> RemoveMember(int projectId, int userId)
         {
-            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId + "/" + userId + "/remove");
+            ApiResult result = await _httpClient.DeleteJsonAsync<ApiResult>("api/projects/" + projectId + "/members/" + userId);
 
             return result.GetData<bool>();
         }
@@ -96,7 +96,7 @@ namespace LightTown.Client.Services.Projects
         /// </summary>
         public async Task<bool> AddMember(int userId, int projectId)
         {
-            ApiResult result = await _httpClient.PutJsonAsync<ApiResult>("api/projects/" + projectId + "/" + userId, new
+            ApiResult result = await _httpClient.PutJsonAsync<ApiResult>("api/projects/" + projectId + "/members/" + userId, new
             {
                 userId,
                 projectId
