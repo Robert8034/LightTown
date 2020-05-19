@@ -1,0 +1,60 @@
+﻿@implements IDisposable
+@inject NavigationManager NavigationManager
+
+@if (IsLink)
+{
+    <a href="@Link" class="list-group-item list-group-item-action">
+        <div class="@(Active.HasValue && Active.Value ? "list-group-item-border-active" : "list-group-item-border")"></div>
+        <span class="list-group-item-text @(Active.HasValue && Active.Value ? "list-group-item-text-active" : "")">@Text</span>
+    </a>
+}
+else
+{
+    <div class="list-group-item list-group-item-action">
+        <div class="@(Active.HasValue && Active.Value ? "list-group-item-border-active" : "list-group-item-border")"></div>
+        <span class="list-group-item-text @(Active.HasValue && Active.Value ? "list-group-item-text-active" : "")">@Text</span>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "";
+
+    [Parameter]
+    public bool? Active { get; set; } = false;
+
+    [Parameter]
+    public bool IsLink { get; set; } = false;
+
+    [Parameter]
+    public string Link { get; set; } = "#";
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnNavigate;
+
+        SetActive();
+    }
+
+    private void OnNavigate(object sender, LocationChangedEventArgs e)
+    {
+        SetActive();
+    }
+
+    private void SetActive()
+    {
+        string relativeUrl = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+
+        if (Active != (Link == relativeUrl))
+        {
+            Active = Link == relativeUrl;
+
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnNavigate;
+    }
+}

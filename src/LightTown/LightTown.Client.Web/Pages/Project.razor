@@ -12,19 +12,11 @@
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Small">
         <GridItem>
-            <div class="list-group">
-                <FormGroup>
-                    <Button Enabled="true" Text="Project" Size="ButtonSize.Full"></Button>
-                </FormGroup>
-                <br/>
-                <FormGroup>
-                    <Button Enabled="true" Text="Overview" Size="ButtonSize.Full"></Button>
-                </FormGroup>
-                <br/>
-                <FormGroup>
-                    <Button Enabled="true" Text="Members" Size="ButtonSize.Full"></Button>
-                </FormGroup>
-            </div>
+            <ListGroup Class="mw-300 m-auto">
+                <ListGroupHeader Text="@_project.ProjectName"></ListGroupHeader>
+                <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}")" Text="Overview" Active="true"></ListGroupItem>
+                <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/members")" Text="Members"></ListGroupItem>
+            </ListGroup>
         </GridItem>
     </GridColumn>
     <GridColumn ColumnSize="ColumnSize.Medium">

@@ -1,0 +1,64 @@
+﻿@page "/projects/{ProjectId:int}/members"
+
+@using LightTown.Client.Services.Projects
+@using LightTown.Client.Services.Users
+
+@inject IUserDataService UserDataService
+@inject IProjectService ProjectService
+
+<h1>Name: @_project?.ProjectName</h1>
+<p1>Creation Date: @_project?.CreationDateTime</p1>
+
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Small">
+        <GridItem>
+            <ListGroup Class="mw-300 m-auto">
+                <ListGroupHeader Text="@_project.ProjectName"></ListGroupHeader>
+                <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}")" Text="Overview"></ListGroupItem>
+                <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/members")" Text="Members" Active="true"></ListGroupItem>
+            </ListGroup>
+        </GridItem>
+    </GridColumn>
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        <span>Show members</span>
+    </GridColumn>
+</Grid>
+
+@code {
+    [Parameter]
+    public int ProjectId { get; set; }
+
+    private LightTown.Core.Models.Projects.Project _project;
+
+    private bool active;
+
+    private List<User> users = new List<User>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _project = await UserDataService.GetProject(ProjectId);
+    }
+
+    private async Task RemoveMemberFromProject(int userId)
+    {
+        await ProjectService.RemoveMember(ProjectId, userId);
+    }
+
+    @*@if (_project?.Members != null)
+        {
+            foreach (var member in _project.Members)
+            {
+            <GridItem>
+            <FormGroup>
+            <p1>Name: @member.Username</p1>
+            </FormGroup>
+            <FormGroup>
+            <p1>Email: @member.Email</p1>
+            </FormGroup>
+            <FormGroup>
+            <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
+            </FormGroup>
+            </GridItem>
+            }
+        }*@
+}
