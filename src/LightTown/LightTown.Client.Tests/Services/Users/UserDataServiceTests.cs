@@ -42,7 +42,7 @@ namespace LightTown.Client.Tests.Services.Users
                 Username = "TestUser"
             }));
 
-            var userDataService = new UserDataService(_httpClient);
+            var userDataService = new UserDataService(_httpClient, null);
 
             //ACT
             await userDataService.LoadData();
@@ -63,13 +63,13 @@ namespace LightTown.Client.Tests.Services.Users
         /// Tests whether <see cref="UserDataService.UnloadData"/> unloads all data.
         /// </summary>
         [Fact]
-        public void UnloadDataTest()
+        public async Task UnloadDataTest()
         {
             //ARRANGE
-            var userSessionService = new UserDataService(_httpClient);
+            var userSessionService = new UserDataService(_httpClient, null);
 
             //ACT
-            userSessionService.UnloadData();
+            await userSessionService.UnloadData();
 
             //ASSERT
             Assert.Null(userSessionService.GetCurrentUser());
@@ -88,7 +88,7 @@ namespace LightTown.Client.Tests.Services.Users
                 }
             ));
 
-            var userDataService = new UserDataService(_httpClient);
+            var userDataService = new UserDataService(_httpClient, null);
 
             //ACT
             //call GetProjects() twice so we not only get the projects from the "server" but also from the cache.
@@ -125,7 +125,7 @@ namespace LightTown.Client.Tests.Services.Users
                 }
             ));
 
-            var userDataService = new UserDataService(_httpClient);
+            var userDataService = new UserDataService(_httpClient, null);
 
             //ACT
             //call GetProject() twice so we not only get the projects from the "server" but also from the cache.

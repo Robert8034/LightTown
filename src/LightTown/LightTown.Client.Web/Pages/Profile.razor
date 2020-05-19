@@ -1,0 +1,57 @@
+﻿@page "/profile"
+@page "/profile/{ProfileId}"
+
+@using LightTown.Client.Services.Projects
+@using LightTown.Client.Services.Users
+@using User = LightTown.Core.Models.Users.User
+
+@inject IUserDataService UserDataService
+@inject IProjectService ProjectService
+
+<div class="profile-header py-4">
+    <span class="profile-header-name">
+        @(_user.Fullname ?? _user.Username)
+    </span>
+</div>
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Small">
+        <div class="profile-avatar">
+            @if (_user.HasAvatar)
+            {
+
+            }
+            else
+            {
+                <svg>
+                    <use xlink:href="libs/fontawesome-free-5.13.0/sprites/solid.svg#user"></use>
+                </svg>
+            }
+        </div>
+    </GridColumn>
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        2
+    </GridColumn>
+</Grid>
+
+@code {
+
+    [Parameter]
+    public int? ProfileId { get; set; }
+
+    private User _user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            ProfileId ??= UserDataService.GetCurrentUser().Id;
+
+            _user = await UserDataService.GetUser(ProfileId.Value);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+}

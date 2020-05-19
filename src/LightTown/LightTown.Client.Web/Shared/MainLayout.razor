@@ -1,8 +1,7 @@
-﻿@using LightTown.Client.Services.Abstraction
-@using LightTown.Client.Web.Services
+﻿@using LightTown.Client.Services.Alerts
 @inherits LayoutComponentBase
 
-@inject IAlertService<AlertService.Alert> AlertService
+@inject IAlertService<BlazorAlertService.Alert> AlertService
 
 <Navigation />
 
@@ -28,12 +27,12 @@
 @code
 {
     //cache of alerts and a bool whether they are already shown (animated).
-    private Dictionary<AlertService.Alert, bool> _alerts;
+    private Dictionary<BlazorAlertService.Alert, bool> _alerts;
 
 
     public MainLayout()
     {
-        _alerts = new Dictionary<AlertService.Alert, bool>();
+        _alerts = new Dictionary<BlazorAlertService.Alert, bool>();
     }
 
     protected override Task OnInitializedAsync()
@@ -44,14 +43,14 @@
         return base.OnInitializedAsync();
     }
 
-    private void OnCloseAlert(AlertService.Alert alert)
+    private void OnCloseAlert(BlazorAlertService.Alert alert)
     {
         _alerts.Remove(alert);
 
         StateHasChanged();
     }
 
-    private void OnShowAlert(AlertService.Alert alert)
+    private void OnShowAlert(BlazorAlertService.Alert alert)
     {
         _alerts[alert] = false;
 

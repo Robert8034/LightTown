@@ -3,6 +3,7 @@
 @inject IUserDataService UserDataService
 @inject IUserAuthService UserAuthService
 @inject IJSRuntime JsRuntime
+@inject NavigationManager NavigationManager
 
 <nav class="navigation navbar navbar-expand-lg navbar-dark">
     <a class="navbar-brand" href="#">LightTown</a>
@@ -13,12 +14,12 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             @* TODO add required links here *@
-            @*<li class="nav-item active">
-                <a class="nav-link" href="#">Timeline</a>
+            <li class="nav-item @(_relativeUrl == "/" ? "active" : "")">
+                <a class="nav-link" href="/">Timeline</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Temp</a>
-            </li>*@
+            <li class="nav-item @(_relativeUrl == "/projects" ? "active" : "")">
+                <a class="nav-link" href="/projects">Projects</a>
+            </li>
         </ul>
         @* TODO replace code below with user info OR leave empty if user is not logged in *@
         <ul class="navbar-nav">
@@ -60,11 +61,23 @@
 
 @code
 {
+    private string _relativeUrl;
+
     protected override void OnInitialized()
     {
         UserDataService.OnUserDataChange += Refresh;
+        NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
+
+        _relativeUrl = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
 
         base.OnInitialized();
+    }
+
+    private void NavigationManagerOnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        _relativeUrl = "/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+
+        StateHasChanged();
     }
 
     public Task Refresh()

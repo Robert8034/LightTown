@@ -29,7 +29,7 @@ rem Move the current directory to the parent directory which is the data project
 cd %MIGRATIONS_PATH%\..\
 
 rem The dotnet command for creating migrations for the current directory
-dotnet ef migrations add InitialCreate
+dotnet ef migrations add InitialCreate --context LightTownContext
 
 :END
 endlocal
