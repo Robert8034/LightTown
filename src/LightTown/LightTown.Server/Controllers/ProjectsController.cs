@@ -82,7 +82,7 @@ namespace LightTown.Server.Controllers
             if (!userExists)
                 return ApiResult.BadRequest();
 
-            _projectService.AddMember(projectId, userId);
+            _projectMemberService.CreateProjectMember(projectId, userId);
 
             return ApiResult.NoContent();
         }

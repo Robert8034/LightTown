@@ -108,8 +108,8 @@ namespace LightTown.Client.Tests.Services.Projects
             //ASSERT
             _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(1),
              ItExpr.Is<HttpRequestMessage>(req =>
-                 req.Method == HttpMethod.Get
-                 && req.RequestUri == new Uri("https://localhost:5001/api/projects/1/1/remove")
+                 req.Method == HttpMethod.Delete
+                 && req.RequestUri == new Uri("https://localhost:5001/api/projects/1/members/1")
              ),
              ItExpr.IsAny<CancellationToken>()
              );
@@ -132,7 +132,7 @@ namespace LightTown.Client.Tests.Services.Projects
             _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(1),
              ItExpr.Is<HttpRequestMessage>(req =>
                  req.Method == HttpMethod.Put
-                 && req.RequestUri == new Uri("https://localhost:5001/api/projects/1/1")
+                 && req.RequestUri == new Uri("https://localhost:5001/api/projects/1/members/1")
              ),
              ItExpr.IsAny<CancellationToken>()
              );
