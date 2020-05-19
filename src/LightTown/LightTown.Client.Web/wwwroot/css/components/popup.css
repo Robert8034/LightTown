@@ -1,16 +1,58 @@
 ﻿.popup {
-    position: absolute;
-    width: 50%;
-    height: 50%;
-    background-color: black;
+    border: 1px solid #646464;
+    border-radius: 6px;
+    padding: 8px;
+    background: var(--primary-bg-color);
 }
 
 .popup-container {
-    position: relative;
-    display: none;
-
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0000003b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .popup-visible {
     display: flex;
+}
+
+.popup-hidden {
+    display: none;
+}
+
+.popup-showing {
+    animation-name: showpopup;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.popup-hiding {
+    animation-name: hidepopup;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes showpopup {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes hidepopup {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
 }

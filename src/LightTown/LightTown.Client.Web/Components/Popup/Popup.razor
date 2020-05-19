@@ -1,5 +1,5 @@
 ﻿
-<div class="popup-container @(Hidden ? "" : "popup-visible")">
+<div class="popup-container @(Visible ? "popup-visible" : "popup-hidden") @(_showing ? "popup-showing" : "") @(_hiding ? "popup-hiding" : "")">
     <div class="popup">
         @ChildContent
     </div>
@@ -10,5 +10,38 @@
     public RenderFragment ChildContent { get; set; }
 
     [Parameter]
-    public bool Hidden { get; set; } = true;
+    public bool Visible { get; set; }
+
+    private bool _showing = false;
+    private bool _hiding = false;
+
+    public async Task Show()
+    {
+        Visible = true;
+        _showing = true;
+
+        StateHasChanged();
+
+        //wait for animation to finish
+        await Task.Delay(500);
+
+        _showing = false;
+
+        StateHasChanged();
+    }
+
+    public async Task Hide()
+    {
+        _hiding = true;
+
+        StateHasChanged();
+
+        //wait for animation to finish
+        await Task.Delay(500);
+
+        _hiding = false;
+        Visible = false;
+
+        StateHasChanged();
+    }
 }
