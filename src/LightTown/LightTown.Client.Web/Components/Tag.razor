@@ -1,0 +1,12 @@
+﻿<span class="badge badge-pill badge-primary">@Text</span>
+
+@code {
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public bool IsLink { get; set; } = false;
+
+    [Parameter]
+    public string Link { get; set; } = "#";
+}
