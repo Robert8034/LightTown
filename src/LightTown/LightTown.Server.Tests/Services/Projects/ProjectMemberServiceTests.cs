@@ -12,7 +12,7 @@ namespace LightTown.Server.Tests.Services.Projects
 {
     public class ProjectMemberServiceTests
     {
-        private readonly Mock<Repository<ProjectMember>> _projectMemberRepositoryMock;
+        private Mock<Repository<ProjectMember>> _projectMemberRepositoryMock;
         
         public ProjectMemberServiceTests()
         {

@@ -13,6 +13,7 @@ namespace LightTown.Server.Tests
         public static void SetupRepositoryMock<T>(this Mock<Repository<T>> repositoryMock, Action<IRepository<T>> options) where T : BaseEntity
         {
             var context = new LightTownTestContext();
+            context.Database.EnsureDeleted();
 
             var constructorArguments = repositoryMock.GetType().GetField("constructorArguments", 
                 BindingFlags.NonPublic | BindingFlags.Instance);
