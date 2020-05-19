@@ -4,3 +4,13 @@
     height: 50%;
     background-color: black;
 }
+
+.popup-container {
+    position: relative;
+    display: none;
+
+}
+
+.popup-visible {
+    display: flex;
+}

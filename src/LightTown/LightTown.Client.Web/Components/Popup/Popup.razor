@@ -1,14 +1,9 @@
-﻿@if (!Hidden)
-{
+﻿
+<div class="popup-container @(Hidden ? "" : "popup-visible")">
     <div class="popup">
         @ChildContent
     </div>
-
-}
-@if (Hidden)
-{
-}
-
+</div>
 
 @code {
     [Parameter]
