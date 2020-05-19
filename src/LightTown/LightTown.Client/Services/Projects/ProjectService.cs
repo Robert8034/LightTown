@@ -84,7 +84,8 @@ namespace LightTown.Client.Services.Projects
         {
             ApiResult result = await _httpClient.DeleteJsonAsync<ApiResult>("api/projects/" + projectId + "/members/" + userId);
 
-            return result.GetData<bool>();
+            //TODO Check for return status codes
+            return true;
         }
 
         /// <summary>
