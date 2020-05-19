@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightTown.Server.Data.Migrations
 {
     [DbContext(typeof(LightTownContext))]
-    [Migration("20200519094734_InitialCreate")]
+    [Migration("20200519115228_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
