@@ -6,34 +6,44 @@
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
 
-<h3>ProjectPage</h3>
-
-<p1>Name: @_project?.ProjectName</p1><br/>
-<p1>Description: @_project?.ProjectDescription</p1><br/>
+<h1>Name: @_project?.ProjectName</h1>
 <p1>Creation Date: @_project?.CreationDateTime</p1>
 
 <Grid>
-    <GridColumn ColumnSize="ColumnSize.Full">
-        @if (_project?.Members != null)
-        {
-            foreach (var member in _project.Members)
-            {
+    <GridColumn ColumnSize="ColumnSize.Small">
+        <GridItem>
+            <div class="list-group">
+                <FormGroup>
+                    <Button Enabled="true" Text="Project" Size="ButtonSize.Full"></Button>
+                </FormGroup>
+                <br/>
+                <FormGroup>
+                    <Button Enabled="true" Text="Overview" Size="ButtonSize.Full"></Button>
+                </FormGroup>
+                <br/>
+                <FormGroup>
+                    <Button Enabled="true" Text="Members" Size="ButtonSize.Full"></Button>
+                </FormGroup>
+            </div>
+        </GridItem>
+    </GridColumn>
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Small">
                 <GridItem>
-
-                    <Card>
-                        <FormGroup>
-                            <p1>Name: @member.Username</p1>
-                        </FormGroup>
-                        <FormGroup>
-                            <p1>Email: @member.Email</p1>
-                        </FormGroup>
-                        <FormGroup>
-                            <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
-                        </FormGroup>
-                    </Card>
+                    <image source="https://www.eso.org/public/images/eso1907a/"></image>
                 </GridItem>
-            }
-        }
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Medium">
+                <GridItem>
+                    <p1>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tristique aliquet turpis ac ultrices. Sed porttitor ipsum quis nisi feugiat, a porttitor lacus cursus. Aliquam fringilla molestie dignissim. Vestibulum non finibus metus. Morbi eget justo non leo convallis mattis id non nisl. Nulla scelerisque facilisis neque, ut luctus purus pretium nec. Aliquam at nunc erat. Pellentesque pharetra risus sem, a fermentum eros dignissim in. Nunc finibus tempor lorem sed lobortis.
+
+                        Phasellus porttitor vitae metus et gravida. Nam sed metus neque. Vivamus at sapien risus. Maecenas facilisis lacus ut ligula viverra, nec facilisis elit maximus. Sed ut rutrum velit, id faucibus eros. Proin porta porta diam. Donec ultrices, enim nec pharetra scelerisque, magna augue tincidunt velit, a vestibulum erat lectus eget ipsum. Aenean convallis quis lectus et pulvinar. Vivamus sed molestie arcu. Ut aliquam lobortis est.
+                    </p1>
+                </GridItem>
+            </GridColumn>
+        </Grid>
     </GridColumn>
 </Grid>
 
@@ -56,4 +66,22 @@
     {
         await ProjectService.RemoveMember(ProjectId, userId);
     }
+
+    @*@if (_project?.Members != null)
+        {
+            foreach (var member in _project.Members)
+            {
+            <GridItem>
+            <FormGroup>
+            <p1>Name: @member.Username</p1>
+            </FormGroup>
+            <FormGroup>
+            <p1>Email: @member.Email</p1>
+            </FormGroup>
+            <FormGroup>
+            <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
+            </FormGroup>
+            </GridItem>
+            }
+        }*@
 }
