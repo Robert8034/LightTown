@@ -137,7 +137,12 @@ namespace LightTown.Server.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Tag");
                 });
@@ -149,7 +154,13 @@ namespace LightTown.Server.Data.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("About")
+                        .HasColumnType("text");
+
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Age")
                         .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -162,6 +173,15 @@ namespace LightTown.Server.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Fullname")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("HasAvatar")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Hometown")
+                        .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -346,6 +366,13 @@ namespace LightTown.Server.Data.Migrations
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("LightTown.Core.Domain.Tags.Tag", b =>
+                {
+                    b.HasOne("LightTown.Core.Domain.Users.User", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

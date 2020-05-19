@@ -1,8 +1,6 @@
-﻿@using LightTown.Client.Web.Services
-@using LightTown.Client.Services.Abstraction
-@using System.Threading
+﻿@using LightTown.Client.Services.Alerts
 
-@inject IAlertService<AlertService.Alert> AlertService
+@inject IAlertService<BlazorAlertService.Alert> AlertService
 
 <div class="alert-outer">
     <div class="alert @(Showing ? "alert-showing" : "") @(_hiding ? "alert-hiding" : "")
@@ -33,7 +31,7 @@
     public bool Showing { get; set; }
 
     [Parameter]
-    public AlertService.Alert AlertData { get; set; }
+    public BlazorAlertService.Alert AlertData { get; set; }
 
     private bool _hiding;
 

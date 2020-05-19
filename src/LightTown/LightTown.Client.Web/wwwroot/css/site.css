@@ -34,6 +34,7 @@ app {
     justify-content: center;
     align-items: center;
     flex-grow: 1;
+    flex-direction: column;
 }
 
 #form-login {
@@ -61,4 +62,19 @@ app {
 
 .dropdown-divider {
     border-top: 1px solid #646464;
+}
+
+.profile-header {
+    width: 100%;
+}
+
+.profile-header-name {
+    font-size: 32px;
+}
+
+.profile-avatar {
+}
+
+.profile-avatar svg {
+    color: var(--secondary-bg-color);
 }

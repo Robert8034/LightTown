@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using LightTown.Client.Services.Alerts;
 using LightTown.Core;
 using LightTown.Core.Models.Projects;
 using LightTown.Core.Models.Tags;
@@ -20,20 +21,24 @@ namespace LightTown.Client.Services.Users
     public class UserDataService : IUserDataService
     {
         private readonly HttpClient _httpClient;
+        private readonly IAlertService<BlazorAlertService.Alert> _alertService;
 
         public Func<Task> OnUserDataChange { get; set; }
 
         private User _currentUser;
         private Dictionary<int, Project> _projects;
+        private Dictionary<int, User> _users;
         private List<Tag> _tags;
 
         //lock objects so a second thread cant access the object when it is being loaded (using httpclient) by another thread.
         private readonly SemaphoreSlim _userLock = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _usersLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _projectsLock = new SemaphoreSlim(1, 1);
 
-        public UserDataService(HttpClient httpClient)
+        public UserDataService(HttpClient httpClient, IAlertService<BlazorAlertService.Alert> alertService)
         {
             _httpClient = httpClient;
+            _alertService = alertService;
         }
 
         /// <summary>
@@ -51,8 +56,7 @@ namespace LightTown.Client.Services.Users
             }
             catch (Exception e)
             {
-                //TODO create ErrorService that shows error on page
-                throw e;
+                _alertService.ShowErrorAlert(true, null, "Error getting user data: " + e.Message);
             }
             finally
             {
@@ -102,8 +106,7 @@ namespace LightTown.Client.Services.Users
                 }
                 catch (Exception e)
                 {
-                    //TODO use ErrorService to show error
-                    throw e;
+                    _alertService.ShowErrorAlert(true, null, "Error getting projects: " + e.Message);
                 }
                 finally
                 {
@@ -136,8 +139,7 @@ namespace LightTown.Client.Services.Users
                 }
                 catch (Exception e)
                 {
-                    //TODO use ErrorService to show error
-                    throw e;
+                    _alertService.ShowErrorAlert(true, null, "Error getting project: " + e.Message);
                 }
                 finally
                 {
@@ -146,6 +148,42 @@ namespace LightTown.Client.Services.Users
             }
 
             return _projects[projectId];
+        }
+
+        /// <summary>
+        /// Get a user, will get it from the server if it doesn't exist in the cache.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<User> GetUser(int userId)
+        {
+            if (userId == _currentUser.Id)
+                return _currentUser;
+
+            if (_users?[userId] == null)
+            {
+                await _usersLock.WaitAsync();
+
+                if (_users == null)
+                    _users = new Dictionary<int, User>();
+
+                try
+                {
+                    ApiResult result = await _httpClient.GetJsonAsync<ApiResult>($"api/users/{userId}");
+
+                    _users[userId] = result.GetData<User>();
+                }
+                catch (Exception e)
+                {
+                    _alertService.ShowErrorAlert(true, null, "Error getting user: " + e.Message);
+                }
+                finally
+                {
+                    _usersLock.Release();
+                }
+            }
+
+            return _users[userId];
         }
     }
 }

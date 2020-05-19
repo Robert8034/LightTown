@@ -41,5 +41,12 @@ namespace LightTown.Client.Services.Users
         /// <param name="projectId"></param>
         /// <returns></returns>
         Task<Project> GetProject(int projectId);
+
+        /// <summary>
+        /// Get a user, will get it from the server if it doesn't exist in the cache.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<User> GetUser(int userId);
     }
 }

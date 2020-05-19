@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using AutoMapper;
 using AutoMapper.Configuration.Annotations;
+using LightTown.Core.Domain.Tags;
 
 namespace LightTown.Core.Models.Users
 {
@@ -11,5 +13,11 @@ namespace LightTown.Core.Models.Users
         public string Email { get; set; }
         [SourceMember(nameof(Domain.Users.User.EmailConfirmed))]
         public bool IsEmailConfirmed { get; set; }
+        public bool HasAvatar { get; set; }
+        public string Fullname { get; set; }
+        public string About { get; set; }
+        public int Age { get; set; }
+        public string Hometown { get; set; }
+        public List<int> TagIds { get; set; }
     }
 }
