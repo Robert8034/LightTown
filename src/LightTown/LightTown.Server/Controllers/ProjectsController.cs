@@ -41,7 +41,7 @@ namespace LightTown.Server.Controllers
         /// <response code="400">Project doesn't exist.</response>
         /// <response code="401">The user isn't authorized.</response>
         [HttpGet]
-        [Route("/{projectId}/members")]
+        [Route("{projectId}/members")]
         [Authorization(Permissions.NONE)]
         public ApiResult GetMembers(int projectId)
         {
@@ -67,7 +67,7 @@ namespace LightTown.Server.Controllers
         /// <response code="401">The user isn't authorized.</response>
         /// <response code="403">The user is authorized but doesn't have permission to this endpoint or to manage this project.</response>
         [HttpPut]
-        [Route("/{projectId}/members/{userId}")]
+        [Route("{projectId}/members/{userId}")]
         [Authorization(Permissions.MANAGE_PROJECTS)]
         public async Task<ApiResult> AddMember(int projectId, int userId)
         {
@@ -97,7 +97,7 @@ namespace LightTown.Server.Controllers
         /// <response code="401">The user isn't authorized.</response>
         /// <response code="403">The user is authorized but doesn't have permission to this endpoint or to manage this project.</response>
         [HttpDelete]
-        [Route("/{projectId}/members/{memberId}")]
+        [Route("{projectId}/members/{memberId}")]
         [Authorization(Permissions.MANAGE_PROJECTS)]
         public ApiResult RemoveMember(int projectId, int memberId)
         {

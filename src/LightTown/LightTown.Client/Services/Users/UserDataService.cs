@@ -185,5 +185,18 @@ namespace LightTown.Client.Services.Users
 
             return _users[userId];
         }
+
+        public async Task<List<User>> GetProjectMembers(int projectId)
+        {
+            var project = await GetProject(projectId);
+
+            if (project.Members == null)
+            {
+                ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId + "/members");
+                project.Members = result.GetData<List<User>>();
+            }
+
+            return project.Members;
+        }
     }
 }
