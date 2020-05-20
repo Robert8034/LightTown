@@ -95,5 +95,7 @@
     private void OnLogout()
     {
         UserAuthService.UnloadAuthentication();
+
+        NavigationManager.NavigateTo("/login");
     }
 }
