@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using LightTown.Client.Services.Alerts;
+using LightTown.Client.Services.Popups;
 using LightTown.Core;
 using LightTown.Core.Models.Projects;
 using LightTown.Core.Models.Tags;
@@ -21,7 +21,7 @@ namespace LightTown.Client.Services.Users
     public class UserDataService : IUserDataService
     {
         private readonly HttpClient _httpClient;
-        private readonly IAlertService<BlazorAlertService.Alert> _alertService;
+        private readonly IPopupService<BlazorPopupService.Popup> _alertService;
 
         public Func<Task> OnUserDataChange { get; set; }
 
@@ -35,7 +35,7 @@ namespace LightTown.Client.Services.Users
         private readonly SemaphoreSlim _usersLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _projectsLock = new SemaphoreSlim(1, 1);
 
-        public UserDataService(HttpClient httpClient, IAlertService<BlazorAlertService.Alert> alertService)
+        public UserDataService(HttpClient httpClient, IPopupService<BlazorPopupService.Popup> alertService)
         {
             _httpClient = httpClient;
             _alertService = alertService;
@@ -56,7 +56,7 @@ namespace LightTown.Client.Services.Users
             }
             catch (Exception e)
             {
-                _alertService.ShowErrorAlert(true, null, "Error getting user data: " + e.Message);
+                _alertService.ShowErrorPopup(true, null, "Error getting user data: " + e.Message);
             }
             finally
             {
@@ -106,7 +106,7 @@ namespace LightTown.Client.Services.Users
                 }
                 catch (Exception e)
                 {
-                    _alertService.ShowErrorAlert(true, null, "Error getting projects: " + e.Message);
+                    _alertService.ShowErrorPopup(true, null, "Error getting projects: " + e.Message);
                 }
                 finally
                 {
@@ -139,7 +139,7 @@ namespace LightTown.Client.Services.Users
                 }
                 catch (Exception e)
                 {
-                    _alertService.ShowErrorAlert(true, null, "Error getting project: " + e.Message);
+                    _alertService.ShowErrorPopup(true, null, "Error getting project: " + e.Message);
                 }
                 finally
                 {
@@ -175,7 +175,7 @@ namespace LightTown.Client.Services.Users
                 }
                 catch (Exception e)
                 {
-                    _alertService.ShowErrorAlert(true, null, "Error getting user: " + e.Message);
+                    _alertService.ShowErrorPopup(true, null, "Error getting user: " + e.Message);
                 }
                 finally
                 {

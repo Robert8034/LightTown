@@ -1,8 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
-using LightTown.Client.Services.Alerts;
 using LightTown.Client.Services.Authentication;
+using LightTown.Client.Services.Popups;
 using LightTown.Client.Services.Projects;
 using LightTown.Client.Services.Users;
 using LightTown.Client.Services.Validation;
@@ -31,7 +31,7 @@ namespace LightTown.Client.Web
             builder.Services.AddSingleton<IProjectService, ProjectService>();
             builder.Services.AddSingleton<IUserAuthService, UserAuthService>();
             builder.Services.AddSingleton<IUserDataService, UserDataService>();
-            builder.Services.AddSingleton<IAlertService<BlazorAlertService.Alert>, BlazorAlertService>();
+            builder.Services.AddSingleton<IPopupService<BlazorPopupService.Popup>, BlazorPopupService>();
             builder.Services.AddBaseAddressHttpClient();
 
             var host = builder.Build();
