@@ -6,8 +6,8 @@
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
 
-<h1>Name: @_project?.ProjectName</h1>
-<p1>Creation Date: @_project?.CreationDateTime</p1>
+<h1> <br /> Name: @_project?.ProjectName</h1>
+<p1>Creation Date: @_project?.CreationDateTime </p1>
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Small">
@@ -20,24 +20,69 @@
         </GridItem>
     </GridColumn>
     <GridColumn ColumnSize="ColumnSize.Medium">
+        <hr class="underLine" style="border:solid;color:#298ECC" />
         <Grid>
             <GridColumn ColumnSize="ColumnSize.Small">
-                <GridItem>
-                    <image source="https://www.eso.org/public/images/eso1907a/"></image>
-                </GridItem>
+                <div>
+                    <GridItem>
+
+                        <img class="img-detail" src="https://www.expert.nl/media/frontend/catalog/products/372569585/630x630/372569585-3216374.jpg" />
+
+                    </GridItem>
+                </div>
             </GridColumn>
             <GridColumn ColumnSize="ColumnSize.Medium">
                 <GridItem>
                     <p1>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tristique aliquet turpis ac ultrices. Sed porttitor ipsum quis nisi feugiat, a porttitor lacus cursus. Aliquam fringilla molestie dignissim. Vestibulum non finibus metus. Morbi eget justo non leo convallis mattis id non nisl. Nulla scelerisque facilisis neque, ut luctus purus pretium nec. Aliquam at nunc erat. Pellentesque pharetra risus sem, a fermentum eros dignissim in. Nunc finibus tempor lorem sed lobortis.
+                        @_project.ProjectDescription
+                        <br />Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tristique aliquet turpis ac ultrices. Sed porttitor ipsum quis nisi feugiat, a porttitor lacus cursus. Aliquam fringilla molestie dignissim. Vestibulum non finibus metus. Morbi eget justo non leo convallis mattis id non nisl. Nulla scelerisque facilisis neque, ut luctus purus pretium nec. Aliquam at nunc erat. Pellentesque pharetra risus sem, a fermentum eros dignissim in. Nunc finibus tempor lorem sed lobortis.
 
-                        Phasellus porttitor vitae metus et gravida. Nam sed metus neque. Vivamus at sapien risus. Maecenas facilisis lacus ut ligula viverra, nec facilisis elit maximus. Sed ut rutrum velit, id faucibus eros. Proin porta porta diam. Donec ultrices, enim nec pharetra scelerisque, magna augue tincidunt velit, a vestibulum erat lectus eget ipsum. Aenean convallis quis lectus et pulvinar. Vivamus sed molestie arcu. Ut aliquam lobortis est.
+                        Phasellus porttitor vitae metus et gravida. Nam sed metus neque. Vivamus at sapien risus. Maecenas facilisis lacus ut ligula viverra, nec facilisis elit maximus. Sed ut rutrum velit, id faucibus eros. Proin porta porta diam. Donec ultrices, enim nec pharetra scelerisque, magna augue tincidunt velit, a vestibulum erat lectus eget ipsum. Aenean convallis quis lectus et pulvinar. Vivamus sed molestie arcu. Ut aliquam lobortis est. <br />
                     </p1>
+                    <div class="d-inline">
+                        <br />
+                        @foreach (var tag in _project.Tags) //return List<int> at the moment. Need to be strings?
+                        {
+                            <Tag Text="" />
+                        }
+                        <Tag Text="tag1" />
+                        <Tag Text="tag2" />
+                    </div>
                 </GridItem>
             </GridColumn>
         </Grid>
     </GridColumn>
 </Grid>
+
+
+<h2><br />Messages</h2>
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Small">
+    </GridColumn>
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        <hr class="underLine" style="border:solid;color:#298ECC" />
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Small">
+                <GridItem>
+                    <h4>Message Title</h4>
+                </GridItem>
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Medium">
+                <GridItem>
+                    <p>Here will be the message that was posted. It can be a long message, or a short message. Are we going to give it a maximum amount of characters, 
+                    before you would have to expand it yourself to see the entire message? Might be nice for both the timeline ánd the project view. Keep it structured.
+                    Love penguins, they are the best. Also arctic foxes.</p>
+                </GridItem>
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Small">
+                <Button Enabled="@true" Text="View" Size="ButtonSize.Big"></Button>
+            </GridColumn>
+        </Grid>
+    </GridColumn>
+    
+</Grid>
+
+
 
 @code {
     [Parameter]

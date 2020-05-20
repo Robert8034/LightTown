@@ -6,3 +6,8 @@
     background-repeat: no-repeat;
     margin: 8px;
 }
+
+.img-detail {
+    width: 150px;
+    height: 150px;
+}
