@@ -178,6 +178,9 @@ namespace LightTown.Server.Data.Migrations
                     b.Property<string>("Hometown")
                         .HasColumnType("text");
 
+                    b.Property<string>("Job")
+                        .HasColumnType("text");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 

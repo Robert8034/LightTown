@@ -114,7 +114,7 @@ namespace LightTown.Client.Services.Users
                 }
             }
             
-            return _projects.Values.ToList();
+            return _projects?.Values.ToList();
         }
 
         /// <summary>

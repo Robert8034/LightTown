@@ -34,6 +34,8 @@ namespace LightTown.Client
                 Content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json")
             });
 
+            response.EnsureSuccessStatusCode();
+
             var stringContent = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(stringContent);
         }

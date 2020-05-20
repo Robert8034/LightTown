@@ -1,9 +1,11 @@
 ﻿@page "/projects"
 
 @using LightTown.Client.Services.Users
+@using LightTown.Client.Web.Services
 
 @inject IUserDataService UserDataService
 @inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Full">
@@ -62,6 +64,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
         _projects = await UserDataService.GetProjects();
     }
 

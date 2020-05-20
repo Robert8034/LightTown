@@ -1,8 +1,11 @@
-﻿<div class="grid">
+﻿<div class="grid @Class">
     @ChildContent
 </div>
 
 @code {
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Class { get; set; } = "";
 }

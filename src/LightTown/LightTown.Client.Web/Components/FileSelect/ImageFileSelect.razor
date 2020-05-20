@@ -1,0 +1,63 @@
+﻿@using System.IO
+@inherits LightTown.Client.Web.Components.FileSelect.FileSelect
+
+<div class="imagefileselect img-thumbnail @Class">
+    @if (_isSvg)
+    {
+        <svg>
+            <use xlink:href="libs/fontawesome-free-5.13.0/sprites/solid.svg#user"></use>
+        </svg>
+    }
+    else
+    {
+        <img src="@(string.IsNullOrEmpty(_newSrc) ? Src : _newSrc)"/>
+    }
+    <input id="imagefileselect-select" class="d-none" type="file" @ref="_element"/>
+    <input class="imagefileselect-select button" type="button" value="Browse..." onclick="document.getElementById('imagefileselect-select').click();" />
+</div>
+
+@code {
+    [Parameter]
+    public Action<FileListEntry> OnChange { get; set; }
+
+    private string _newSrc;
+
+    private bool _isSvg;
+
+    protected override void OnInitialized()
+    {
+        _isSvg = IsSvg(Src);
+    }
+
+    private bool IsSvg(string file)
+    {
+        return Path.GetExtension(file) == ".svg" || Path.GetExtension(file).ToLower().StartsWith(".svg#");
+    }
+
+    [JSInvokable]
+    public async Task NotifyChange(FileListEntry[] files)
+    {
+        var file = files[0];
+
+        file.Owner = this;
+
+        byte[] bytes;
+
+        using (var stream = OpenFileStream(file))
+        using (var memoryStream = new MemoryStream())
+        {
+            await stream.CopyToAsync(memoryStream);
+            bytes = memoryStream.ToArray();
+        }
+
+        string base64 = Convert.ToBase64String(bytes);
+
+        _newSrc = $"data:image/png;base64, {base64}";
+
+        _isSvg = IsSvg(file.Name);
+
+        StateHasChanged();
+
+        OnChange?.Invoke(file);
+    }
+}
