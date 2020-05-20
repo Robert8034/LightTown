@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightTown.Server.Data.Migrations
 {
     [DbContext(typeof(LightTownContext))]
-    [Migration("20200520075625_InitialCreate")]
+    [Migration("20200520084109_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -183,6 +183,9 @@ namespace LightTown.Server.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Hometown")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Job")
                         .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")

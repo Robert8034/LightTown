@@ -1,0 +1,20 @@
+﻿.imagefileselect {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: initial;
+    flex-direction: column;
+    position: relative;
+}
+
+.imagefileselect svg {
+    fill: var(--secondary-bg-color);
+}
+
+.imagefileselect-select {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+}

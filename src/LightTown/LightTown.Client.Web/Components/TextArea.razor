@@ -1,15 +1,12 @@
-﻿<div class="input-group @(Class)">
-    <span class="input-title">@Title</span>
-    <span class="input-text">@Text</span>
-    <input class="input" @oninput="@Change" type="@Type" placeholder="@Placeholder" value="@Value"/>
+﻿<div class="textarea-group @(Class)">
+    <span class="textarea-title">@Title</span>
+    <span class="textarea-text">@Text</span>
+    <textarea class="textarea" @oninput="@Change" placeholder="@Placeholder">@Value</textarea>
 </div>
 
 @code {
     [Parameter]
     public string Class { get; set; } = "";
-
-    [Parameter]
-    public string Type { get; set; } = "text";
 
     [Parameter]
     public string Placeholder { get; set; } = "";

@@ -2,10 +2,12 @@
 
 @using LightTown.Client.Services.Validation
 @using LightTown.Client.Services.Projects
+@using LightTown.Client.Web.Services
 
 @inject IValidationService ValidationService
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
 
 
 <Form>
@@ -31,6 +33,15 @@
     private string _projectName;
     private string _description;
     private string _creationResult;
+
+    protected override void OnInitialized()
+    {
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+    }
 
     public Task OnProjectNameChange(string value)
     {

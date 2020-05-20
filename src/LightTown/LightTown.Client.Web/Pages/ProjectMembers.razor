@@ -2,9 +2,12 @@
 
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
+@using LightTown.Client.Web.Services
 
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
 
 <h1>Name: @_project?.ProjectName</h1>
 <p1>Creation Date: @_project?.CreationDateTime</p1>
@@ -36,6 +39,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
         _project = await UserDataService.GetProject(ProjectId);
     }
 

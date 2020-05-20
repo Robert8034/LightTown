@@ -32,6 +32,7 @@ namespace LightTown.Client.Web
             builder.Services.AddSingleton<IUserAuthService, UserAuthService>();
             builder.Services.AddSingleton<IUserDataService, UserDataService>();
             builder.Services.AddSingleton<IPopupService<BlazorPopupService.Popup>, BlazorPopupService>();
+            builder.Services.AddSingleton<Services.AuthenticationService>();
             builder.Services.AddBaseAddressHttpClient();
 
             var host = builder.Build();
@@ -42,6 +43,9 @@ namespace LightTown.Client.Web
             {
                 await userDataService.LoadData();
             }
+
+            //initialize authentication service
+            var authenticationService = host.Services.GetService<Services.AuthenticationService>();
 
             await host.RunAsync();
         }

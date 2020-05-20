@@ -66,6 +66,8 @@ app {
 
 .profile-header {
     width: 100%;
+    display: flex;
+    justify-content: space-between;
 }
 
 .profile-header-name {
@@ -73,12 +75,22 @@ app {
 }
 
 .profile-avatar {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: initial;
 }
 
 .profile-avatar svg {
-    color: var(--secondary-bg-color);
+    fill: var(--secondary-bg-color);
 }
 
 .mw-300 {
     max-width: 300px;
+}
+
+.text-primary-color {
+    color: var(--primary-color);
 }

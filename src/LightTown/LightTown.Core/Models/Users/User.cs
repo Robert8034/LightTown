@@ -18,6 +18,7 @@ namespace LightTown.Core.Models.Users
         public string About { get; set; }
         public int Age { get; set; }
         public string Hometown { get; set; }
+        public string Job { get; set; }
         public List<int> TagIds { get; set; }
     }
 }

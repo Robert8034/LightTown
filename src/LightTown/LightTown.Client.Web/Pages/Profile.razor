@@ -3,19 +3,23 @@
 
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
+@using LightTown.Client.Web.Services
 @using User = LightTown.Core.Models.Users.User
 
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
 
 <div class="profile-header py-4">
     <span class="profile-header-name">
         @(_user.Fullname ?? _user.Username)
     </span>
+    <Button Text="Edit profile" OnClick="@(() => EditProfile())"></Button>
 </div>
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Small">
-        <div class="profile-avatar">
+        <div class="profile-avatar img-thumbnail">
             @if (_user.HasAvatar)
             {
 
@@ -27,9 +31,24 @@
                 </svg>
             }
         </div>
+        <div class="d-block mt-5">
+            <div class="w-100">
+                <span class="text-primary-color">Job: </span>
+                <span class="text">@(!string.IsNullOrEmpty(_user.Job) ? _user.Job : "-")</span>
+            </div>
+            <div class="w-100">
+                <span class="text-primary-color">Age: </span>
+                <span class="text">@(_user.Age != 0 ? _user.Age.ToString() : "-")</span>
+            </div>
+            <div class="w-100">
+                <span class="text-primary-color">Hometown: </span>
+                <span class="text">@(!string.IsNullOrEmpty(_user.Hometown) ? _user.Hometown : "-")</span>
+            </div>
+        </div>
     </GridColumn>
     <GridColumn ColumnSize="ColumnSize.Medium">
-        2
+        <h3>About</h3>
+        <span class="text">@(!string.IsNullOrEmpty(_user.About) ? @_user.About : "This user doesn't have his/her about page setup yet.")</span>
     </GridColumn>
 </Grid>
 
@@ -42,16 +61,21 @@
 
     protected override async Task OnInitializedAsync()
     {
-        try
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
         {
-            ProfileId ??= UserDataService.GetCurrentUser().Id;
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
 
-            _user = await UserDataService.GetUser(ProfileId.Value);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        ProfileId ??= UserDataService.GetCurrentUser().Id;
+
+        _user = await UserDataService.GetUser(ProfileId.Value);
+    }
+
+    public Task EditProfile()
+    {
+        NavigationManager.NavigateTo("/profile/edit");
+
+        return Task.CompletedTask;
     }
 }

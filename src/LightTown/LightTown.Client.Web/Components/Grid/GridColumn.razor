@@ -1,4 +1,4 @@
-﻿<div class="grid-column @(ColumnSize == ColumnSize.Small ? "grid-column-1" : ColumnSize == ColumnSize.Medium ? "grid-column-2" : "grid-column-3")">
+﻿<div class="grid-column @Class @(ColumnSize == ColumnSize.Small ? "grid-column-1" : ColumnSize == ColumnSize.Medium ? "grid-column-2" : "grid-column-3")">
     @ChildContent
 </div>
 
@@ -9,4 +9,7 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
 }
