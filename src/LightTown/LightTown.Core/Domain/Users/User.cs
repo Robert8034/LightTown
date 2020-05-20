@@ -11,7 +11,7 @@ namespace LightTown.Core.Domain.Users
         public bool HasAvatar { get; set; }
         public int Age { get; set; }
         public string Hometown { get; set; }
-        public List<Tag> Tags { get; set; }
+        public List<UserTag> Tags { get; set; }
 
         public User(string username)
         {
