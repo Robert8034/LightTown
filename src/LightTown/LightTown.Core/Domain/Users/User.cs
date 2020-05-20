@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using LightTown.Core.Domain.Projects;
 using LightTown.Core.Domain.Tags;
 using Microsoft.AspNetCore.Identity;
 
@@ -12,7 +13,7 @@ namespace LightTown.Core.Domain.Users
         public int Age { get; set; }
         public string Hometown { get; set; }
         public string Job { get; set; }
-        public List<Tag> Tags { get; set; }
+        public List<ProjectTag> Tags { get; set; }
 
         public User(string username)
         {
