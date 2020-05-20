@@ -12,17 +12,26 @@
             @foreach (var project in _projects)
             {
                 <GridItem>
-
                     <Card>
-                        <FormGroup>
-                            <p1>Project name: @project.ProjectName</p1>
-                        </FormGroup>
-                        <FormGroup>
-                            <p1>Project members: @project.MemberCount</p1>
-                        </FormGroup>
-                        <FormGroup>
-                            <Button Enabled="@true" Text="View Project" OnClick="@(() => ViewProject(project.Id))" Size="ButtonSize.Full"></Button>
-                        </FormGroup>
+                        <Grid>
+                            <GridColumn ColumnSize="ColumnSize.Medium">
+                                <GridItem>
+                                    <h4>@project.ProjectName</h4>
+                                </GridItem>
+                            </GridColumn>
+                            <GridColumn ColumnSize="ColumnSize.Small">
+                                <GridItem>
+                                    <div class="d-inline">
+                                        <Tag Text="Tag 1" />
+                                        <Tag Text="Tag 2" />
+                                        <Tag Text="Tag 3" />
+                                    </div>
+                                </GridItem>
+                            </GridColumn>
+                            <GridColumn ColumnSize="ColumnSize.Small">
+                                    <Button Enabled="@true" Text="View" OnClick="@(() => ViewProject(project.Id))" Size="ButtonSize.Big"></Button>
+                            </GridColumn>
+                        </Grid>
                     </Card>
                 </GridItem>
             }

@@ -1,7 +1,7 @@
-﻿@using LightTown.Client.Services.Alerts
+﻿@using LightTown.Client.Services.Popups
 @inherits LayoutComponentBase
 
-@inject IAlertService<BlazorAlertService.Alert> AlertService
+@inject IPopupService<BlazorPopupService.Popup> PopupService
 
 <Navigation />
 
@@ -11,48 +11,46 @@
     </div>
 </div>
 
-@for (int i = 0; i < _alerts.Count; i++)
+@for (int i = 0; i < _popups.Count; i++)
 {
-    var alert = _alerts.ElementAt(i);
+    var popup = _popups.ElementAt(i);
 
-    //if "already shown" is true, we set isShowing to false, if isShowing is true it will do the animation in the Alert component.
-    bool isShowing = !alert.Value;
+    //if "already shown" is true, we set isShowing to false, if isShowing is true it will do the animation in the Popup component.
+    bool isShowing = !popup.Value;
 
-    <Alert AlertData="@alert.Key" Showing="@isShowing"></Alert>
-    
+    <Popup PopupData="@popup.Key" Showing="@isShowing"></Popup>
+
     //set "already shown" to true
-    _alerts[alert.Key] = true;
+    _popups[popup.Key] = true;
 }
 
 @code
 {
-    //cache of alerts and a bool whether they are already shown (animated).
-    private Dictionary<BlazorAlertService.Alert, bool> _alerts;
+    //cache of popups and a bool whether they are already shown (animated).
+    private Dictionary<BlazorPopupService.Popup, bool> _popups;
 
 
     public MainLayout()
     {
-        _alerts = new Dictionary<BlazorAlertService.Alert, bool>();
+        _popups = new Dictionary<BlazorPopupService.Popup, bool>();
     }
 
-    protected override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        AlertService.OnShowAlert = OnShowAlert;
-        AlertService.OnCloseAlert = OnCloseAlert;
-
-        return base.OnInitializedAsync();
+        PopupService.OnShowPopup = OnShowPopup;
+        PopupService.OnClosePopup = OnClosePopup;
     }
 
-    private void OnCloseAlert(BlazorAlertService.Alert alert)
+    private void OnClosePopup(BlazorPopupService.Popup popup)
     {
-        _alerts.Remove(alert);
+        _popups.Remove(popup);
 
         StateHasChanged();
     }
 
-    private void OnShowAlert(BlazorAlertService.Alert alert)
+    private void OnShowPopup(BlazorPopupService.Popup popup)
     {
-        _alerts[alert] = false;
+        _popups[popup] = false;
 
         StateHasChanged();
     }

@@ -1,0 +1,47 @@
+﻿
+<div class="modal-container @(Visible ? "popup-visible" : "modal-hidden") @(_showing ? "modal-showing" : "") @(_hiding ? "modal-hiding" : "")">
+    <div class="modal">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public bool Visible { get; set; }
+
+    private bool _showing = false;
+    private bool _hiding = false;
+
+    public async Task Show()
+    {
+        Visible = true;
+        _showing = true;
+
+        StateHasChanged();
+
+        //wait for animation to finish
+        await Task.Delay(500);
+
+        _showing = false;
+
+        StateHasChanged();
+    }
+
+    public async Task Hide()
+    {
+        _hiding = true;
+
+        StateHasChanged();
+
+        //wait for animation to finish
+        await Task.Delay(500);
+
+        _hiding = false;
+        Visible = false;
+
+        StateHasChanged();
+    }
+}

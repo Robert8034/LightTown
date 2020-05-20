@@ -78,3 +78,7 @@ app {
 .profile-avatar svg {
     color: var(--secondary-bg-color);
 }
+
+.mw-300 {
+    max-width: 300px;
+}
