@@ -14,22 +14,39 @@
                 <GridItem>
                     <Card>
                         <Grid>
+                            <GridColumn ColumnSize="ColumnSize.Small">
+                                <div class="content-vertical">
+                                    <GridItem>
+
+                                        <img class="img-overview" src="https://www.expert.nl/media/frontend/catalog/products/372569585/630x630/372569585-3216374.jpg" />
+
+                                    </GridItem>
+                                </div>
+                            </GridColumn>
+                            <GridColumn ColumnSize="ColumnSize.Full">
+                                <div class="content-vertical">
+                                    <GridItem>
+                                        <h4>@project.ProjectName</h4>
+                                    </GridItem>
+                                </div>
+                            </GridColumn>
                             <GridColumn ColumnSize="ColumnSize.Medium">
-                                <GridItem>
-                                    <h4>@project.ProjectName</h4>
-                                </GridItem>
+                                <div class="content-vertical">
+                                    <GridItem>
+                                        <div class="d-inline">
+                                            <Tag Text="Tag 1" />
+                                            <Tag Text="Tag 2" />
+                                            <Tag Text="Tag 3" />
+                                        </div>
+                                    </GridItem>
+                                </div>
                             </GridColumn>
                             <GridColumn ColumnSize="ColumnSize.Small">
-                                <GridItem>
-                                    <div class="d-inline">
-                                        <Tag Text="Tag 1" />
-                                        <Tag Text="Tag 2" />
-                                        <Tag Text="Tag 3" />
-                                    </div>
-                                </GridItem>
-                            </GridColumn>
-                            <GridColumn ColumnSize="ColumnSize.Small">
-                                    <Button Enabled="@true" Text="View" OnClick="@(() => ViewProject(project.Id))" Size="ButtonSize.Big"></Button>
+                                <div class="content-vertical">
+                                    <GridItem>
+                                        <Button Enabled="@true" Text="View" OnClick="@(() => ViewProject(project.Id))" Size="ButtonSize.Big"></Button>
+                                    </GridItem>
+                                </div>
                             </GridColumn>
                         </Grid>
                     </Card>
