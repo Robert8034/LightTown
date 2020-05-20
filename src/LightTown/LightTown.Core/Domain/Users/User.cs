@@ -13,7 +13,7 @@ namespace LightTown.Core.Domain.Users
         public int Age { get; set; }
         public string Hometown { get; set; }
         public string Job { get; set; }
-        public List<ProjectTag> Tags { get; set; }
+        public List<UserTag> Tags { get; set; }
 
         public User(string username)
         {
