@@ -37,6 +37,12 @@ app {
     flex-direction: column;
 }
 
+.content-vertical {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
 #form-login {
     width: 400px;
 }
