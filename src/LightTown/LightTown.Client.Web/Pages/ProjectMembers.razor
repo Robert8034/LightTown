@@ -23,7 +23,24 @@
         </GridItem>
     </GridColumn>
     <GridColumn ColumnSize="ColumnSize.Medium">
-        <span>Show members</span>
+
+        @if (_project?.Members != null)
+        {
+            foreach (var member in _project.Members)
+            {
+                <GridItem>
+                    <FormGroup>
+                        <p1>Name: @member.Username</p1>
+                    </FormGroup>
+                    <FormGroup>
+                        <p1>Email: @member.Email</p1>
+                    </FormGroup>
+                    <FormGroup>
+                        <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
+                    </FormGroup>
+                </GridItem>
+            }
+        }
     </GridColumn>
 </Grid>
 
@@ -46,6 +63,7 @@
         }
 
         _project = await UserDataService.GetProject(ProjectId);
+        _project.Members = await UserDataService.GetProjectMembers(ProjectId);
     }
 
     private async Task RemoveMemberFromProject(int userId)
@@ -53,21 +71,5 @@
         await ProjectService.RemoveMember(ProjectId, userId);
     }
 
-    @*@if (_project?.Members != null)
-        {
-            foreach (var member in _project.Members)
-            {
-            <GridItem>
-            <FormGroup>
-            <p1>Name: @member.Username</p1>
-            </FormGroup>
-            <FormGroup>
-            <p1>Email: @member.Email</p1>
-            </FormGroup>
-            <FormGroup>
-            <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
-            </FormGroup>
-            </GridItem>
-            }
-        }*@
+  
 }
