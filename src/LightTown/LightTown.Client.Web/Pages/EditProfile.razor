@@ -1,0 +1,57 @@
+﻿@page "/profile/edit"
+
+@using LightTown.Client.Services.Projects
+@using LightTown.Client.Services.Users
+@using LightTown.Client.Web.Services
+@using User = LightTown.Core.Models.Users.User
+
+@inject IUserDataService UserDataService
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
+
+<Grid Class="mt-4">
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        <Form Class="w-100">
+            <FormGroup>
+                <Input Placeholder="Job" Title="Job" Text="What is your job called?" Type="text" Value="@_user.Job"/>
+            </FormGroup>
+            <FormGroup>
+                <Input Placeholder="Age" Title="Age" Text="What is your age?" Type="text" Value="@_user.Age"/>
+            </FormGroup>
+            <FormGroup>
+                <Input Placeholder="Hometown" Title="Hometown" Text="Where do you live?" Type="text" Value="@_user.Hometown"/>
+            </FormGroup>
+            <FormGroup>
+                <TextArea Placeholder="About" Title="About" Text="Tell everyone something about yourself." Value="@_user.About"></TextArea>
+            </FormGroup>
+            <FormGroup AlignContent="AlignContent.Right">
+                <Button Text="Save"></Button>
+            </FormGroup>
+        </Form>
+    </GridColumn>
+    <GridColumn Class="d-flex justify-content-center" ColumnSize="ColumnSize.Small">
+        <ImageFileSelect Class="mw-300" Src="/libs/fontawesome-free-5.13.0/sprites/solid.svg#user"></ImageFileSelect>
+    </GridColumn>
+</Grid>
+
+@code {
+
+    [Parameter]
+    public int? ProfileId { get; set; }
+
+    private User _user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        ProfileId ??= UserDataService.GetCurrentUser().Id;
+
+        _user = await UserDataService.GetUser(ProfileId.Value);
+    }
+}
