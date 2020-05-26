@@ -1,0 +1,35 @@
+﻿@page "/management"
+
+@using LightTown.Client.Services.Projects
+@using LightTown.Client.Services.Users
+@using LightTown.Client.Web.Services
+
+@inject IUserDataService UserDataService
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
+
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Full">
+        <GridItem>
+            <ListGroup Class="mw-300 m-auto">
+                <ListGroupHeader Text="Management"></ListGroupHeader>
+                <ListGroupItem IsLink="true"  Text="Create Account"></ListGroupItem>
+                <ListGroupItem IsLink="true" Link="@($"/projects/create")" Text="Create Project" Active="true"></ListGroupItem>
+            </ListGroup>
+        </GridItem>
+    </GridColumn>
+</Grid>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+    }
+
+}
