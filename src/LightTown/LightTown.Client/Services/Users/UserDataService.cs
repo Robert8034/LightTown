@@ -61,11 +61,13 @@ namespace LightTown.Client.Services.Users
                 ApiResult tagsResult = await _httpClient.GetJsonAsync<ApiResult>("api/tags");
 
                 var tags = tagsResult.GetData<List<Tag>>();
-
+                
                 foreach (Tag tag in tags)
                 {
                     _tags[tag.Id] = tag;
                 }
+
+                await FillUser(_currentUser);
             }
             catch (Exception e)
             {
@@ -79,7 +81,7 @@ namespace LightTown.Client.Services.Users
             if(OnUserDataChange != null)
                 await OnUserDataChange.Invoke();
         }
-
+        
         /// <summary>
         /// Unload all data including the current user.
         /// </summary>
@@ -300,6 +302,21 @@ namespace LightTown.Client.Services.Users
             foreach (int tagId in project.TagIds)
             {
                 project.Tags.Add(await GetTag(tagId));
+            }
+        }
+
+        /// <summary>
+        /// Fill a user with tags.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private async Task FillUser(User user)
+        {
+            user.Tags = new List<Tag>();
+
+            foreach (int tagId in user.TagIds)
+            {
+                user.Tags.Add(await GetTag(tagId));
             }
         }
     }

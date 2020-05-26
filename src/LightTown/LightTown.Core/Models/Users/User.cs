@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using AutoMapper.Configuration.Annotations;
+using LightTown.Core.Models.Tags;
 
 namespace LightTown.Core.Models.Users
 {
@@ -23,5 +24,6 @@ namespace LightTown.Core.Models.Users
         public string Job { get; set; }
         public string AvatarFilename { get; set; }
         public List<int> TagIds { get; set; }
+        public List<Tag> Tags { get; set; }
     }
 }

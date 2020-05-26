@@ -144,7 +144,6 @@ namespace LightTown.Server.Controllers.Api
                 var projectModel = _mapper.Map<Core.Models.Projects.Project>(project.Item1);
                 projectModel.MemberCount = project.Item2;
                 projectModel.TagIds = project.Item3.ToList();
-                projectModel.Tags = new List<Tag>();
                 projectModels.Add(projectModel);
             }
 

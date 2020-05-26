@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightTown.Core;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
+using LightTown.Core.Models.Tags;
 using LightTown.Server.Services.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +41,10 @@ namespace LightTown.Server.Controllers.Api
         {
             var currentUser = await _userManager.GetUserAsync(User);
 
+            var tagIds = _userService.GetUserTagIds(currentUser.Id);
+
             var userModel = _mapper.Map<Core.Models.Users.User>(currentUser);
+            userModel.TagIds = tagIds;
 
             return ApiResult.Success(userModel);
         }

@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using LightTown.Core.Data;
 using LightTown.Core.Domain.Users;
 using Microsoft.AspNetCore.Identity;
 
@@ -8,10 +11,12 @@ namespace LightTown.Server.Services.Users
     public class UserService : IUserService
     {
         private readonly UserManager<User> _userManager;
+        private readonly IRepository<UserTag> _userTagRepository;
 
-        public UserService(UserManager<User> userManager)
+        public UserService(UserManager<User> userManager, IRepository<UserTag> userTagRepository)
         {
             _userManager = userManager;
+            _userTagRepository = userTagRepository;
         }
 
         /// <summary>
@@ -87,6 +92,19 @@ namespace LightTown.Server.Services.Users
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Get a list of tag ids of a user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public List<int> GetUserTagIds(int userId)
+        {
+            return _userTagRepository.TableNoTracking
+                .Where(userTag => userTag.UserId == userId)
+                .Select(userTag => userTag.TagId)
+                .ToList();
         }
 
         /// <summary>
