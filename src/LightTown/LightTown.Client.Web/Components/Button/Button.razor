@@ -1,6 +1,18 @@
-﻿@if (!Enabled)
+﻿@{
+    var size = Size == ButtonSize.Small ?
+        "button-small" : Size == ButtonSize.Big ?
+        "button-big" : Size == ButtonSize.Full ?
+        "button-full" : "button-medium";
+
+    var type = Type == ButtonType.Error ?
+        "button-error" : Type == ButtonType.Success ?
+        "button-success" : Type == ButtonType.Warning ?
+        "button-warning" : "";
+}
+
+@if (!Enabled)
 {
-    <button class="button @Class @(Size == ButtonSize.Small ? "button-small" : Size == ButtonSize.Big ? "button-big" : Size == ButtonSize.Full ? "button-full" : "button-medium")" @onclick="@Click" disabled>
+    <button class="button @Class @size @type" @onclick="@Click" disabled>
         @if (_loading)
         {
             <div class="spinner-border" role="status">
@@ -14,7 +26,7 @@
 }
 else
 {
-    <button class="button @Class @(Size == ButtonSize.Small ? "button-small" : Size == ButtonSize.Big ? "button-big" : Size == ButtonSize.Full ? "button-full" : "button-medium")" @onclick="@Click">
+    <button class="button @Class @size @type" @onclick="@Click">
         @if (_loading)
         {
             <div class="spinner-border" role="status">
@@ -36,6 +48,9 @@ else
 
     [Parameter]
     public ButtonSize Size { get; set; } = ButtonSize.Medium;
+
+    [Parameter]
+    public ButtonType Type { get; set; } = ButtonType.Primary;
 
     [Parameter]
     public Func<Task> OnClick { get; set; }

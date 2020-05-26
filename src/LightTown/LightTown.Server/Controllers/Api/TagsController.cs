@@ -6,7 +6,7 @@ using LightTown.Server.Services.Tags;
 using Microsoft.AspNetCore.Mvc;
 using Tag = LightTown.Core.Domain.Tags.Tag;
 
-namespace LightTown.Server.Controllers
+namespace LightTown.Server.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]

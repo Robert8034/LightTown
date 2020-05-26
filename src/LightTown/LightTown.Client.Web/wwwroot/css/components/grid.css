@@ -5,6 +5,7 @@
 }
 
 .grid-column {
+    flex-direction: column;
 }
 
 .grid-column-1 {

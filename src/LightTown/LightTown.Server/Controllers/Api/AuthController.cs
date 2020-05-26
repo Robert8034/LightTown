@@ -1,13 +1,12 @@
-using LightTown.Server.Models.Users;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using LightTown.Core;
-using LightTown.Core.Data;
 using LightTown.Core.Domain.Users;
+using LightTown.Server.Models.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
-namespace LightTown.Server.Controllers
+namespace LightTown.Server.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
