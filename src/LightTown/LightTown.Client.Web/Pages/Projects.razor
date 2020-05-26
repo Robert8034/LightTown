@@ -36,9 +36,10 @@
                                 <div class="content-vertical">
                                     <GridItem>
                                         <div class="d-inline">
-                                            <Tag Text="Tag 1" />
-                                            <Tag Text="Tag 2" />
-                                            <Tag Text="Tag 3" />
+                                            @foreach (var tag in project.Tags)
+                                            {
+                                                <Tag Text="@tag.Name" Id="@tag.Id"/>
+                                            }
                                         </div>
                                     </GridItem>
                                 </div>

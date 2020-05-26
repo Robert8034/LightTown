@@ -5,6 +5,7 @@
 @using LightTown.Client.Services.Users
 @using LightTown.Client.Web.Services
 @using User = LightTown.Core.Models.Users.User
+@using Tag = LightTown.Core.Models.Tags.Tag
 
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
@@ -22,7 +23,7 @@
         <div class="profile-avatar img-thumbnail">
             @if (_user.HasAvatar)
             {
-
+                <img src="@($"/users/avatars/{_user.AvatarFilename}")"/>
             }
             else
             {
@@ -31,7 +32,23 @@
                 </svg>
             }
         </div>
-        <div class="d-block mt-5">
+        <div class="d-block mt-4">
+            <h3>Info</h3>
+            <div class="w-100">
+                <span class="text-primary-color">Job: </span>
+                <span class="text">@(!string.IsNullOrEmpty(_user.Job) ? _user.Job : "-")</span>
+            </div>
+            <div class="w-100">
+                <span class="text-primary-color">Age: </span>
+                <span class="text">@(_user.Age != 0 ? _user.Age.ToString() : "-")</span>
+            </div>
+            <div class="w-100">
+                <span class="text-primary-color">Hometown: </span>
+                <span class="text">@(!string.IsNullOrEmpty(_user.Hometown) ? _user.Hometown : "-")</span>
+            </div>
+        </div>
+        <div class="d-block mt-4">
+            <h3>Tags</h3>
             <div class="w-100">
                 <span class="text-primary-color">Job: </span>
                 <span class="text">@(!string.IsNullOrEmpty(_user.Job) ? _user.Job : "-")</span>
@@ -58,6 +75,7 @@
     public int? ProfileId { get; set; }
 
     private User _user;
+    private List<Tag> _tags = new List<Tag>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,6 +88,8 @@
         ProfileId ??= UserDataService.GetCurrentUser().Id;
 
         _user = await UserDataService.GetUser(ProfileId.Value);
+
+        _tags = await UserDataService.GetUserTags(_user.Id);
     }
 
     public Task EditProfile()

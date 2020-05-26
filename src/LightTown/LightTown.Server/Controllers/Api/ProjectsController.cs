@@ -7,12 +7,13 @@ using LightTown.Core;
 using LightTown.Core.Domain.Projects;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
+using LightTown.Core.Models.Tags;
 using LightTown.Server.Models.Projects;
 using LightTown.Server.Services.Projects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LightTown.Server.Controllers
+namespace LightTown.Server.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -147,7 +148,8 @@ namespace LightTown.Server.Controllers
             {
                 var projectModel = _mapper.Map<Core.Models.Projects.Project>(project.Item1);
                 projectModel.MemberCount = project.Item2;
-                projectModel.Tags = project.Item3.ToList();
+                projectModel.TagIds = project.Item3.ToList();
+                projectModel.Tags = new List<Tag>();
                 projectModels.Add(projectModel);
             }
 

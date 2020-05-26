@@ -28,17 +28,21 @@ namespace LightTown.Client.Services.Users
         private User _currentUser;
         private Dictionary<int, Project> _projects;
         private Dictionary<int, User> _users;
-        private List<Tag> _tags;
+        private Dictionary<int, Tag> _tags;
 
         //lock objects so a second thread cant access the object when it is being loaded (using httpclient) by another thread.
         private readonly SemaphoreSlim _userLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _usersLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _projectsLock = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _tagsLock = new SemaphoreSlim(1,1);
 
         public UserDataService(HttpClient httpClient, IPopupService<BlazorPopupService.Popup> alertService)
         {
             _httpClient = httpClient;
             _alertService = alertService;
+            _projects = new Dictionary<int, Project>();
+            _users = new Dictionary<int, User>();
+            _tags = new Dictionary<int, Tag>();
         }
 
         /// <summary>
@@ -50,9 +54,18 @@ namespace LightTown.Client.Services.Users
             {
                 await _userLock.WaitAsync();
 
-                ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/users/@me");
+                ApiResult userResult = await _httpClient.GetJsonAsync<ApiResult>("api/users/@me");
 
-                _currentUser = result.GetData<User>();
+                _currentUser = userResult.GetData<User>();
+
+                ApiResult tagsResult = await _httpClient.GetJsonAsync<ApiResult>("api/tags");
+
+                var tags = tagsResult.GetData<List<Tag>>();
+
+                foreach (Tag tag in tags)
+                {
+                    _tags[tag.Id] = tag;
+                }
             }
             catch (Exception e)
             {
@@ -88,12 +101,21 @@ namespace LightTown.Client.Services.Users
         }
 
         /// <summary>
+        /// Set the current user object or <see langword="null"/> if no user is loaded.
+        /// </summary>
+        /// <returns></returns>
+        public void SetCurrentUser(User user)
+        {
+            _currentUser = user;
+        }
+
+        /// <summary>
         /// Get the list of available projects.
         /// </summary>
         /// <returns></returns>
         public async Task<List<Project>> GetProjects()
         {
-            if (_projects == null)
+            if (_projects.Count == 0)
             {
                 await _projectsLock.WaitAsync();
 
@@ -124,18 +146,19 @@ namespace LightTown.Client.Services.Users
         /// <returns></returns>
         public async Task<Project> GetProject(int projectId)
         {
-            if (_projects?[projectId] == null)
+            if (!_projects.ContainsKey(projectId))
             {
                 await _projectsLock.WaitAsync();
-
-                if(_projects == null)
-                    _projects = new Dictionary<int, Project>();
 
                 try
                 {
                     ApiResult result = await _httpClient.GetJsonAsync<ApiResult>($"api/projects/{projectId}");
 
-                    _projects[projectId] = result.GetData<Project>();
+                    var project = result.GetData<Project>();
+
+                    await FillProject(project);
+
+                    _projects[projectId] = project;
                 }
                 catch (Exception e)
                 {
@@ -150,6 +173,8 @@ namespace LightTown.Client.Services.Users
             return _projects[projectId];
         }
 
+
+
         /// <summary>
         /// Get a user, will get it from the server if it doesn't exist in the cache.
         /// </summary>
@@ -160,12 +185,9 @@ namespace LightTown.Client.Services.Users
             if (userId == _currentUser.Id)
                 return _currentUser;
 
-            if (_users?[userId] == null)
+            if (!_users.ContainsKey(userId))
             {
                 await _usersLock.WaitAsync();
-
-                if (_users == null)
-                    _users = new Dictionary<int, User>();
 
                 try
                 {
@@ -197,6 +219,88 @@ namespace LightTown.Client.Services.Users
             }
 
             return project.Members;
+        }
+
+        /// <summary>
+        /// Get a tag, will get it from the server if it doesn't exist in the cache.
+        /// </summary>
+        /// <param name="tagId"></param>
+        /// <returns>One specific tag.</returns>
+        public async Task<Tag> GetTag(int tagId)
+        {
+            if (!_tags.ContainsKey(tagId))
+            {
+                await _tagsLock.WaitAsync();
+
+                try
+                {
+                    ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/tags/" + tagId);
+                    _tags[tagId] = result.GetData<Tag>();
+                }
+                catch (Exception e)
+                {
+                    _alertService.ShowErrorPopup(true, null, "Error getting tags: " + e.Message);
+                }
+                finally
+                {
+                    _tagsLock.Release();
+                }
+            }
+            return _tags[tagId];
+        }
+
+        /// <summary>
+        /// Get a list of project tags.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns>A list of project tags.</returns>
+        public async Task<List<Tag>> GetProjectTags(int projectId)
+        {
+            var projectTags = new List<Tag>();
+
+            var project = await GetProject(projectId);
+
+            foreach (var tagId in project.TagIds)
+            {
+                projectTags.Add(await GetTag(tagId));
+            }
+
+            return projectTags;
+        }
+
+        /// <summary>
+        /// Get a list of tags that a user has.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>A list of project tags.</returns>
+        public async Task<List<Tag>> GetUserTags(int userId)
+        {
+            var userTags = new List<Tag>();
+
+            var user = await GetUser(userId);
+
+            foreach (var tagId in user.TagIds)
+            {
+                userTags.Add(await GetTag(tagId));
+            }
+
+            return userTags;
+        }
+        
+        /// <summary>
+        /// Fill a project with tags and members.
+        /// </summary>
+        /// <param name="project"></param>
+        /// <returns></returns>
+        private async Task FillProject(Project project)
+        {
+            project.Members = await GetProjectMembers(project.Id);
+            project.Tags = new List<Tag>();
+
+            foreach (int tagId in project.TagIds)
+            {
+                project.Tags.Add(await GetTag(tagId));
+            }
         }
     }
 }

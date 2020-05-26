@@ -6,7 +6,7 @@ using LightTown.Server.Services.Tags;
 using Microsoft.AspNetCore.Mvc;
 using Tag = LightTown.Core.Domain.Tags.Tag;
 
-namespace LightTown.Server.Controllers
+namespace LightTown.Server.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -35,6 +35,18 @@ namespace LightTown.Server.Controllers
             var tagModels = _mapper.Map<Core.Models.Tags.Tag>(tags);
 
             return ApiResult.Success(tagModels);
+        }
+
+        [HttpGet]
+        [Route("{tagId}")]
+        [Authorization(Permissions.VIEW_ALL_PROJECTS)]
+        public ApiResult GetTag(int tagId)
+        {
+            var tag = _tagService.GetTag(tagId);
+
+            var tagModel = _mapper.Map<Core.Models.Tags.Tag>(tag);
+
+            return ApiResult.Success(tagModel);
         }
     }
 }

@@ -12,13 +12,23 @@
     {
         <img src="@(string.IsNullOrEmpty(_newSrc) ? Src : _newSrc)"/>
     }
-    <input id="imagefileselect-select" class="d-none" type="file" @ref="_element"/>
-    <input class="imagefileselect-select button" type="button" value="Browse..." onclick="document.getElementById('imagefileselect-select').click();" />
+    <input id="imagefileselect-select" class="d-none" type="file" accept=".png,.jpg,.jpeg" @ref="_element"/>
+    <input class="imagefileselect-select button button-medium" type="button" value="Browse..." onclick="document.getElementById('imagefileselect-select').click();" />
+    @if (CanSave)
+    {
+        <Button Class="imagefileselect-save" Text="Save" Type="ButtonType.Success" OnClick="@(async () => await SaveAvatar())"></Button>
+    }
 </div>
 
 @code {
     [Parameter]
     public Action<FileListEntry> OnChange { get; set; }
+
+    [Parameter]
+    public bool CanSave { get; set; }
+
+    [Parameter]
+    public Func<Task> OnSave { get; set; }
 
     private string _newSrc;
 
@@ -60,4 +70,13 @@
 
         OnChange?.Invoke(file);
     }
+
+    private async Task SaveAvatar()
+    {
+        if (OnSave != null)
+        {
+            await OnSave.Invoke();
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoMapper;
+using LightTown.Core.Models.Tags;
 using LightTown.Core.Models.Users;
 
 namespace LightTown.Core.Models.Projects
@@ -13,7 +14,8 @@ namespace LightTown.Core.Models.Projects
         public string ProjectDescription { get; set; }
         //public List<Post> ProjectPosts { get; set; }
         public List<User> Members { get; set; }
-        public List<int> Tags { get; set; }
+        public List<int> TagIds { get; set; }
+        public List<Tag> Tags { get; set; }
         public int? MemberCount { get; set; }
         public DateTime CreationDateTime { get; set; }
         public DateTime LastModifiedDateTime { get; set; }

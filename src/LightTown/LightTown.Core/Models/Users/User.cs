@@ -1,14 +1,16 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using AutoMapper.Configuration.Annotations;
-using LightTown.Core.Domain.Tags;
 
 namespace LightTown.Core.Models.Users
 {
     [AutoMap(typeof(Domain.Users.User))]
     public class User
     {
+        [Required]
         public int Id { get; set; }
+        [Required]
         public string Username { get; set; }
         public string Email { get; set; }
         [SourceMember(nameof(Domain.Users.User.EmailConfirmed))]
@@ -19,6 +21,7 @@ namespace LightTown.Core.Models.Users
         public int Age { get; set; }
         public string Hometown { get; set; }
         public string Job { get; set; }
+        public string AvatarFilename { get; set; }
         public List<int> TagIds { get; set; }
     }
 }

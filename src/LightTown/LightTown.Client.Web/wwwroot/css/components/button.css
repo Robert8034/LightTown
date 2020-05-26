@@ -1,20 +1,20 @@
 ﻿:root {
     /* button colors */
     --primary-button-color: #298ecc;
+    --success-button-color: #00b000;
     /* TODO change colors of buttons below */
-    --success-button-color: green;
     --error-button-color: red;
     --warning-button-color: orange;
     /* button colors when hovered */
     --primary-button-color-hover: #317caa;
+    --success-button-color-hover: #090;
     /* TODO change colors of buttons below */
-    --success-button-color-hover: green;
     --error-button-color-hover: red;
     --warning-button-color-hover: orange;
     /* button colors when disabled */
     --primary-button-color-disabled: #2a668a;
+    --success-button-color-disabled: #007900;
     /* TODO change colors of buttons below */
-    --success-button-color-disabled: green;
     --error-button-color-disabled: red;
     --warning-button-color-disabled: orange;
 }
