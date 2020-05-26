@@ -71,7 +71,7 @@
             return;
         }
 
-        _projects = await UserDataService.GetProjectsWithTags();
+        _projects = await UserDataService.GetProjects();
     }
 
     private Task ViewProject(int projectId)
