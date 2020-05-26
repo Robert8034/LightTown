@@ -12,7 +12,7 @@ using LightTown.Server.Services.Projects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LightTown.Server.Controllers
+namespace LightTown.Server.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]

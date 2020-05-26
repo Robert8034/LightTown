@@ -50,7 +50,8 @@ namespace LightTown.Server.Data.Migrations
                     HasAvatar = table.Column<bool>(nullable: false),
                     Age = table.Column<int>(nullable: false),
                     Hometown = table.Column<string>(nullable: true),
-                    Job = table.Column<string>(nullable: true)
+                    Job = table.Column<string>(nullable: true),
+                    AvatarFilename = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

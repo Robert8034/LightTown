@@ -198,5 +198,21 @@ namespace LightTown.Client.Services.Users
 
             return project.Members;
         }
+
+        public void SetCurrentUser(User user)
+        {
+            _currentUser = user;
+        }
+
+        public async Task<List<Tag>> GetUserTags(int userId)
+        {
+            var user = await GetUser(userId);
+
+            List<Tag> tags = new List<Tag>();
+
+
+
+            return tags;
+        }
     }
 }

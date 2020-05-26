@@ -14,6 +14,7 @@ namespace LightTown.Core.Domain.Users
         public string Hometown { get; set; }
         public string Job { get; set; }
         public List<UserTag> Tags { get; set; }
+        public string AvatarFilename { get; set; }
 
         public User(string username)
         {

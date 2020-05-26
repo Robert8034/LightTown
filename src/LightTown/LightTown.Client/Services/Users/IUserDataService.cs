@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LightTown.Core.Models.Projects;
+using LightTown.Core.Models.Tags;
 using LightTown.Core.Models.Users;
 
 namespace LightTown.Client.Services.Users
@@ -55,5 +56,18 @@ namespace LightTown.Client.Services.Users
         /// <param name="projectId"></param>
         /// <returns></returns>
         Task<List<User>> GetProjectMembers(int projectId);
+
+        /// <summary>
+        /// Set the current user object or <see langword="null"/> if no user is loaded.
+        /// </summary>
+        /// <returns></returns>
+        void SetCurrentUser(User user);
+
+        /// <summary>
+        /// Get a user's tags, will get user and/or tags from server if not in cache.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<List<Tag>> GetUserTags(int userId);
     }
 }
