@@ -9,16 +9,50 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationService AuthenticationService
 
-<h1> <br /> Name: @_project?.ProjectName</h1>
-<p1>Creation Date: @_project?.CreationDateTime </p1>
+
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Small">
+    </GridColumn>
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Full">
+                <GridItem>
+                    <h1> <br /> Name: @_project?.ProjectName</h1>
+                </GridItem>
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Small" >
+            </GridColumn>
+        </Grid>
+    </GridColumn>
+</Grid>
+
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Small">
+    </GridColumn>
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Full">
+                <GridItem>
+                    <p1>Creation Date: @_project?.CreationDateTime </p1>
+                </GridItem>
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Small">
+                <GridItem>
+                    <Button class="button-join" Enabled="@true" Text="Join" Size="ButtonSize.Big"></Button> 
+                </GridItem>
+            </GridColumn>
+        </Grid>
+    </GridColumn>
+</Grid>
+
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Small">
         <GridItem>
             <ListGroup Class="mw-300 m-auto">
-                <ListGroupHeader Text="@_project?.ProjectName"></ListGroupHeader>
-                <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}")" Text="Overview" Active="true"></ListGroupItem>
-                <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/members")" Text="Members"></ListGroupItem>
+                <ListGroupHeader Text="@_project.ProjectName"></ListGroupHeader>
+                <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}")" Text="Overview"></ListGroupItem>
+                <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/members")" Text="Members" Active="true"></ListGroupItem>
             </ListGroup>
         </GridItem>
     </GridColumn>
@@ -28,9 +62,7 @@
             <GridColumn ColumnSize="ColumnSize.Small">
                 <div>
                     <GridItem>
-
                         <img class="img-detail" src="https://www.expert.nl/media/frontend/catalog/products/372569585/630x630/372569585-3216374.jpg" />
-
                     </GridItem>
                 </div>
             </GridColumn>
@@ -82,7 +114,6 @@
             </GridColumn>
         </Grid>
     </GridColumn>
-    
 </Grid>
 
 
@@ -104,6 +135,7 @@
             NavigationManager.NavigateTo("/login");
             return;
         }
+
 
         _project = await UserDataService.GetProject(ProjectId);
     }
