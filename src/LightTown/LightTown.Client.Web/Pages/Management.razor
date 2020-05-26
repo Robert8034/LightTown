@@ -9,17 +9,18 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationService AuthenticationService
 
-<Grid>
-    <GridColumn ColumnSize="ColumnSize.Full">
-        <GridItem>
-            <ListGroup Class="mw-300 m-auto">
-                <ListGroupHeader Text="Management"></ListGroupHeader>
-                <ListGroupItem IsLink="true"  Text="Create Account"></ListGroupItem>
-                <ListGroupItem IsLink="true" Link="@($"/projects/create")" Text="Create Project" Active="true"></ListGroupItem>
-            </ListGroup>
-        </GridItem>
-    </GridColumn>
-</Grid>
+
+    <Grid>
+        <GridColumn ColumnSize="ColumnSize.Full">
+            <GridItem>
+                <ListGroup Class="content-center">
+                    <ListGroupHeader Text="Management"></ListGroupHeader>
+                    <ListGroupItem IsCentered="true" Text="Create Account"></ListGroupItem>
+                    <ListGroupItem IsLink="true" Link="@($"/projects/create")" Text="Create Project" Active="true"></ListGroupItem>
+                </ListGroup>
+            </GridItem>
+        </GridColumn>
+    </Grid>
 
 @code {
 
