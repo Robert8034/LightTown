@@ -1,4 +1,5 @@
-﻿using LightTown.Core.Domain.Projects;
+﻿using System.Collections.Generic;
+using LightTown.Core.Domain.Projects;
 
 namespace LightTown.Server.Services.Projects
 {
@@ -25,5 +26,7 @@ namespace LightTown.Server.Services.Projects
         /// </summary>
         /// <returns>If successful in adding, this method will return <see langword="true"></see>, if not it will return <see langword="false"></see>. </returns>
         public void CreateProjectMember(int projectId, int userId);
+
+        List<ProjectMember> GetProjectMembers(int projectId);
     }
 }

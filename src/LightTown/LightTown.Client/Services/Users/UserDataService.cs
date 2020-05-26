@@ -127,6 +127,11 @@ namespace LightTown.Client.Services.Users
 
                     _projects = result.GetData<List<Project>>()
                         .ToDictionary(project => project.Id, project => project);
+
+                    foreach (Project project in _projects.Values)
+                    {
+                        await FillProject(project);
+                    }
                 }
                 catch (Exception e)
                 {
