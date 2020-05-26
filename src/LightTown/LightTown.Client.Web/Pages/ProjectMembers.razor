@@ -1,5 +1,6 @@
 ﻿@page "/projects/{ProjectId:int}/members"
 
+@using System.Security.Cryptography.X509Certificates
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
 @using LightTown.Client.Web.Services
@@ -9,9 +10,14 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationService AuthenticationService
 
-<h1>Name: @_project?.ProjectName</h1>
+<h1> <br/> Name: @_project?.ProjectName</h1>
 <p1>Creation Date: @_project?.CreationDateTime</p1>
 
+<Modal Visible="@false" @ref="MemberModal">
+    <h2>Add Members To Project</h2>
+    <Input Type="text" Placeholder="Username" OnChange="@OnSearchQueryChange"/>
+    <Button OnClick="(() => HidePopup())"></Button>
+</Modal>
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Small">
         <GridItem>
@@ -22,7 +28,7 @@
             </ListGroup>
         </GridItem>
     </GridColumn>
-    <GridColumn ColumnSize="ColumnSize.Medium">
+    <GridColumn ColumnSize="ColumnSize.Full">
 
         @if (_project?.Members != null)
         {
@@ -42,6 +48,7 @@
             }
         }
     </GridColumn>
+    <Button OnClick="@(() => ShowPopup())" ></Button>
 </Grid>
 
 @code {
@@ -51,6 +58,8 @@
     private LightTown.Core.Models.Projects.Project _project;
 
     private bool active;
+
+    private Modal MemberModal;
 
     private List<User> users = new List<User>();
 
@@ -71,5 +80,20 @@
         await ProjectService.RemoveMember(ProjectId, userId);
     }
 
-  
+    private async Task HidePopup()
+    {
+        await MemberModal.Hide();
+    }
+
+    private async Task ShowPopup()
+    {
+        await MemberModal.Show();
+    }
+
+    private async Task OnSearchQueryChange(string value)
+    {
+        
+    }
+
+
 }
