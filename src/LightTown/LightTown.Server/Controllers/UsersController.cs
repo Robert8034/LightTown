@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightTown.Core;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
+using LightTown.Server.Services.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace LightTown.Server.Controllers
@@ -36,6 +40,18 @@ namespace LightTown.Server.Controllers
             var userModel = _mapper.Map<Core.Models.Users.User>(currentUser);
 
             return ApiResult.Success(userModel);
+        }
+
+        [HttpGet]
+        [Route("search/{searchValue}")]
+        [Authorization(Permissions.NONE)]
+        public ApiResult SearchUsers(string searchValue)
+        {
+            List<User> users = _userManager.Users.Where(e => e.UserName == searchValue).ToList();
+
+            var usersModel = _mapper.Map<List<Core.Models.Users.User>>(users);
+
+            return ApiResult.Success(usersModel);
         }
     }
 }

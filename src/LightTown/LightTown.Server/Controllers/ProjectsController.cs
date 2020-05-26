@@ -74,13 +74,18 @@ namespace LightTown.Server.Controllers
             bool projectExists = _projectService.ProjectExists(projectId);
 
             if(!projectExists)
-                return ApiResult.BadRequest();
+                return ApiResult.BadRequest("Project does not exist");
 
             //HACK: this works but is bad for performance since it gets the entire user object just to check if it exists
             bool userExists = await _userManager.FindByIdAsync(userId.ToString()) != null;
 
             if (!userExists)
-                return ApiResult.BadRequest();
+                return ApiResult.BadRequest("User does not exist");
+
+            bool userIsMember = _projectService.UserIsMember(projectId, userId);
+
+            if (userIsMember)
+                return ApiResult.BadRequest("User is already member");
 
             _projectMemberService.CreateProjectMember(projectId, userId);
 

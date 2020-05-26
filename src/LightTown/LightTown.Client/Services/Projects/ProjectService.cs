@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using LightTown.Client.Services.Users;
 using LightTown.Core;
 using LightTown.Core.Models.Projects;
 using LightTown.Core.Models.Users;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LightTown.Client.Services.Projects
 {
@@ -84,8 +86,8 @@ namespace LightTown.Client.Services.Projects
         {
             ApiResult result = await _httpClient.DeleteJsonAsync<ApiResult>("api/projects/" + projectId + "/members/" + userId);
 
-            //TODO Check for return status codes
             return true;
+            //TODO Check for return status codes
         }
 
         /// <summary>
@@ -102,8 +104,14 @@ namespace LightTown.Client.Services.Projects
                 userId,
                 projectId
             });
-
-            return result.GetData<bool>();
+            return true;
         }
+
+        public async Task<List<User>> GetProjectMembers(int projectId)
+        {
+            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId + "/members");
+
+            return result.GetData<List<User>>();
+        } 
     }
 }

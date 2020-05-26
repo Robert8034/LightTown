@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using LightTown.Core.Data;
 using LightTown.Core.Domain.Projects;
+using Microsoft.EntityFrameworkCore;
 
 namespace LightTown.Server.Services.Projects
 {
@@ -41,6 +43,15 @@ namespace LightTown.Server.Services.Projects
                 ProjectId = projectId,
                 MemberId = userId
             });
+        }
+
+        public List<ProjectMember> GetProjectMembers(int projectId)
+        {
+            if (_projectMemberRepository.TableNoTracking.Any(e => e.ProjectId == projectId))
+            {
+                return _projectMemberRepository.TableNoTracking.Where(e => e.ProjectId == projectId).ToList();
+            }
+            return new List<ProjectMember>();
         }
     }
 }
