@@ -54,9 +54,18 @@ namespace LightTown.Client.Services.Users
             {
                 await _userLock.WaitAsync();
 
-                ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/users/@me");
+                ApiResult userResult = await _httpClient.GetJsonAsync<ApiResult>("api/users/@me");
 
-                _currentUser = result.GetData<User>();
+                _currentUser = userResult.GetData<User>();
+
+                ApiResult tagsResult = await _httpClient.GetJsonAsync<ApiResult>("api/tags");
+
+                var tags = tagsResult.GetData<List<Tag>>();
+
+                foreach (Tag tag in tags)
+                {
+                    _tags[tag.Id] = tag;
+                }
             }
             catch (Exception e)
             {
@@ -89,6 +98,15 @@ namespace LightTown.Client.Services.Users
         public User GetCurrentUser()
         {
             return _currentUser;
+        }
+
+        /// <summary>
+        /// Set the current user object or <see langword="null"/> if no user is loaded.
+        /// </summary>
+        /// <returns></returns>
+        public void SetCurrentUser(User user)
+        {
+            _currentUser = user;
         }
 
         /// <summary>
@@ -268,12 +286,7 @@ namespace LightTown.Client.Services.Users
 
             return userTags;
         }
-
-        public void SetCurrentUser(User user)
-        {
-            _currentUser = user;
-        }
-
+        
         /// <summary>
         /// Fill a project with tags and members.
         /// </summary>
