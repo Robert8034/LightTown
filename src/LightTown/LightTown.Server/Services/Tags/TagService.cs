@@ -24,5 +24,15 @@ namespace LightTown.Server.Services.Tags
 
             return tags;
         }
+
+        /// <summary>
+        /// Get one tag based on tagId.
+        /// </summary>
+        /// <param name="tagId"></param>
+        /// <returns>One specific tag</returns>
+        public Tag GetTag(int tagId)
+        {
+            return _tagRepository.TableNoTracking.SingleOrDefault(e => e.Id == tagId);
+        }
     }
 }

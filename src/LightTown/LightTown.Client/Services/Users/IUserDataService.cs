@@ -58,16 +58,23 @@ namespace LightTown.Client.Services.Users
         Task<List<User>> GetProjectMembers(int projectId);
 
         /// <summary>
-        /// Set the current user object or <see langword="null"/> if no user is loaded.
+        /// Get a tag, will get it from the server if it doesn't exist in the cache.
         /// </summary>
-        /// <returns></returns>
-        void SetCurrentUser(User user);
+        /// <param name="tagId"></param>
+        /// <returns>One specific tag.</returns>
+        Task<Tag> GetTag(int tagId);
 
         /// <summary>
-        /// Get a user's tags, will get user and/or tags from server if not in cache.
+        /// Get a list of project tags.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        Task<List<Tag>> GetUserTags(int userId);
+        /// <param name="tagIds"></param>
+        /// <returns>A list of project tags.</returns>
+        Task<List<Tag>> GetProjectTags(List<int> tagIds);
+
+        /// <summary>
+        /// Get a list of projects with its correct tags.
+        /// </summary>
+        /// <returns>A list of projects with a filled list of tags.</returns>
+        Task<List<Project>> GetProjectsWithTags();
     }
 }

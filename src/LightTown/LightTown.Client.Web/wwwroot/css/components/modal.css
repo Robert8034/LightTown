@@ -3,6 +3,11 @@
     border-radius: 6px;
     padding: 8px;
     background: var(--primary-bg-color);
+    display: initial;
+    width: initial;
+    height: initial;
+    top: initial;
+    left: initial;
 }
 
 .modal-container {

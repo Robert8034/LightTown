@@ -7,5 +7,6 @@ namespace LightTown.Server.Services.Tags
     public interface ITagService
     {
         IEnumerable<Tag> GetTags();
+        Tag GetTag(int tagId);
     }
 }
