@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using LightTown.Core;
 using LightTown.Core.Domain.Roles;
@@ -32,7 +33,7 @@ namespace LightTown.Server.Controllers.Api
         {
             IEnumerable<Tag> tags = _tagService.GetTags();
 
-            var tagModels = _mapper.Map<Core.Models.Tags.Tag>(tags);
+            var tagModels = _mapper.Map<List<Core.Models.Tags.Tag>>(tags);
 
             return ApiResult.Success(tagModels);
         }
