@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using LightTown.Core;
+using Microsoft.AspNetCore.Mvc;
 using LightTown.Core.Domain.Roles;
 using LightTown.Server.Services.Users;
 using Microsoft.AspNetCore.StaticFiles;
@@ -38,5 +40,6 @@ namespace LightTown.Server.Controllers
 
             return new NotFoundResult();
         }
+
     }
 }

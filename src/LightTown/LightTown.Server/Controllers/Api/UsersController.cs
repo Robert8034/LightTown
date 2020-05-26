@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightTown.Core;
@@ -170,6 +171,18 @@ namespace LightTown.Server.Controllers.Api
             }
 
             return ApiResult.BadRequest();
+        }
+
+        [HttpGet]
+        [Route("search/{searchValue}")]
+        [Authorization(Permissions.NONE)]
+        public ApiResult SearchUsers(string searchValue)
+        {
+            List<User> users = _userManager.Users.Where(e => e.UserName == searchValue).ToList();
+
+            var usersModel = _mapper.Map<List<Core.Models.Users.User>>(users);
+
+            return ApiResult.Success(usersModel);
         }
     }
 }
