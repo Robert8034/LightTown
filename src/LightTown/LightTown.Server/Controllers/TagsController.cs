@@ -36,5 +36,17 @@ namespace LightTown.Server.Controllers
 
             return ApiResult.Success(tagModels);
         }
+
+        [HttpGet]
+        [Route("{tagId}")]
+        [Authorization(Permissions.VIEW_ALL_PROJECTS)]
+        public ApiResult GetTag(int tagId)
+        {
+            var tag = _tagService.GetTag(tagId);
+
+            var tagModel = _mapper.Map<Core.Models.Tags.Tag>(tag);
+
+            return ApiResult.Success(tagModel);
+        }
     }
 }
