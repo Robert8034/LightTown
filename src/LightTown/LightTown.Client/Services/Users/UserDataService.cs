@@ -31,7 +31,7 @@ namespace LightTown.Client.Services.Users
         private Dictionary<int, Tag> _tags;
 
         //lock objects so a second thread cant access the object when it is being loaded (using httpclient) by another thread.
-        private readonly SemaphoreSlim _userLock = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _currentUserLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _usersLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _projectsLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _tagsLock = new SemaphoreSlim(1,1);
@@ -52,7 +52,7 @@ namespace LightTown.Client.Services.Users
         {
             try
             {
-                await _userLock.WaitAsync();
+                await _currentUserLock.WaitAsync();
 
                 ApiResult userResult = await _httpClient.GetJsonAsync<ApiResult>("api/users/@me");
 
@@ -71,11 +71,11 @@ namespace LightTown.Client.Services.Users
             }
             catch (Exception e)
             {
-                _alertService.ShowErrorPopup(true, null, "Error getting user data: " + e.Message);
+                _alertService?.ShowErrorPopup(true, null, "Error getting user data: " + e.Message);
             }
             finally
             {
-                _userLock.Release();
+                _currentUserLock.Release();
             }
 
             if(OnUserDataChange != null)
@@ -135,7 +135,7 @@ namespace LightTown.Client.Services.Users
                 }
                 catch (Exception e)
                 {
-                    _alertService.ShowErrorPopup(true, null, "Error getting projects: " + e.Message);
+                    _alertService?.ShowErrorPopup(true, null, "Error getting projects: " + e.Message);
                 }
                 finally
                 {
@@ -147,7 +147,7 @@ namespace LightTown.Client.Services.Users
         }
 
         /// <summary>
-        /// Get a project, will get it from the server if it doesn't exist in the cache.
+        /// Get a project, will get it from the server if it doesn't exist in the cache. Returns <see langword="null"/> on error or if it doesn't exist.
         /// </summary>
         /// <param name="projectId"></param>
         /// <returns></returns>
@@ -163,13 +163,15 @@ namespace LightTown.Client.Services.Users
 
                     var project = result.GetData<Project>();
 
-                    await FillProject(project);
-
                     _projects[projectId] = project;
+
+                    await FillProject(project);
                 }
                 catch (Exception e)
                 {
-                    _alertService.ShowErrorPopup(true, null, "Error getting project: " + e.Message);
+                    _alertService?.ShowErrorPopup(true, null, "Error getting project: " + e.Message);
+
+                    return null;
                 }
                 finally
                 {
@@ -180,8 +182,6 @@ namespace LightTown.Client.Services.Users
             return _projects[projectId];
         }
 
-
-
         /// <summary>
         /// Get a user, will get it from the server if it doesn't exist in the cache.
         /// </summary>
@@ -189,7 +189,7 @@ namespace LightTown.Client.Services.Users
         /// <returns></returns>
         public async Task<User> GetUser(int userId)
         {
-            if (userId == _currentUser.Id)
+            if (userId == _currentUser?.Id)
                 return _currentUser;
 
             if (!_users.ContainsKey(userId))
@@ -201,10 +201,12 @@ namespace LightTown.Client.Services.Users
                     ApiResult result = await _httpClient.GetJsonAsync<ApiResult>($"api/users/{userId}");
 
                     _users[userId] = result.GetData<User>();
+
+                    await FillUser(_users[userId]);
                 }
                 catch (Exception e)
                 {
-                    _alertService.ShowErrorPopup(true, null, "Error getting user: " + e.Message);
+                    _alertService?.ShowErrorPopup(true, null, "Error getting user: " + e.Message);
                 }
                 finally
                 {
@@ -215,21 +217,41 @@ namespace LightTown.Client.Services.Users
             return _users[userId];
         }
 
+        /// <summary>
+        /// Get a list of members of a project, will get it from the server if it doesn't exist in the cache. Returns <see langword="null"/> on error or if the project doesn't exist.
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
         public async Task<List<User>> GetProjectMembers(int projectId)
         {
             var project = await GetProject(projectId);
 
+            if (project == null)
+                return null;
+
             if (project.Members == null)
             {
-                ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId + "/members");
-                project.Members = result.GetData<List<User>>();
+                try
+                {
+                    ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId + "/members");
+                    project.Members = result.GetData<List<User>>();
+
+                    foreach (User projectMember in project.Members)
+                    {
+                        _users[projectMember.Id] = projectMember;
+                    }
+                }
+                catch (Exception e)
+                {
+                    _alertService?.ShowErrorPopup(true, null, "Error getting project members: " + e.Message);
+                }
             }
 
             return project.Members;
         }
 
         /// <summary>
-        /// Get a tag, will get it from the server if it doesn't exist in the cache.
+        /// Get a tag, will get it from the server if it doesn't exist in the cache. Returns <see langword="null"/> on error or if it doesn't exist.
         /// </summary>
         /// <param name="tagId"></param>
         /// <returns>One specific tag.</returns>
@@ -246,7 +268,9 @@ namespace LightTown.Client.Services.Users
                 }
                 catch (Exception e)
                 {
-                    _alertService.ShowErrorPopup(true, null, "Error getting tags: " + e.Message);
+                    _alertService?.ShowErrorPopup(true, null, "Error getting tags: " + e.Message);
+
+                    return null;
                 }
                 finally
                 {
@@ -257,7 +281,7 @@ namespace LightTown.Client.Services.Users
         }
 
         /// <summary>
-        /// Get a list of project tags.
+        /// Get a list of project tags. Returns <see langword="null"/> on error or if the project doesn't exist.
         /// </summary>
         /// <param name="projectId"></param>
         /// <returns>A list of project tags.</returns>
@@ -267,9 +291,15 @@ namespace LightTown.Client.Services.Users
 
             var project = await GetProject(projectId);
 
+            if (project == null)
+                return null;
+
             foreach (var tagId in project.TagIds)
             {
-                projectTags.Add(await GetTag(tagId));
+                var tag = await GetTag(tagId);
+
+                if(tag != null)
+                    projectTags.Add(tag);
             }
 
             return projectTags;
@@ -288,25 +318,33 @@ namespace LightTown.Client.Services.Users
 
             foreach (var tagId in user.TagIds)
             {
-                userTags.Add(await GetTag(tagId));
+                var tag = await GetTag(tagId);
+
+                if (tag != null)
+                    userTags.Add(tag);
             }
 
             return userTags;
         }
         
         /// <summary>
-        /// Fill a project with tags and members.
+        /// Fill a project with tags (NOT members!).
         /// </summary>
         /// <param name="project"></param>
         /// <returns></returns>
         private async Task FillProject(Project project)
         {
-            project.Members = await GetProjectMembers(project.Id);
             project.Tags = new List<Tag>();
+
+            if (project.TagIds == null)
+                return;
 
             foreach (int tagId in project.TagIds)
             {
-                project.Tags.Add(await GetTag(tagId));
+                var tag = await GetTag(tagId);
+
+                if (tag != null)
+                    project.Tags.Add(tag);
             }
         }
 
@@ -319,9 +357,15 @@ namespace LightTown.Client.Services.Users
         {
             user.Tags = new List<Tag>();
 
+            if (user.TagIds == null)
+                return;
+
             foreach (int tagId in user.TagIds)
             {
-                user.Tags.Add(await GetTag(tagId));
+                var tag = await GetTag(tagId);
+
+                if (tag != null)
+                    user.Tags.Add(tag);
             }
         }
     }

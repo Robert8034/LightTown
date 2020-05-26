@@ -37,7 +37,7 @@ namespace LightTown.Client.Services.Users
         Task<List<Project>> GetProjects();
 
         /// <summary>
-        /// Get a project, will get it from the server if it doesn't exist in the cache.
+        /// Get a project, will get it from the server if it doesn't exist in the cache. Returns <see langword="null"/> on error or if it doesn't exist.
         /// </summary>
         /// <param name="projectId"></param>
         /// <returns></returns>
@@ -51,21 +51,21 @@ namespace LightTown.Client.Services.Users
         Task<User> GetUser(int userId);
 
         /// <summary>
-        /// Gets project members, will get project and/or project members from server if not in cache.
+        /// Gets project members, will get project and/or project members from server if not in cache. Returns <see langword="null"/> on error or if the project doesn't exist.
         /// </summary>
         /// <param name="projectId"></param>
         /// <returns></returns>
         Task<List<User>> GetProjectMembers(int projectId);
 
         /// <summary>
-        /// Get a tag, will get it from the server if it doesn't exist in the cache.
+        /// Get a tag, will get it from the server if it doesn't exist in the cache. Returns <see langword="null"/> on error or if it doesn't exist.
         /// </summary>
         /// <param name="tagId"></param>
         /// <returns>One specific tag.</returns>
         Task<Tag> GetTag(int tagId);
 
         /// <summary>
-        /// Get a list of project tags.
+        /// Get a list of project tags. Returns <see langword="null"/> on error or if the project doesn't exist.
         /// </summary>
         /// <param name="projectId"></param>
         /// <returns>A list of project tags.</returns>

@@ -17,15 +17,19 @@ namespace LightTown.Client.Tests
         /// Setup the HttpMessageHandler Mock with expected return data.
         /// </summary>
         /// <param name="httpMessageHandlerMock"></param>
+        /// <param name="method">The http method to mock.</param>
+        /// <param name="url">The url to call.</param>
         /// <param name="httpStatusCode">The expected status code.</param>
         /// <param name="content">The expected content which will be serialized to JSON.</param>
-        public static void SetupHttpMessageHandlerMock(this Mock<HttpMessageHandler> httpMessageHandlerMock, HttpStatusCode httpStatusCode, object content)
+        public static void SetupHttpMessageHandlerMock(this Mock<HttpMessageHandler> httpMessageHandlerMock, HttpMethod method, string url, HttpStatusCode httpStatusCode, object content)
         {
+
             httpMessageHandlerMock
                 .Protected()
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.Is<HttpRequestMessage>(httpRequestMessage =>
+                        httpRequestMessage.Method == method && httpRequestMessage.RequestUri == new Uri("https://localhost:5001/" + url)),
                     ItExpr.IsAny<CancellationToken>()
                 )
                 .ReturnsAsync(new HttpResponseMessage

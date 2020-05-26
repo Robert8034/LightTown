@@ -106,7 +106,7 @@
         }
     </GridColumn>
     <GridColumn ColumnSize="ColumnSize.Small">
-        @if (_project?.Members != null)
+        @if (_projectMembers != null)
         {
             foreach (var member in _project.Members)
             {
@@ -136,6 +136,8 @@
 
     private LightTown.Core.Models.Projects.Project _project;
 
+    private List<User> _projectMembers;
+
     private bool active;
 
     private Modal MemberModal = new Modal();
@@ -153,7 +155,9 @@
         MemberModal.Visible = false;
 
         _project = await UserDataService.GetProject(ProjectId);
-        _project.Members = await UserDataService.GetProjectMembers(ProjectId);
+
+        if(_project != null)
+            _projectMembers = await UserDataService.GetProjectMembers(ProjectId);
     }
 
     private async Task RemoveMemberFromProject(int userId)

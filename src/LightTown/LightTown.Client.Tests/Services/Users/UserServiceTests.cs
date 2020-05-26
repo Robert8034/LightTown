@@ -34,7 +34,7 @@ namespace LightTown.Client.Tests.Services.Users
         public async Task SearchUsersTest()
         {
             //ARRANGE
-            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.OK, new ApiResult(
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Get, "api/users/search/Test", HttpStatusCode.OK, new ApiResult(
                 HttpStatusCode.OK, new List<User>
                 {
                     new User

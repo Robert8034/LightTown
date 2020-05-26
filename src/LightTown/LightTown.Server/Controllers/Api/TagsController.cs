@@ -38,12 +38,21 @@ namespace LightTown.Server.Controllers.Api
             return ApiResult.Success(tagModels);
         }
 
+        /// <summary>
+        /// Get a tag.
+        /// </summary>
+        /// <response code="200">Valid response with the tag.</response>
+        /// <response code="401">The user isn't authorized.</response>
+        /// <response code="404">The tag doesn't exist.</response>
         [HttpGet]
         [Route("{tagId}")]
-        [Authorization(Permissions.VIEW_ALL_PROJECTS)]
+        [Authorization(Permissions.NONE)]
         public ApiResult GetTag(int tagId)
         {
             var tag = _tagService.GetTag(tagId);
+
+            if(tag == null)
+                return ApiResult.NotFound();
 
             var tagModel = _mapper.Map<Core.Models.Tags.Tag>(tag);
 

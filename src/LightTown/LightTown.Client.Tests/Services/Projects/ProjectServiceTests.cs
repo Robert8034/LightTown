@@ -34,7 +34,7 @@ namespace LightTown.Client.Tests.Services.Projects
         public async Task CreateProjectTest()
         {
             //ARRANGE
-            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.OK, new ApiResult(HttpStatusCode.OK, new Project()
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Post, "api/projects",HttpStatusCode.OK, new ApiResult(HttpStatusCode.OK, new Project()
             {
                ProjectName = "TestProject",
                ProjectDescription = "TestDescription"
@@ -98,7 +98,7 @@ namespace LightTown.Client.Tests.Services.Projects
         public async Task RemoveMemberTest()
         {
             //ARRANGE
-            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.NoContent, ApiResult.NoContent());
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Delete, "api/projects/1/members/1",HttpStatusCode.NoContent, ApiResult.NoContent());
 
             var projectService = new ProjectService(_httpClient, null);
 
@@ -121,7 +121,7 @@ namespace LightTown.Client.Tests.Services.Projects
         public async Task AddMemberTest()
         {
             //ARRANGE
-            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.OK, ApiResult.NoContent());
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Put, "api/projects/1/members/1", HttpStatusCode.OK, ApiResult.NoContent());
 
             var projectService = new ProjectService(_httpClient, null);
 
@@ -144,7 +144,7 @@ namespace LightTown.Client.Tests.Services.Projects
         public async Task GetProjectMembersTest()
         {
             //ARRANGE
-            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.NoContent, new ApiResult(
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Get, "api/projects/1/members",HttpStatusCode.NoContent, new ApiResult(
                 HttpStatusCode.OK, new List<User>
                 {
                     new User
