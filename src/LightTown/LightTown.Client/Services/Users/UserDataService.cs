@@ -136,7 +136,11 @@ namespace LightTown.Client.Services.Users
                 {
                     ApiResult result = await _httpClient.GetJsonAsync<ApiResult>($"api/projects/{projectId}");
 
-                    _projects[projectId] = result.GetData<Project>();
+                    var project = result.GetData<Project>();
+
+                    await FillProject(project);
+
+                    _projects[projectId] = project;
                 }
                 catch (Exception e)
                 {
@@ -150,6 +154,8 @@ namespace LightTown.Client.Services.Users
 
             return _projects[projectId];
         }
+
+
 
         /// <summary>
         /// Get a user, will get it from the server if it doesn't exist in the cache.
@@ -228,34 +234,60 @@ namespace LightTown.Client.Services.Users
         /// <summary>
         /// Get a list of project tags.
         /// </summary>
-        /// <param name="tagIds"></param>
+        /// <param name="projectId"></param>
         /// <returns>A list of project tags.</returns>
-        public async Task<List<Tag>> GetProjectTags(List<int> tagIds)
+        public async Task<List<Tag>> GetProjectTags(int projectId)
         {
             var projectTags = new List<Tag>();
 
-            foreach (var id in tagIds)
+            var project = await GetProject(projectId);
+
+            foreach (var tagId in project.TagIds)
             {
-                projectTags.Add(await GetTag(id));
+                projectTags.Add(await GetTag(tagId));
             }
 
             return projectTags;
         }
 
         /// <summary>
-        /// Get a list of projects with its correct tags.
+        /// Get a list of tags that a user has.
         /// </summary>
-        /// <returns>A list of projects with a filled list of tags.</returns>
-        public async Task<List<Project>> GetProjectsWithTags()
+        /// <param name="userId"></param>
+        /// <returns>A list of project tags.</returns>
+        public async Task<List<Tag>> GetUserTags(int userId)
         {
-            var projects = await GetProjects();
+            var userTags = new List<Tag>();
 
-            foreach (var project in projects)
+            var user = await GetUser(userId);
+
+            foreach (var tagId in user.TagIds)
             {
-                project.Tags = await GetProjectTags(project.TagIds);
+                userTags.Add(await GetTag(tagId));
             }
 
-            return projects;
+            return userTags;
+        }
+
+        public void SetCurrentUser(User user)
+        {
+            _currentUser = user;
+        }
+
+        /// <summary>
+        /// Fill a project with tags and members.
+        /// </summary>
+        /// <param name="project"></param>
+        /// <returns></returns>
+        private async Task FillProject(Project project)
+        {
+            project.Members = await GetProjectMembers(project.Id);
+            project.Tags = new List<Tag>();
+
+            foreach (int tagId in project.TagIds)
+            {
+                project.Tags.Add(await GetTag(tagId));
+            }
         }
     }
 }

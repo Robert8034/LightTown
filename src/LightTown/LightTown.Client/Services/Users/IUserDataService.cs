@@ -67,14 +67,12 @@ namespace LightTown.Client.Services.Users
         /// <summary>
         /// Get a list of project tags.
         /// </summary>
-        /// <param name="tagIds"></param>
+        /// <param name="projectId"></param>
         /// <returns>A list of project tags.</returns>
-        Task<List<Tag>> GetProjectTags(List<int> tagIds);
+        Task<List<Tag>> GetProjectTags(int projectId);
 
-        /// <summary>
-        /// Get a list of projects with its correct tags.
-        /// </summary>
-        /// <returns>A list of projects with a filled list of tags.</returns>
-        Task<List<Project>> GetProjectsWithTags();
+        Task<List<Tag>> GetUserTags(int userId);
+
+        void SetCurrentUser(User user);
     }
 }
