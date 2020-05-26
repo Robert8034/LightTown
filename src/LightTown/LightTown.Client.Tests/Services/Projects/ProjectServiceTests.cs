@@ -98,7 +98,7 @@ namespace LightTown.Client.Tests.Services.Projects
         public async Task RemoveMemberTest()
         {
             //ARRANGE
-            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.OK, new ApiResult(HttpStatusCode.OK, true));
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.NoContent, ApiResult.NoContent());
 
             var projectService = new ProjectService(_httpClient, null);
 
@@ -121,7 +121,7 @@ namespace LightTown.Client.Tests.Services.Projects
         public async Task AddMemberTest()
         {
             //ARRANGE
-            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.OK, new ApiResult(HttpStatusCode.OK, true));
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.OK, ApiResult.NoContent());
 
             var projectService = new ProjectService(_httpClient, null);
 
@@ -130,14 +130,53 @@ namespace LightTown.Client.Tests.Services.Projects
 
             //ASSERT
             _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(1),
-             ItExpr.Is<HttpRequestMessage>(req =>
-                 req.Method == HttpMethod.Put
-                 && req.RequestUri == new Uri("https://localhost:5001/api/projects/1/members/1")
-             ),
-             ItExpr.IsAny<CancellationToken>()
-             );
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Put
+                    && req.RequestUri == new Uri("https://localhost:5001/api/projects/1/members/1")
+                ),
+                ItExpr.IsAny<CancellationToken>()
+            );
 
             Assert.True(result);
+        }
+
+        [Fact]
+        public async Task GetProjectMembersTest()
+        {
+            //ARRANGE
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.NoContent, new ApiResult(
+                HttpStatusCode.OK, new List<User>
+                {
+                    new User
+                    {
+                        Id = 1,
+                        Username = "Test"
+                    },
+                    new User
+                    {
+                        Id = 2,
+                        Username = "Test2"
+                    }
+                }));
+
+            var projectService = new ProjectService(_httpClient, null);
+
+            //ACT
+            var result = await projectService.GetProjectMembers(1);
+
+            //ASSERT
+            _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(1),
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get
+                    && req.RequestUri == new Uri("https://localhost:5001/api/projects/1/members")
+                ),
+                ItExpr.IsAny<CancellationToken>()
+            );
+
+            Assert.Equal(1, result[0].Id);
+            Assert.Equal(2, result[1].Id);
+            Assert.Equal("Test", result[0].Username);
+            Assert.Equal("Test2", result[1].Username);
         }
     }
 }

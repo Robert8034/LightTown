@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
-using LightTown.Core.Domain.Users;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using LightTown.Core.Models.Users;
 
 namespace LightTown.Client.Services.Users
 {
     public interface IUserService
     {
-        Task<User> GetUserData(int userid);
+        Task<List<User>> SearchUsers(string searchValue);
     }
 }

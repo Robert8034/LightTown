@@ -31,6 +31,7 @@ namespace LightTown.Client.Web
             builder.Services.AddSingleton<IProjectService, ProjectService>();
             builder.Services.AddSingleton<IUserAuthService, UserAuthService>();
             builder.Services.AddSingleton<IUserDataService, UserDataService>();
+            builder.Services.AddSingleton<IUserService, UserService>();
             builder.Services.AddSingleton<IPopupService<BlazorPopupService.Popup>, BlazorPopupService>();
             builder.Services.AddSingleton<Services.AuthenticationService>();
             builder.Services.AddBaseAddressHttpClient();
