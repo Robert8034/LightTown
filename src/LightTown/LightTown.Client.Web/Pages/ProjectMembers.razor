@@ -11,31 +11,65 @@
 @inject AuthenticationService AuthenticationService
 @inject IUserService UserService;
 
-<h1> <br/> Name: @_project?.ProjectName</h1>
-<p1>Creation Date: @_project?.CreationDateTime</p1>
 
-<Modal @ref="MemberModal">
-    <h2>Add Members To Project</h2>
-    <Input Type="text" Placeholder="Username" OnChange="@OnSearchQueryChange"/>
-    <Grid>
-        <GridColumn ColumnSize="ColumnSize.Full">
-            <br/>
-            @foreach (var user in users)
-            {
-                <Grid>
-                    <GridColumn ColumnSize="ColumnSize.Medium">
-                        <p1>@user.Username</p1>
-                    </GridColumn>
-                    <GridColumn ColumnSize="ColumnSize.Small">
-                        <Button Text="Add To Project" Enabled="true" Size="ButtonSize.Full" OnClick="@(() => AddMemberToProject(user.Id))"></Button>
-                    </GridColumn>
-                </Grid>
-            }
-        </GridColumn>
-    </Grid>
-    <br/>
-    <Button OnClick="(() => HideModal())" Text="Close Window"></Button>
-</Modal>
+    <Modal @ref="MemberModal">
+        <h2>Add Members To Project</h2>
+        <Input Type="text" Placeholder="Username" OnChange="@OnSearchQueryChange" />
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Full">
+                <br />
+                @foreach (var user in users)
+                {
+                    <Grid>
+                        <GridColumn ColumnSize="ColumnSize.Medium">
+                            <p1>@user.Username</p1>
+                        </GridColumn>
+                        <GridColumn ColumnSize="ColumnSize.Small">
+                            <Button Text="Add To Project" Enabled="true" Size="ButtonSize.Full" OnClick="@(() => AddMemberToProject(user.Id))"></Button>
+                        </GridColumn>
+                    </Grid>
+                }
+            </GridColumn>
+        </Grid>
+        <br />
+        <Button OnClick="(() => HideModal())" Text="Close Window"></Button>
+    </Modal>
+
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Small">
+    </GridColumn>
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Full">
+                <GridItem>
+                    <h1> <br /> Name: @_project?.ProjectName</h1>
+                    <p1>Creation Date: @_project?.CreationDateTime</p1>
+                </GridItem>
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Small">
+            </GridColumn>
+        </Grid>
+    </GridColumn>
+</Grid>
+
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Small">
+    </GridColumn>
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Full">
+                <GridItem>
+                    <h2>Members</h2>
+                </GridItem>
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Small">
+                <GridItem>
+                    <Button OnClick="@(() => ShowModal())" Text="Add Member" Size="ButtonSize.Full"></Button>
+                </GridItem>
+            </GridColumn>
+        </Grid>
+    </GridColumn>
+</Grid>
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Small">
@@ -47,29 +81,53 @@
             </ListGroup>
         </GridItem>
     </GridColumn>
-</Grid>
-<Grid>
-    <GridColumn ColumnSize="ColumnSize.Full">
-
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        <hr class="underLine" style="border:solid;color:#298ECC" />
+    <GridColumn ColumnSize="ColumnSize.Small">
         @if (_project?.Members != null)
         {
             foreach (var member in _project.Members)
             {
-                <GridItem>
-                    <FormGroup>
-                        <p1>Name: @member.Username</p1>
-                    </FormGroup>
-                    <FormGroup>
-                        <p1>Email: @member.Email</p1>
-                    </FormGroup>
-                    <FormGroup>
-                        <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
-                    </FormGroup>
-                </GridItem>
+                if (member.Id % 2 == 1)
+                {
+                    <GridItem>
+                        <FormGroup>
+                            <p1>Name: @member.Username</p1>
+                        </FormGroup>
+                        <FormGroup>
+                            <p1>Email: @member.Email</p1>
+                        </FormGroup>
+                        <FormGroup>
+                            <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
+                        </FormGroup>
+                    </GridItem>
+                }
             }
         }
     </GridColumn>
-    <Button OnClick="@(() => ShowModal())" Text="Add Member" Size="ButtonSize.Full"></Button>
+    <GridColumn ColumnSize="ColumnSize.Small">
+        @if (_project?.Members != null)
+        {
+            foreach (var member in _project.Members)
+            {
+                if (member.Id % 2 == 0)
+                {
+                    <GridItem>
+                        <FormGroup>
+                            <p1>Name: @member.Username</p1>
+                        </FormGroup>
+                        <FormGroup>
+                            <p1>Email: @member.Email</p1>
+                        </FormGroup>
+                        <FormGroup>
+                            <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
+                        </FormGroup>
+                    </GridItem>
+                }
+            }
+        }
+        </GridColumn>
+    </GridColumn>
 </Grid>
 
 @code {
