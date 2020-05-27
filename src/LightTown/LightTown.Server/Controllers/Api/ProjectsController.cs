@@ -212,5 +212,18 @@ namespace LightTown.Server.Controllers.Api
 
             return ApiResult.Success(projectModel);
         }
+
+        [HttpGet]
+        [Route("search/{searchValue}")]
+        [Authorization(Permissions.NONE)]
+        public ApiResult SearchProjects(string searchValue)
+        {
+            var projects = _projectService.SearchProjects(searchValue);
+
+            var projectsModel = _mapper.Map<List<Core.Models.Projects.Project>>(projects);
+
+            return ApiResult.Success(projectsModel); 
+        } 
+
     }
 }
