@@ -39,7 +39,7 @@
             </GridColumn>
             <GridColumn ColumnSize="ColumnSize.Small">
                 <GridItem>
-                    <Button class="button-join" Enabled="@true" Text="Join" Size="ButtonSize.Big"></Button> 
+                    <Button class="button-join" Enabled="@true" OnClick="@(() => AddMemberToProject(UserDataService.GetCurrentUser().Id))" Text="Join" Size="ButtonSize.Big"></Button> 
                 </GridItem>
             </GridColumn>
         </Grid>
@@ -144,21 +144,12 @@
         await ProjectService.RemoveMember(ProjectId, userId);
     }
 
-    @*@if (_project?.Members != null)
-        {
-            foreach (var member in _project.Members)
-            {
-            <GridItem>
-            <FormGroup>
-            <p1>Name: @member.Username</p1>
-            </FormGroup>
-            <FormGroup>
-            <p1>Email: @member.Email</p1>
-            </FormGroup>
-            <FormGroup>
-            <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
-            </FormGroup>
-            </GridItem>
-            }
-        }*@
+    private async Task AddMemberToProject(int userId)
+    {
+        await ProjectService.AddMember(userId, ProjectId);
+
+        _project.Members = await ProjectService.GetProjectMembers(ProjectId);
+
+        StateHasChanged();
+    }
 }
