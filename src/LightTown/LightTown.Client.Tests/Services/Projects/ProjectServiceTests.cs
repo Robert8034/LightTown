@@ -183,7 +183,7 @@ namespace LightTown.Client.Tests.Services.Projects
         public async Task SearchProjectsTest()
         {
             //ARRANGE
-            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.OK, new ApiResult(
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Get, "api/projects/search/Test", HttpStatusCode.OK, new ApiResult(
                 HttpStatusCode.OK, new List<Project>
                 {
                    new Project
