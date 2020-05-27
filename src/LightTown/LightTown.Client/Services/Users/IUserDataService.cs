@@ -71,8 +71,31 @@ namespace LightTown.Client.Services.Users
         /// <returns>A list of project tags.</returns>
         Task<List<Tag>> GetProjectTags(int projectId);
 
+        /// <summary>
+        /// Get a list of tags that a user has.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>A list of project tags.</returns>
         Task<List<Tag>> GetUserTags(int userId);
 
+        /// <summary>
+        /// Set the current user object or <see langword="null"/> if no user is loaded.
+        /// </summary>
+        /// <returns></returns>
         void SetCurrentUser(User user);
+
+        /// <summary>
+        /// Search tags based on the name from the cached tags list. Optionally exclude some tags.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="excludeList"></param>
+        /// <returns></returns>
+        List<Tag> SearchTags(string name, List<Tag> excludeList = null);
+
+        /// <summary>
+        /// Add tags to the cache if they don't already exist. Returns a list of inserted tags.
+        /// </summary>
+        /// <param name="tags"></param>
+        IEnumerable<Tag> SetTags(List<Tag> tags);
     }
 }

@@ -99,7 +99,7 @@ namespace LightTown.Client.Services.Projects
         /// </summary>
         public async Task<bool> AddMember(int userId, int projectId)
         {
-            ApiResult result = await _httpClient.PutJsonAsync<ApiResult>("api/projects/" + projectId + "/members/" + userId, new
+            ApiResult result = await _httpClient.PutJson<ApiResult>("api/projects/" + projectId + "/members/" + userId, new
             {
                 userId,
                 projectId

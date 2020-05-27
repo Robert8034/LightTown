@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LightTown.Core.Data;
+using LightTown.Core.Domain.Tags;
 using LightTown.Core.Domain.Users;
+using LightTown.Server.Services.Tags;
 using Microsoft.AspNetCore.Identity;
 
 namespace LightTown.Server.Services.Users
@@ -12,11 +14,15 @@ namespace LightTown.Server.Services.Users
     {
         private readonly UserManager<User> _userManager;
         private readonly IRepository<UserTag> _userTagRepository;
+        private readonly IRepository<Tag> _tagRepository;
+        private readonly ITagService _tagService;
 
-        public UserService(UserManager<User> userManager, IRepository<UserTag> userTagRepository)
+        public UserService(UserManager<User> userManager, IRepository<UserTag> userTagRepository, IRepository<Tag> tagRepository, ITagService tagService)
         {
             _userManager = userManager;
             _userTagRepository = userTagRepository;
+            _tagRepository = tagRepository;
+            _tagService = tagService;
         }
 
         /// <summary>
@@ -105,6 +111,46 @@ namespace LightTown.Server.Services.Users
                 .Where(userTag => userTag.UserId == userId)
                 .Select(userTag => userTag.TagId)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Try to modify the user's tags.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="tags"></param>
+        /// <param name="newTags"></param>
+        /// <returns></returns>
+        public bool TryModifyUserTags(User user, List<Core.Models.Tags.Tag> tags, out List<Tag> newTags)
+        {
+            newTags = null;
+
+            var oldTags = _userTagRepository.Table.Where(userTag => userTag.UserId == user.Id).ToList();
+
+            var removedTags = oldTags.Where(userTag => tags.All(tag => tag.Id != userTag.TagId)).ToList();
+
+            var addedTags = tags.Where(tag => oldTags.All(userTag => tag.Id != userTag.TagId)).ToList();
+
+            foreach (Core.Models.Tags.Tag tag in addedTags)
+            {
+                if (tag.Id == 0 || _tagRepository.GetById(tag.Id) == null)
+                {
+                    tag.Id = _tagService.InsertTag(tag).Id;
+                }
+            }
+
+            _userTagRepository.Delete(removedTags);
+
+            var addedUserTagEntities = addedTags.Select(tag => new UserTag
+            {
+                UserId = user.Id,
+                TagId = tag.Id
+            });
+
+            var addedUserTags = addedUserTagEntities.Select(userTag => _userTagRepository.Insert(userTag)).ToList();
+
+            newTags = addedUserTags.Select(userTag => userTag.Tag).ToList();
+
+            return true;
         }
 
         /// <summary>

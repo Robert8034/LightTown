@@ -34,5 +34,13 @@ namespace LightTown.Server.Services.Tags
         {
             return _tagRepository.TableNoTracking.SingleOrDefault(e => e.Id == tagId);
         }
+
+        public Tag InsertTag(Core.Models.Tags.Tag tag)
+        {
+            return _tagRepository.Insert(new Tag
+            {
+                Name = tag.Name
+            });
+        }
     }
 }

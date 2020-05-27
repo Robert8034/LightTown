@@ -107,3 +107,7 @@ app {
 .text-primary-color {
     color: var(--primary-color);
 }
+
+.text-title {
+    font-size: 24px;
+}

@@ -12,7 +12,8 @@ namespace LightTown.Client
         public static async Task<T> PostJsonAsync<T>(this HttpClient httpClient, string url, object data) =>
             await httpClient.SendJsonAsync<T>(HttpMethod.Post, url, data);
 
-        public static async Task<T> PutJsonAsync<T>(this HttpClient httpClient, string url, object data) =>
+        //we use "PutJson" here because blazor otherwise wants to use a microsoft package extension method that's exactly the same but uses System.Text.Json which gives us some deserialization errors.
+        public static async Task<T> PutJson<T>(this HttpClient httpClient, string url, object data) =>
             await httpClient.SendJsonAsync<T>(HttpMethod.Put, url, data);
 
         public static async Task<T> PatchJsonAsync<T>(this HttpClient httpClient, string url, object data) =>

@@ -7,6 +7,7 @@
 @using LightTown.Core
 @using User = LightTown.Core.Models.Users.User
 @using System.IO
+@using Tag = LightTown.Core.Models.Tags.Tag
 
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
@@ -35,17 +36,41 @@ else if (_user != null)
                 <FormGroup>
                     <TextArea Placeholder="About" Title="About" Text="Tell everyone something about yourself." Value="@_user.About" OnChange="@((value) => OnAboutChange(value))"></TextArea>
                 </FormGroup>
+                <FormGroup>
+                    <span class="text-title w-100">Tags</span>
+                    <div class="d-inline mb-2">
+                        @foreach (var tag in _tags)
+                        {
+                            <Tag Text="@tag.Name" Removable="true" OnRemove="@(() => RemoveTag(tag))"></Tag>
+                        }
+                        @foreach (var tag in _newTags.Keys)
+                        {
+                            <Tag Text="@tag.Name" Removable="true" OnRemove="@(() => RemoveTag(tag))"></Tag>
+                        }
+                    </div>
+                    <Input Placeholder="Add tags..." Type="text" OnChange="@((value) => OnAddTagChange(value))" />
+                    <div class="d-inline mb-2">
+                        @foreach (var tag in _recommendedTags)
+                        {
+                            <Tag Text="@tag.Key.Name" Clickable="true" OnClick="@(() => AddTag(tag.Key, tag.Value))"></Tag>
+                        }
+                    </div>
+                </FormGroup>
                 <FormGroup AlignContent="AlignContent.Right">
                     @if (!string.IsNullOrEmpty(_userErrorMessage))
                     {
-                        <span class="text text-danger">@_userErrorMessage</span>
+                        <span class="text text-danger d-flex align-items-center mr-2">@_userErrorMessage</span>
                     }
-                    <Button Text="Save" Enabled="@CanSave()" OnClick="@(async () => await SaveUser())"></Button>
+                    @if (!string.IsNullOrEmpty(_userSuccessMessage))
+                    {
+                        <span class="text text-success d-flex align-items-center mr-2">@_userSuccessMessage</span>
+                    }
+                    <Button Text="Save" Enabled="@(CanSave() || CanSaveAvatar() || CanSaveTags())" OnClick="@(async () => await SaveUser())"></Button>
                 </FormGroup>
             </Form>
         </GridColumn>
         <GridColumn Class="d-flex align-items-center" ColumnSize="ColumnSize.Small">
-            <ImageFileSelect Class="mw-300" Src="@_avatarSource" OnChange="@(file => OnAvatarChange(file))" CanSave="@CanSaveAvatar()" OnSave="@(async () => OnAvatarSave())"></ImageFileSelect>
+            <ImageFileSelect Class="mw-300" Src="@_avatarSource" OnChange="@(file => OnAvatarChange(file))" CanSave="false"></ImageFileSelect>
             @if (!string.IsNullOrEmpty(_avatarErrorMessage))
             {
                 <span class="text text-danger">@_avatarErrorMessage</span>
@@ -63,11 +88,14 @@ else if (_user != null)
     private string _avatarSource;
     private User _user;
     private User _newUser;
-    private List<Core.Models.Tags.Tag> _tags = new List<Core.Models.Tags.Tag>();
-    private List<Core.Models.Tags.Tag> _newTags = new List<Core.Models.Tags.Tag>();
+    private List<Tag> _tags = new List<Tag>();
+    private Dictionary<Tag, bool> _newTags = new Dictionary<Tag, bool>();
+    private Dictionary<Tag, bool> _recommendedTags = new Dictionary<Tag, bool>();
+    private string _newTagInputValue;
     private FileListEntry _newAvatar;
 
     private string _userErrorMessage;
+    private string _userSuccessMessage;
     private string _avatarErrorMessage;
 
     protected override async Task OnInitializedAsync()
@@ -115,11 +143,60 @@ else if (_user != null)
 
     private async Task SaveUser()
     {
-        var result = await HttpClient.PatchJsonAsync<ApiResult>("api/users/@me", _newUser);
+        bool saved = false;
 
-        UserDataService.SetCurrentUser(result.GetData<User>());
+        if (CanSave())
+        {
+            var result = await HttpClient.PatchJsonAsync<ApiResult>("api/users/@me", _newUser);
 
-        _user = await UserDataService.GetUser(ProfileId.Value);
+            UserDataService.SetCurrentUser(result.GetData<User>());
+
+            _user = await UserDataService.GetUser(ProfileId.Value);
+
+            saved = true;
+        }
+
+        if(CanSaveTags())
+        {
+            var allTags = _tags.ToList();
+            allTags.AddRange(_newTags.Keys);
+
+            var result = await HttpClient.PutJson<ApiResult>("api/users/@me/tags", allTags);
+
+            var tags = result.GetData<List<Tag>>();
+
+            var newTags = UserDataService.SetTags(tags);
+
+            _user.Tags.AddRange(newTags);
+
+            saved = true;
+        }
+
+        if (CanSaveAvatar())
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                await _newAvatar.Data.CopyToAsync(stream);
+
+                byte[] bytes = stream.ToArray();
+
+                var byteContent = new ByteArrayContent(bytes);
+
+                byteContent.Headers.Remove("Content-Type");
+                byteContent.Headers.Add("Content-Type", _newAvatar.Type);
+
+                var result = await HttpClient.PutAsync("api/users/@me/avatar", byteContent);
+
+                if (result.IsSuccessStatusCode)
+                    _newAvatar = null;
+                else
+                    _avatarErrorMessage = "Error saving avatar: " + (int)result.StatusCode + " " + result.StatusCode;
+            }
+
+            saved = true;
+        }
+
+        _userSuccessMessage = saved ? "Profile successfully saved." : null;
 
         StateHasChanged();
     }
@@ -138,6 +215,21 @@ else if (_user != null)
             return true;
         if (_user.About != _newUser.About && (!string.IsNullOrEmpty(_user.About) || !string.IsNullOrEmpty(_newUser.About)))
             return true;
+
+        return false;
+    }
+
+    private bool CanSaveTags()
+    {
+        if (_newTags.Count > 0)
+            return true;
+
+        foreach (var tag in _user.Tags)
+        {
+            //the tag has been removed.
+            if (!_tags.Contains(tag))
+                return true;
+        }
 
         return false;
     }
@@ -198,32 +290,83 @@ else if (_user != null)
     {
         _newAvatar = file;
 
+        CanSaveAvatar();
+
         StateHasChanged();
     }
 
-    private async Task OnAvatarSave()
+    private Task RemoveTag(Tag tag)
     {
-        using (MemoryStream stream = new MemoryStream())
+        _tags.Remove(tag);
+        _newTags.Remove(tag);
+
+        SetRecommendedTags();
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnAddTagChange(string value)
+    {
+        _newTagInputValue = value;
+
+        SetRecommendedTags();
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private void SetRecommendedTags()
+    {
+        _recommendedTags.Clear();
+
+        if (!string.IsNullOrEmpty(_newTagInputValue))
         {
-            await _newAvatar.Data.CopyToAsync(stream);
+            var excludeList = new List<Tag>(_tags);
+            excludeList.AddRange(_newTags.Keys);
 
-            byte[] bytes = stream.ToArray();
+            var tags = UserDataService.SearchTags(_newTagInputValue, excludeList);
 
-            var byteContent = new ByteArrayContent(bytes);
+            //if none of the existing tags have the exact search name we add it as a new tag, otherwise we simply add the search results
+            if(tags.All(tag => tag.Name != _newTagInputValue) && _newTags.Keys.All(tag => tag.Name != _newTagInputValue))
+            {
+                _recommendedTags.Add(new Tag { Name = _newTagInputValue }, true);
 
-            byteContent.Headers.Remove("Content-Type");
-            byteContent.Headers.Add("Content-Type", _newAvatar.Type);
-
-            var result = await HttpClient.PutAsync("api/users/@me/avatar", byteContent);
-
-            if (result.IsSuccessStatusCode)
-                _newAvatar = null;
+                //add all tags with "isNew" set to false
+                foreach (Tag tag in tags)
+                {
+                    _recommendedTags.Add(tag, false);
+                }
+            }
             else
-                _avatarErrorMessage = "Error saving avatar: " + (int)result.StatusCode + " " + result.StatusCode;
+            {
+                //if tags has 10 results we remove the last result because the new tag has replaced it
+                if(tags.Count == 10)
+                    tags.RemoveAt(9);
 
-            StateHasChanged();
+                foreach (Tag tag in tags)
+                {
+                    _recommendedTags.Add(tag, false);
+                }
+            }
         }
 
+        Console.WriteLine(string.Join(", ", _newTags.Keys.Select(tag => tag.Name)));
     }
 
+    private Task AddTag(Tag tag, bool isNew)
+    {
+        if(_user.Tags.Contains(tag))
+            _tags.Add(tag);
+        else
+            _newTags.Add(tag, isNew);
+
+        SetRecommendedTags();
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
     }
+}
