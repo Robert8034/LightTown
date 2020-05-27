@@ -89,8 +89,15 @@ app {
     background-color: initial;
 }
 
+.profile-avatar img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
 .profile-avatar svg {
     fill: var(--secondary-bg-color);
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .mw-300 {

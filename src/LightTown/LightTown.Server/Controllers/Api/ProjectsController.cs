@@ -39,8 +39,8 @@ namespace LightTown.Server.Controllers.Api
         /// </summary>
         /// <param name="projectId"></param>
         /// <response code="200">Valid response with the list of members.</response>
-        /// <response code="400">Project doesn't exist.</response>
         /// <response code="401">The user isn't authorized.</response>
+        /// <response code="404">Project doesn't exist.</response>
         [HttpGet]
         [Route("{projectId}/members")]
         [Authorization(Permissions.NONE)]
@@ -49,7 +49,7 @@ namespace LightTown.Server.Controllers.Api
             bool projectExists = _projectService.ProjectExists(projectId);
 
             if (!projectExists)
-                return ApiResult.BadRequest();
+                return ApiResult.NotFound();
 
             var members = _projectService.GetMembers(projectId);
 
@@ -159,9 +159,9 @@ namespace LightTown.Server.Controllers.Api
         /// Get a project that the user has view access to.
         /// </summary>
         /// <response code="200">Valid response with the project.</response>
-        /// <response code="400">Project doesn't exist.</response>
         /// <response code="401">The user isn't authorized.</response>
         /// <response code="403">The user is authorized but doesn't have the <see cref="Permissions.VIEW_ALL_PROJECTS"/> permission and isn't a member of this project.</response>
+        /// <response code="404">Project doesn't exist.</response>
         [HttpGet]
         [Route("{projectId}")]
         [Authorization(Permissions.NONE)]
@@ -182,7 +182,7 @@ namespace LightTown.Server.Controllers.Api
             Project project = _projectService.GetProject(projectId);
 
             if (project == null)
-                return ApiResult.BadRequest();
+                return ApiResult.NotFound();
 
             var projectModel = _mapper.Map<Core.Models.Projects.Project>(project);
 

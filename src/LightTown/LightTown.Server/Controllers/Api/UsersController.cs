@@ -5,7 +5,6 @@ using AutoMapper;
 using LightTown.Core;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
-using LightTown.Core.Models.Tags;
 using LightTown.Server.Services.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +17,12 @@ namespace LightTown.Server.Controllers.Api
     {
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
-        private readonly RoleManager<Role> _roleManager;
         private readonly IUserService _userService;
 
-        public UsersController(UserManager<User> userManager, IMapper mapper, RoleManager<Role> roleManager, IUserService userService)
+        public UsersController(UserManager<User> userManager, IMapper mapper, IUserService userService)
         {
             _userManager = userManager;
             _mapper = mapper;
-            _roleManager = roleManager;
             _userService = userService;
         }
 
@@ -53,7 +50,9 @@ namespace LightTown.Server.Controllers.Api
         /// Modify the current user.
         /// </summary>
         /// <response code="200">Valid response with the updated user object.</response>
+        /// <response code="400">Invalid request data given.</response>
         /// <response code="401">The user isn't authorized.</response>
+        /// <response code="403">The user is trying to modify a different user (wrong endpoint!).</response>
         [HttpPatch]
         [Route("@me")]
         [Authorization(Permissions.NONE)]
@@ -81,29 +80,17 @@ namespace LightTown.Server.Controllers.Api
             return ApiResult.BadRequest();
         }
 
-
         /// <summary>
-        /// Modify a user.
+        /// Modify a (different) user.
         /// </summary>
         /// <response code="200">Valid response with the updated user object.</response>
         /// <response code="400">The user doesn't exist or has invalid data.</response>
         /// <response code="401">The user isn't authorized.</response>
-        /// <response code="403">The user doesn't have access to modify this user.</response>
+        /// <response code="403">The user doesn't have the right permissions.</response>
         [HttpPatch]
         [Authorization(Permissions.MANAGE_USERS)]
         public async Task<ApiResult> ModifyUser(Core.Models.Users.User user)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-
-            //get the roles of the current user.
-            var roles = (await _userManager.GetRolesAsync(currentUser))
-                .Select(async roleName => await _roleManager.FindByNameAsync(roleName))
-                .Select(e => e.Result);
-
-            //if none of the roles has the MANAGE_USERS permission we send a forbidden result.
-            if (!roles.Any(role => role.Permissions.HasFlag(Permissions.MANAGE_USERS)))
-                return ApiResult.Forbidden("You do not have access to modify this user.");
-
             var oldUser = await _userManager.FindByIdAsync(user.Id.ToString());
 
             if(oldUser == null)
@@ -140,30 +127,18 @@ namespace LightTown.Server.Controllers.Api
             return ApiResult.BadRequest();
         }
 
-
         /// <summary>
         /// Modify a user's avatar.
         /// </summary>
         /// <response code="204">Avatar is updated.</response>
         /// <response code="400">Invalid request data.</response>
         /// <response code="401">The user isn't authorized.</response>
-        /// <response code="403">The user doesn't have access to modify this user's avatar.</response>
+        /// <response code="403">The user doesn't have the right permissions.</response>
         [HttpPut]
         [Route("{userId}/avatar")]
         [Authorization(Permissions.MANAGE_USERS)]
         public async Task<ApiResult> ModifyUserAvatar(int userId)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-
-            //get the roles of the current user.
-            var roles = (await _userManager.GetRolesAsync(currentUser))
-                .Select(async roleName => await _roleManager.FindByNameAsync(roleName))
-                .Select(e => e.Result);
-
-            //if none of the roles has the MANAGE_USERS permission we send a forbidden result.
-            if (!roles.Any(role => role.Permissions.HasFlag(Permissions.MANAGE_USERS)))
-                return ApiResult.Forbidden("You do not have access to modify this user's avatar.");
-
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
             if (user == null)
