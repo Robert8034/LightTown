@@ -28,9 +28,6 @@ else if (_user != null)
                     <Input Placeholder="Job" Title="Job" Text="What is your job called?" Type="text" Value="@_user.Job" OnChange="@((value) => OnJobChange(value))"/>
                 </FormGroup>
                 <FormGroup>
-                    <Input Placeholder="Age" Title="Age" Text="What is your age?" Type="number" Value="@_user.Age" OnChange="@((value) => OnAgeChange(value))"/>
-                </FormGroup>
-                <FormGroup>
                     <Input Placeholder="Hometown" Title="Hometown" Text="Where do you live?" Type="text" Value="@_user.Hometown" OnChange="@((value) => OnHometownChange(value))"/>
                 </FormGroup>
                 <FormGroup>
@@ -122,7 +119,6 @@ else if (_user != null)
             _newUser = new User
             {
                 About = _user.About,
-                Age = _user.Age,
                 Hometown = _user.Hometown,
                 HasAvatar = _user.HasAvatar,
                 Username = _user.Username,
@@ -203,13 +199,8 @@ else if (_user != null)
 
     private bool CanSave()
     {
-        if (_newUser.Age < 0)
-            return false;
-
         //cant save if both values are null or empty or both values are the same
         if (_user.Job != _newUser.Job && (!string.IsNullOrEmpty(_user.Job) || !string.IsNullOrEmpty(_newUser.Job)))
-            return true;
-        if (_user.Age != _newUser.Age)
             return true;
         if (_user.Hometown != _newUser.Hometown && (!string.IsNullOrEmpty(_user.Hometown) || !string.IsNullOrEmpty(_newUser.Hometown)))
             return true;
@@ -252,16 +243,6 @@ else if (_user != null)
     private Task OnJobChange(string value)
     {
         _newUser.Job = value;
-
-        StateHasChanged();
-
-        return Task.CompletedTask;
-    }
-
-
-    private Task OnAgeChange(string value)
-    {
-        _newUser.Age = int.Parse(value);
 
         StateHasChanged();
 

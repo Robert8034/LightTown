@@ -39,7 +39,6 @@ namespace LightTown.Server.Services.Users
             if (!IsUserValid(user, oldUser))
                 return false;
 
-            oldUser.Age = user.Age;
             oldUser.About = user.About;
             oldUser.Hometown = user.Hometown;
             oldUser.Job = user.Job;
@@ -162,8 +161,6 @@ namespace LightTown.Server.Services.Users
         private bool IsUserValid(Core.Models.Users.User user, User oldUser)
         {
             if (user.Username != oldUser.UserName)
-                return false;
-            if (user.Age < 0)
                 return false;
 
             return true;
