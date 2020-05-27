@@ -107,11 +107,30 @@ namespace LightTown.Client.Services.Projects
             return true;
         }
 
+        /// <summary>
+        /// Gets a list of <see cref="User"/> using <paramref name="projectId"/> from a <see cref="Project"/>.
+        /// <param name="projectId"></param>
+        /// <para></para>
+        /// <returns>Returns a list of <see cref="User"/> if successful or <see langword="null"/> if unsuccessful.</returns>
+        /// </summary>
         public async Task<List<User>> GetProjectMembers(int projectId)
         {
             ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId + "/members");
 
             return result.GetData<List<User>>();
-        } 
+        }
+
+        /// <summary>
+        /// Gets a list of <see cref="Project"/> using <paramref name="searchValue"/>.
+        /// <param name="projectId"></param>
+        /// <para></para>
+        /// <returns>Returns a list of <see cref="Project"/> if successful or <see langword="null"/> if unsuccessful.</returns>
+        /// </summary>
+        public async Task<List<Project>> SearchProjects(string searchValue)
+        {
+            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/search/" + searchValue);
+
+            return result.GetData<List<Project>>();
+        }
     }
 }

@@ -27,6 +27,14 @@ namespace LightTown.Server.Services.Projects
         /// <returns>If successful in adding, this method will return <see langword="true"></see>, if not it will return <see langword="false"></see>. </returns>
         public void CreateProjectMember(int projectId, int userId);
 
+        /// <summary>
+        /// Gets a list of project members from targeted <paramref name="projectId"/>.
+        /// <para>
+        /// The <paramref name="projectId"/> parameter is expected to be valid.
+        /// </para>
+        /// <param name="projectId"></param>
+        /// </summary>
+        /// <returns>If there are matches, it will return these in a list. If not it will return a new empty list. </returns>
         List<ProjectMember> GetProjectMembers(int projectId);
     }
 }

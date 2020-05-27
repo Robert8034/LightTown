@@ -178,5 +178,39 @@ namespace LightTown.Client.Tests.Services.Projects
             Assert.Equal("Test", result[0].Username);
             Assert.Equal("Test2", result[1].Username);
         }
+
+        [Fact]
+        public async Task SearchProjectsTest()
+        {
+            //ARRANGE
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpStatusCode.OK, new ApiResult(
+                HttpStatusCode.OK, new List<Project>
+                {
+                   new Project
+                   {
+                       ProjectName = "Test",
+                       ProjectDescription = "TestDesc",
+                       Id = 1
+                   }
+                }));
+
+            var projectService = new ProjectService(_httpClient, null);
+
+            //ACT
+            var result = await projectService.SearchProjects("Test");
+
+            //ASSERT
+            _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(1),
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get
+                    && req.RequestUri == new Uri("https://localhost:5001/api/projects/search/Test")
+                ),
+                ItExpr.IsAny<CancellationToken>()
+            );
+
+            Assert.Equal(1, result[0].Id);
+            Assert.Equal("Test", result[0].ProjectName);
+            Assert.Equal("TestDesc", result[0].ProjectDescription);
+        }
     }
 }

@@ -12,5 +12,6 @@ namespace LightTown.Client.Services.Projects
         Task<bool> RemoveMember(int Id, int userId);
         Task<bool> AddMember(int userId, int projectId);
         Task<List<User>> GetProjectMembers(int projectId);
+        Task<List<Project>> SearchProjects(string searchValue);
     }
 }

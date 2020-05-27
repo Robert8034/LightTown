@@ -106,5 +106,14 @@ namespace LightTown.Server.Services.Projects
         {
             return _projectMemberRepository.TableNoTracking.Any(e => e.MemberId == userId && e.ProjectId == projectId);
         }
+
+        public List<Project> SearchProjects(string searchValue)
+        {
+            if (_projectRepository.TableNoTracking.Any(e => e.ProjectName == searchValue))
+            {
+                return _projectRepository.TableNoTracking.Where(e => e.ProjectName == searchValue).ToList();
+            }
+            return new List<Project>();
+        }
     }
 }

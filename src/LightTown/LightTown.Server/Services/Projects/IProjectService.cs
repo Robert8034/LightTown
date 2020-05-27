@@ -75,5 +75,12 @@ namespace LightTown.Server.Services.Projects
         /// <param name="userId"></param>
         /// <returns></returns>
         bool UserIsMember(int projectId, int userId);
+
+        /// <summary>
+        /// Returns a list of <see cref="Project"/> where the name of the project matches <paramref name="searchValue"/>
+        /// </summary>
+        /// <param name="searchValue"></param>
+        /// <returns></returns>
+        List<Project> SearchProjects(string searchValue);
     }
 }
