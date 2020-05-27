@@ -47,6 +47,30 @@ namespace LightTown.Server.Controllers.Api
         }
 
         /// <summary>
+        /// Get the a user.
+        /// </summary>
+        /// <response code="200">Valid response with a user object.</response>
+        /// <response code="401">The user isn't authorized.</response>
+        /// <response code="404">No user found with the user id.</response>
+        [HttpGet]
+        [Route("{userId}")]
+        [Authorization(Permissions.NONE)]
+        public async Task<ApiResult> GetUser(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if(user == null)
+                return ApiResult.NotFound();
+
+            var tagIds = _userService.GetUserTagIds(user.Id);
+
+            var userModel = _mapper.Map<Core.Models.Users.User>(user);
+            userModel.TagIds = tagIds;
+
+            return ApiResult.Success(userModel);
+        }
+
+        /// <summary>
         /// Modify the current user.
         /// </summary>
         /// <response code="200">Valid response with the updated user object.</response>

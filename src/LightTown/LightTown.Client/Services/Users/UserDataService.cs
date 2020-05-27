@@ -207,6 +207,8 @@ namespace LightTown.Client.Services.Users
                 catch (Exception e)
                 {
                     _alertService?.ShowErrorPopup(true, null, "Error getting user: " + e.Message);
+
+                    return null;
                 }
                 finally
                 {

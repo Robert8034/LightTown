@@ -1,4 +1,5 @@
 ﻿@page "/profile/edit"
+@page "/profile/{ProfileId:int}/edit"
 
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
@@ -6,7 +7,6 @@
 @using LightTown.Core
 @using User = LightTown.Core.Models.Users.User
 @using System.IO
-@using System.Runtime.CompilerServices
 
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
@@ -14,47 +14,57 @@
 @inject AuthenticationService AuthenticationService
 @inject HttpClient HttpClient
 
-<Grid Class="mt-4">
-    <GridColumn ColumnSize="ColumnSize.Medium">
-        <Form Class="w-100">
-            <FormGroup>
-                <Input Placeholder="Job" Title="Job" Text="What is your job called?" Type="text" Value="@_user.Job" OnChange="@((value) => OnJobChange(value))"/>
-            </FormGroup>
-            <FormGroup>
-                <Input Placeholder="Age" Title="Age" Text="What is your age?" Type="number" Value="@_user.Age" OnChange="@((value) => OnAgeChange(value))"/>
-            </FormGroup>
-            <FormGroup>
-                <Input Placeholder="Hometown" Title="Hometown" Text="Where do you live?" Type="text" Value="@_user.Hometown" OnChange="@((value) => OnHometownChange(value))"/>
-            </FormGroup>
-            <FormGroup>
-                <TextArea Placeholder="About" Title="About" Text="Tell everyone something about yourself." Value="@_user.About" OnChange="@((value) => OnAboutChange(value))"></TextArea>
-            </FormGroup>
-            <FormGroup AlignContent="AlignContent.Right">
-                @if (!string.IsNullOrEmpty(_userErrorMessage))
-                {
-                    <span class="text text-danger">@_userErrorMessage</span>
-                }
-                <Button Text="Save" Enabled="@CanSave()" OnClick="@(async () => await SaveUser())"></Button>
-            </FormGroup>
-        </Form>
-    </GridColumn>
-    <GridColumn Class="d-flex align-items-center" ColumnSize="ColumnSize.Small">
-        <ImageFileSelect Class="mw-300" Src="@_avatarSource" OnChange="@(file => OnAvatarChange(file))" CanSave="@CanSaveAvatar()" OnSave="@(async () => OnAvatarSave())"></ImageFileSelect>
-        @if (!string.IsNullOrEmpty(_avatarErrorMessage))
-        {
-            <span class="text text-danger">@_avatarErrorMessage</span>
-        }
-    </GridColumn>
-</Grid>
+@if (_isError)
+{
+    <h5>Whoops! Something went wrong while trying to display the page, are you sure the URL is correct?</h5>
+}
+else if (_user != null)
+{
+    <Grid Class="mt-4">
+        <GridColumn ColumnSize="ColumnSize.Medium">
+            <Form Class="w-100">
+                <FormGroup>
+                    <Input Placeholder="Job" Title="Job" Text="What is your job called?" Type="text" Value="@_user.Job" OnChange="@((value) => OnJobChange(value))"/>
+                </FormGroup>
+                <FormGroup>
+                    <Input Placeholder="Age" Title="Age" Text="What is your age?" Type="number" Value="@_user.Age" OnChange="@((value) => OnAgeChange(value))"/>
+                </FormGroup>
+                <FormGroup>
+                    <Input Placeholder="Hometown" Title="Hometown" Text="Where do you live?" Type="text" Value="@_user.Hometown" OnChange="@((value) => OnHometownChange(value))"/>
+                </FormGroup>
+                <FormGroup>
+                    <TextArea Placeholder="About" Title="About" Text="Tell everyone something about yourself." Value="@_user.About" OnChange="@((value) => OnAboutChange(value))"></TextArea>
+                </FormGroup>
+                <FormGroup AlignContent="AlignContent.Right">
+                    @if (!string.IsNullOrEmpty(_userErrorMessage))
+                    {
+                        <span class="text text-danger">@_userErrorMessage</span>
+                    }
+                    <Button Text="Save" Enabled="@CanSave()" OnClick="@(async () => await SaveUser())"></Button>
+                </FormGroup>
+            </Form>
+        </GridColumn>
+        <GridColumn Class="d-flex align-items-center" ColumnSize="ColumnSize.Small">
+            <ImageFileSelect Class="mw-300" Src="@_avatarSource" OnChange="@(file => OnAvatarChange(file))" CanSave="@CanSaveAvatar()" OnSave="@(async () => OnAvatarSave())"></ImageFileSelect>
+            @if (!string.IsNullOrEmpty(_avatarErrorMessage))
+            {
+                <span class="text text-danger">@_avatarErrorMessage</span>
+            }
+        </GridColumn>
+    </Grid>
+}
 
 @code {
-
     [Parameter]
     public int? ProfileId { get; set; }
+
+    private bool _isError = false;
 
     private string _avatarSource;
     private User _user;
     private User _newUser;
+    private List<Core.Models.Tags.Tag> _tags = new List<Core.Models.Tags.Tag>();
+    private List<Core.Models.Tags.Tag> _newTags = new List<Core.Models.Tags.Tag>();
     private FileListEntry _newAvatar;
 
     private string _userErrorMessage;
@@ -72,25 +82,35 @@
 
         _user = await UserDataService.GetUser(ProfileId.Value);
 
-        _newUser = new User
-        {
-            About = _user.About,
-            Age = _user.Age,
-            Hometown = _user.Hometown,
-            HasAvatar = _user.HasAvatar,
-            Username = _user.Username,
-            Email = _user.Email,
-            IsEmailConfirmed = _user.IsEmailConfirmed,
-            Job = _user.Job,
-            Fullname = _user.Fullname,
-            TagIds = _user.TagIds,
-            Id = _user.Id
-        };
 
-        if (_user.HasAvatar)
-            _avatarSource = $"/users/avatars/{_user.AvatarFilename}";
+        if (_user == null)
+        {
+            _isError = true;
+        }
         else
-            _avatarSource = "/libs/fontawesome-free-5.13.0/sprites/solid.svg#user";
+        {
+            _tags = await UserDataService.GetUserTags(_user.Id);
+
+            _newUser = new User
+            {
+                About = _user.About,
+                Age = _user.Age,
+                Hometown = _user.Hometown,
+                HasAvatar = _user.HasAvatar,
+                Username = _user.Username,
+                Email = _user.Email,
+                IsEmailConfirmed = _user.IsEmailConfirmed,
+                Job = _user.Job,
+                Fullname = _user.Fullname,
+                TagIds = _user.TagIds,
+                Id = _user.Id
+            };
+
+            if (_user.HasAvatar)
+                _avatarSource = $"/users/avatars/{_user.AvatarFilename}";
+            else
+                _avatarSource = "/libs/fontawesome-free-5.13.0/sprites/solid.svg#user";
+        }
     }
 
     private async Task SaveUser()
@@ -106,7 +126,7 @@
 
     private bool CanSave()
     {
-        if(_newUser.Age < 0)
+        if (_newUser.Age < 0)
             return false;
 
         //cant save if both values are null or empty or both values are the same
@@ -124,7 +144,7 @@
 
     private bool CanSaveAvatar()
     {
-        if(_newAvatar == null)
+        if (_newAvatar == null)
             return false;
 
         if (_newAvatar.Size > 8000000)
@@ -206,4 +226,4 @@
 
     }
 
-}
+    }
