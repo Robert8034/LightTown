@@ -107,14 +107,15 @@ else if (_user != null)
 
         _user = await UserDataService.GetUser(ProfileId.Value);
 
-
         if (_user == null)
         {
             _isError = true;
         }
         else
         {
-            _tags = await UserDataService.GetUserTags(_user.Id);
+            _tags = (await UserDataService.GetUserTags(_user.Id))
+                .OrderBy(tag => tag.Name)
+                .ToList();
 
             _newUser = new User
             {
@@ -161,9 +162,15 @@ else if (_user != null)
 
             var tags = result.GetData<List<Tag>>();
 
-            var newTags = UserDataService.SetTags(tags);
+            var newTags = UserDataService.SetTags(tags).ToList();
 
-            _user.Tags.AddRange(newTags);
+            _user.Tags = newTags;
+
+            _newTags.Clear();
+
+            _tags = _user.Tags
+                .OrderBy(tag => tag.Name)
+                .ToList(); ;
 
             saved = true;
         }
@@ -311,7 +318,7 @@ else if (_user != null)
             var tags = UserDataService.SearchTags(_newTagInputValue, excludeList);
 
             //if none of the existing tags have the exact search name we add it as a new tag, otherwise we simply add the search results
-            if(tags.All(tag => tag.Name != _newTagInputValue) && _newTags.Keys.All(tag => tag.Name != _newTagInputValue))
+            if(_tags.All(tag => tag.Name != _newTagInputValue) && _newTags.Keys.All(tag => tag.Name != _newTagInputValue))
             {
                 _recommendedTags.Add(new Tag { Name = _newTagInputValue }, true);
 
@@ -333,8 +340,6 @@ else if (_user != null)
                 }
             }
         }
-
-        Console.WriteLine(string.Join(", ", _newTags.Keys.Select(tag => tag.Name)));
     }
 
     private Task AddTag(Tag tag, bool isNew)

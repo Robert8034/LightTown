@@ -143,7 +143,7 @@ namespace LightTown.Client.Services.Users
         }
 
         /// <summary>
-        /// Add tags to the cache if they don't already exist. Returns a list of inserted tags.
+        /// Add tags to the cache if they don't already exist. Returns a list of tags from input, replaced with cached objects for already existing tags.
         /// </summary>
         /// <param name="tags"></param>
         public IEnumerable<Tag> SetTags(List<Tag> tags)
@@ -154,6 +154,10 @@ namespace LightTown.Client.Services.Users
                 {
                     _tags[tag.Id] = tag;
                     yield return tag;
+                }
+                else
+                {
+                    yield return _tags[tag.Id];
                 }
             }
         }

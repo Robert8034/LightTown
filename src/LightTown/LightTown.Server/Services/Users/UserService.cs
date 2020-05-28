@@ -7,6 +7,7 @@ using LightTown.Core.Domain.Tags;
 using LightTown.Core.Domain.Users;
 using LightTown.Server.Services.Tags;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace LightTown.Server.Services.Users
 {
@@ -55,13 +56,17 @@ namespace LightTown.Server.Services.Users
         public async Task<bool> TryModifyUserAvatar(User user, Stream fileStream, long? contentLength,
             string contentType)
         {
-            if (contentLength > 8000000)
+            if (contentLength < 1 || contentLength > 8000000)
                 return false;
 
             if (contentType != "image/jpeg" && contentType != "image/png")
                 return false;
 
-            string extension = contentType == "image/jpeg" ? ".jpg" : ".png";
+            string extension = contentType == "image/jpeg" ? ".jpg" : 
+                contentType == "image/jpeg" ? ".png" : null;
+
+            if (extension == null)
+                return false;
 
             if (user.HasAvatar)
                 File.Delete(Path.Combine(Config.UserAvatarPath, $"{user.AvatarFilename}"));
@@ -113,26 +118,26 @@ namespace LightTown.Server.Services.Users
         }
 
         /// <summary>
-        /// Try to modify the user's tags.
+        /// Modify the user's tags and add the tags if they don't exist.
+        /// Return the user's tags.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="tags"></param>
-        /// <param name="newTags"></param>
         /// <returns></returns>
-        public bool TryModifyUserTags(User user, List<Core.Models.Tags.Tag> tags, out List<Tag> newTags)
+        public List<Tag> ModifyUserTags(User user, List<Core.Models.Tags.Tag> tags)
         {
-            newTags = null;
+            var userTags = _userTagRepository.Table.Where(userTag => userTag.UserId == user.Id)
+                .Include(userTag => userTag.Tag).ToList();
 
-            var oldTags = _userTagRepository.Table.Where(userTag => userTag.UserId == user.Id).ToList();
+            var removedTags = userTags.Where(userTag => tags.All(tag => tag.Id != userTag.TagId)).ToList();
 
-            var removedTags = oldTags.Where(userTag => tags.All(tag => tag.Id != userTag.TagId)).ToList();
-
-            var addedTags = tags.Where(tag => oldTags.All(userTag => tag.Id != userTag.TagId)).ToList();
+            var addedTags = tags.Where(tag => userTags.All(userTag => tag.Id != userTag.TagId)).ToList();
 
             foreach (Core.Models.Tags.Tag tag in addedTags)
             {
                 if (tag.Id == 0 || _tagRepository.GetById(tag.Id) == null)
                 {
+                    tag.Id = 0;
                     tag.Id = _tagService.InsertTag(tag).Id;
                 }
             }
@@ -145,11 +150,13 @@ namespace LightTown.Server.Services.Users
                 TagId = tag.Id
             });
 
+            userTags.RemoveAll(userTag => removedTags.Contains(userTag));
+
             var addedUserTags = addedUserTagEntities.Select(userTag => _userTagRepository.Insert(userTag)).ToList();
 
-            newTags = addedUserTags.Select(userTag => userTag.Tag).ToList();
+            userTags.AddRange(addedUserTags);
 
-            return true;
+            return userTags.Select(userTag => userTag.Tag).ToList();
         }
 
         /// <summary>

@@ -180,6 +180,7 @@ namespace LightTown.Server.Controllers.Api
 
         /// <summary>
         /// Modify the current user's tags.
+        /// Returns the user's current (new) tags.
         /// </summary>
         /// <response code="204">Tags is updated.</response>
         /// <response code="400">Invalid request data.</response>
@@ -191,18 +192,16 @@ namespace LightTown.Server.Controllers.Api
         {
             var currentUser = await _userManager.GetUserAsync(User);
 
-            if (_userService.TryModifyUserTags(currentUser, tags, out List<Tag> newTags))
-            {
-                var newTagsModels = _mapper.Map<List<Core.Models.Tags.Tag>>(newTags);
+            var newTags = _userService.ModifyUserTags(currentUser, tags);
+           
+            var newTagsModels = _mapper.Map<List<Core.Models.Tags.Tag>>(newTags);
 
-                return ApiResult.Success(newTagsModels);
-            }
-
-            return ApiResult.BadRequest();
+            return ApiResult.Success(newTagsModels);
         }
 
         /// <summary>
         /// Modify a user's tags.
+        /// Returns the user's current (new) tags.
         /// </summary>
         /// <response code="204">Tags are updated.</response>
         /// <response code="400">Invalid request data.</response>
@@ -211,19 +210,18 @@ namespace LightTown.Server.Controllers.Api
         [HttpPut]
         [Route("{userId}/tags")]
         [Authorization(Permissions.MANAGE_USERS)]
-        public async Task<ApiResult> ModifyUserTags(int userId)
+        public async Task<ApiResult> ModifyUserTags(int userId, [FromBody] List<Core.Models.Tags.Tag> tags)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
             if (user == null)
                 return ApiResult.BadRequest();
 
-            if (await _userService.TryModifyUserAvatar(user, Request.Body, Request.ContentLength, Request.ContentType))
-            {
-                return ApiResult.NoContent();
-            }
+            var newTags = _userService.ModifyUserTags(user, tags);
+            
+            var newTagsModels = _mapper.Map<List<Core.Models.Tags.Tag>>(newTags);
 
-            return ApiResult.BadRequest();
+            return ApiResult.Success(newTagsModels);
         }
 
         [HttpGet]
