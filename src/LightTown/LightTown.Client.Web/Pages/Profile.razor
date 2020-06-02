@@ -1,5 +1,5 @@
 ﻿@page "/profile"
-@page "/profile/{ProfileId}"
+@page "/profile/{ProfileId:int}"
 
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
@@ -12,61 +12,66 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationService AuthenticationService
 
-<div class="profile-header py-4">
-    <span class="profile-header-name">
-        @(_user.Fullname ?? _user.Username)
-    </span>
-    <Button Text="Edit profile" OnClick="@(() => EditProfile())"></Button>
-</div>
-<Grid>
-    <GridColumn ColumnSize="ColumnSize.Small">
-        <div class="profile-avatar img-thumbnail">
-            @if (_user.HasAvatar)
-            {
-                <img src="@($"/users/avatars/{_user.AvatarFilename}")"/>
-            }
-            else
-            {
-                <svg>
-                    <use xlink:href="libs/fontawesome-free-5.13.0/sprites/solid.svg#user"></use>
-                </svg>
-            }
-        </div>
-        <div class="d-block mt-4">
-            <h3>Info</h3>
-            <div class="w-100">
-                <span class="text-primary-color">Job: </span>
-                <span class="text">@(!string.IsNullOrEmpty(_user.Job) ? _user.Job : "-")</span>
-            </div>
-            <div class="w-100">
-                <span class="text-primary-color">Age: </span>
-                <span class="text">@(_user.Age != 0 ? _user.Age.ToString() : "-")</span>
-            </div>
-            <div class="w-100">
-                <span class="text-primary-color">Hometown: </span>
-                <span class="text">@(!string.IsNullOrEmpty(_user.Hometown) ? _user.Hometown : "-")</span>
-            </div>
-        </div>
-        <div class="d-block mt-4">
-            <h3>Tags</h3>
-            <div class="d-inline">
-                @foreach (var tag in _tags)
+@if (_isError)
+{
+    <h5>Whoops! Something went wrong while trying to display the page, are you sure the URL is correct?</h5>
+}
+else if(_user != null)
+{
+    <div class="profile-header py-4">
+        <span class="profile-header-name">
+            @(_user.Fullname ?? _user.Username)
+        </span>
+        <Button Text="Edit profile" OnClick="@(() => EditProfile())"></Button>
+    </div>
+    <Grid>
+        <GridColumn ColumnSize="ColumnSize.Small">
+            <div class="profile-avatar img-thumbnail">
+                @if (_user.HasAvatar)
                 {
-                    <Tag Text="@tag.Name"></Tag>
+                    <img src="@($"/users/avatars/{_user.AvatarFilename}")"/>
+                }
+                else
+                {
+                    <svg>
+                        <use xlink:href="libs/fontawesome-free-5.13.0/sprites/solid.svg#user"></use>
+                    </svg>
                 }
             </div>
-        </div>
-    </GridColumn>
-    <GridColumn ColumnSize="ColumnSize.Medium">
-        <h3>About</h3>
-        <span class="text">@(!string.IsNullOrEmpty(_user.About) ? @_user.About : "This user doesn't have his/her about page setup yet.")</span>
-    </GridColumn>
-</Grid>
+            <div class="d-block mt-4">
+                <h3>Info</h3>
+                <div class="w-100">
+                    <span class="text-primary-color">Job: </span>
+                    <span class="text">@(!string.IsNullOrEmpty(_user.Job) ? _user.Job : "-")</span>
+                </div>
+                <div class="w-100">
+                    <span class="text-primary-color">Hometown: </span>
+                    <span class="text">@(!string.IsNullOrEmpty(_user.Hometown) ? _user.Hometown : "-")</span>
+                </div>
+            </div>
+            <div class="d-block mt-4">
+                <h3>Tags</h3>
+                <div class="d-inline">
+                    @foreach (var tag in _tags)
+                    {
+                        <Tag Text="@tag.Name"></Tag>
+                    }
+                </div>
+            </div>
+        </GridColumn>
+        <GridColumn ColumnSize="ColumnSize.Medium">
+            <h3>About</h3>
+            <span class="text">@(!string.IsNullOrEmpty(_user.About) ? @_user.About : "This user doesn't have his/her about page setup yet.")</span>
+        </GridColumn>
+    </Grid>
+}
 
 @code {
 
     [Parameter]
     public int? ProfileId { get; set; }
+
+    private bool _isError = false;
 
     private User _user;
     private List<Tag> _tags = new List<Tag>();
@@ -83,12 +88,19 @@
 
         _user = await UserDataService.GetUser(ProfileId.Value);
 
-        _tags = await UserDataService.GetUserTags(_user.Id);
+        if (_user == null)
+        {
+            _isError = true;
+        }
+        else
+        {
+            _tags = await UserDataService.GetUserTags(_user.Id);
+        }
     }
 
     public Task EditProfile()
     {
-        NavigationManager.NavigateTo("/profile/edit");
+        NavigationManager.NavigateTo(ProfileId == UserDataService.GetCurrentUser().Id ? "/profile/edit" : $"/profile/{ProfileId}/edit");
 
         return Task.CompletedTask;
     }

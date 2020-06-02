@@ -171,7 +171,7 @@ namespace LightTown.Client.Tests.Services.Users
             var projectAgain = await userDataService.GetProject(projectId);
 
             //ASSERT
-            //even though GetProject() was called twice, we only expect it to actually retrieve data from the server the first time (so only once).
+            //even though GetProject() was called twice, we only expect it to actually retrieve data from the server the first time (so only once), assuming it cached the project.
             _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(shouldBeNull ? 2 : 1),
                 ItExpr.Is<HttpRequestMessage>(req =>
                     req.Method == HttpMethod.Get
@@ -200,11 +200,11 @@ namespace LightTown.Client.Tests.Services.Users
         /// <summary>
         /// Tests whether <see cref="UserDataService.GetUser"/> gets the user and if it caches the user.
         /// </summary>
-        [Fact]
-        public async Task GetUserTest()
+        [Theory]
+        [InlineData(1, false)]
+        [InlineData(1337, true)]
+        public async Task GetUserTest(int userId, bool shouldBeNull)
         {
-            int userId = 1;
-
             //ARRANGE
             _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Get, "api/users/1", HttpStatusCode.OK, new ApiResult(HttpStatusCode.OK, new User
             {
@@ -217,6 +217,8 @@ namespace LightTown.Client.Tests.Services.Users
             }
             ));
 
+            _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Get, "api/users/1337", HttpStatusCode.NotFound, null);
+
             _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Get, "api/tags/2", HttpStatusCode.OK, new ApiResult(HttpStatusCode.OK, new Tag { Id = 2 }));
             _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Get, "api/tags/3", HttpStatusCode.OK, new ApiResult(HttpStatusCode.OK, new Tag { Id = 3 }));
 
@@ -228,8 +230,8 @@ namespace LightTown.Client.Tests.Services.Users
             var userAgain = await userDataService.GetUser(userId);
 
             //ASSERT
-            //even though GetUser() was called twice, we only expect it to actually retrieve data from the server the first time (so only once).
-            _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(1),
+            //even though GetUser() was called twice, we only expect it to actually retrieve data from the server the first time (so only once), assuming it cached the user.
+            _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Exactly(shouldBeNull ? 2 : 1),
                 ItExpr.Is<HttpRequestMessage>(req =>
                     req.Method == HttpMethod.Get
                     && req.RequestUri == new Uri($"https://localhost:5001/api/users/{userId}")
@@ -237,12 +239,20 @@ namespace LightTown.Client.Tests.Services.Users
                 ItExpr.IsAny<CancellationToken>()
             );
 
-            Assert.Equal("admin", user.Username);
-            Assert.Equal(2, user.Tags.Count);
-            Assert.Equal(2, user.Tags[0].Id);
+            if (shouldBeNull)
+            {
+                Assert.Null(user);
+                Assert.Null(userAgain);
+            }
+            else
+            {
+                Assert.Equal("admin", user.Username);
+                Assert.Equal(2, user.Tags.Count);
+                Assert.Equal(2, user.Tags[0].Id);
 
-            //we expect both users to be the same object since the second GetUser() call simply returned the cached user.
-            Assert.Equal(userAgain, user);
+                //we expect both users to be the same object since the second GetUser() call simply returned the cached user.
+                Assert.Equal(userAgain, user);
+            }
         }
 
         /// <summary>

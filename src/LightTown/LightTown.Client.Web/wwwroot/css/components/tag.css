@@ -1,0 +1,10 @@
+﻿.tag-close {
+    font-size: 12px;
+    cursor: pointer;
+    width: 12px;
+    display: inline-block;
+}
+
+.tag-clickable {
+    cursor: pointer;
+}
