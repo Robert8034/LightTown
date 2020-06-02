@@ -1,4 +1,10 @@
-﻿<span class="badge badge-pill badge-primary">@Text</span>
+﻿<span class="badge badge-pill badge-primary @(Clickable ? "tag-clickable" : "")" @onclick="@(async () => await Click())">
+    @Text
+    @if (Removable)
+    {
+        <span aria-hidden="true" class="tag-close" @onclick="@(async () => await Remove())">&times;</span>
+    }
+</span>
 
 @code {
     [Parameter]
@@ -12,4 +18,32 @@
 
     [Parameter]
     public string Link { get; set; } = "#";
+
+    [Parameter]
+    public bool Clickable { get; set; }
+
+    [Parameter]
+    public Func<Task> OnClick { get; set; }
+
+    [Parameter]
+    public bool Removable { get; set; }
+
+    [Parameter]
+    public Func<Task> OnRemove { get; set; }
+
+    private async Task Remove()
+    {
+        if (OnRemove != null)
+        {
+            await OnRemove();
+        }
+    }
+
+    private async Task Click()
+    {
+        if (OnClick != null)
+        {
+            await OnClick();
+        }
+    }
 }

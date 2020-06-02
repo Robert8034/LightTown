@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using LightTown.Core;
 using LightTown.Core.Domain.Roles;
+using LightTown.Core.Domain.Tags;
 using LightTown.Core.Domain.Users;
 using LightTown.Server.Services.Users;
 using Microsoft.AspNetCore.Identity;
@@ -174,6 +175,53 @@ namespace LightTown.Server.Controllers.Api
             }
 
             return ApiResult.BadRequest();
+        }
+
+
+        /// <summary>
+        /// Modify the current user's tags.
+        /// Returns the user's current (new) tags.
+        /// </summary>
+        /// <response code="204">Tags is updated.</response>
+        /// <response code="400">Invalid request data.</response>
+        /// <response code="401">The user isn't authorized.</response>
+        [HttpPut]
+        [Route("@me/tags")]
+        [Authorization(Permissions.NONE)]
+        public async Task<ApiResult> ModifySelfTags([FromBody] List<Core.Models.Tags.Tag> tags)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var newTags = _userService.ModifyUserTags(currentUser, tags);
+           
+            var newTagsModels = _mapper.Map<List<Core.Models.Tags.Tag>>(newTags);
+
+            return ApiResult.Success(newTagsModels);
+        }
+
+        /// <summary>
+        /// Modify a user's tags.
+        /// Returns the user's current (new) tags.
+        /// </summary>
+        /// <response code="204">Tags are updated.</response>
+        /// <response code="400">Invalid request data.</response>
+        /// <response code="401">The user isn't authorized.</response>
+        /// <response code="403">The user doesn't have the right permissions.</response>
+        [HttpPut]
+        [Route("{userId}/tags")]
+        [Authorization(Permissions.MANAGE_USERS)]
+        public async Task<ApiResult> ModifyUserTags(int userId, [FromBody] List<Core.Models.Tags.Tag> tags)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null)
+                return ApiResult.BadRequest();
+
+            var newTags = _userService.ModifyUserTags(user, tags);
+            
+            var newTagsModels = _mapper.Map<List<Core.Models.Tags.Tag>>(newTags);
+
+            return ApiResult.Success(newTagsModels);
         }
 
         [HttpGet]

@@ -111,6 +111,57 @@ namespace LightTown.Client.Services.Users
             _currentUser = user;
         }
 
+        public List<Tag> SearchTags(string name, List<Tag> excludeList = null)
+        {
+            int maxResults = 10;
+
+            List<Tag> results = new List<Tag>();
+
+            //filter tags based on exclude list
+            List<Tag> filteredTags = _tags.Values.Where(tag => !excludeList?.Contains(tag) ?? true).ToList();
+
+            //search for tag with the exact name or with name to lower
+            if(filteredTags.Any(tag => tag.Name == name))
+                results.Add(filteredTags.First(tag => tag.Name == name));
+            else if (filteredTags.Any(tag => tag.Name.ToLower() == name.ToLower()))
+                results.Add(filteredTags.First(tag => tag.Name.ToLower() == name.ToLower()));
+
+            //search for tags that start with name (don't include tags already in the results list)
+            results.AddRange(filteredTags.Where(tag => !results.Contains(tag) &&
+                                                       tag.Name.ToLower().StartsWith(name.ToLower())).ToList());
+
+            //return the first 10 results if 10 has already been reached
+            if (results.Count >= maxResults)
+                return results.Take(maxResults).ToList();
+
+            //search for tags that contain name (don't include tags already in the results list)
+            results.AddRange(filteredTags.Where(tag => !results.Contains(tag) &&
+                                                       tag.Name.ToLower().Contains(name.ToLower())));
+
+            //return the first 10 results
+            return results.Take(maxResults).ToList();
+        }
+
+        /// <summary>
+        /// Add tags to the cache if they don't already exist. Returns a list of tags from input, replaced with cached objects for already existing tags.
+        /// </summary>
+        /// <param name="tags"></param>
+        public IEnumerable<Tag> SetTags(List<Tag> tags)
+        {
+            foreach (var tag in tags)
+            {
+                if (!_tags.ContainsKey(tag.Id))
+                {
+                    _tags[tag.Id] = tag;
+                    yield return tag;
+                }
+                else
+                {
+                    yield return _tags[tag.Id];
+                }
+            }
+        }
+
         /// <summary>
         /// Get the list of available projects.
         /// </summary>

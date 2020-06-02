@@ -3,8 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LightTown.Core.Data;
+using LightTown.Core.Domain.Tags;
 using LightTown.Core.Domain.Users;
+using LightTown.Server.Services.Tags;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace LightTown.Server.Services.Users
 {
@@ -12,11 +15,15 @@ namespace LightTown.Server.Services.Users
     {
         private readonly UserManager<User> _userManager;
         private readonly IRepository<UserTag> _userTagRepository;
+        private readonly IRepository<Tag> _tagRepository;
+        private readonly ITagService _tagService;
 
-        public UserService(UserManager<User> userManager, IRepository<UserTag> userTagRepository)
+        public UserService(UserManager<User> userManager, IRepository<UserTag> userTagRepository, IRepository<Tag> tagRepository, ITagService tagService)
         {
             _userManager = userManager;
             _userTagRepository = userTagRepository;
+            _tagRepository = tagRepository;
+            _tagService = tagService;
         }
 
         /// <summary>
@@ -33,7 +40,6 @@ namespace LightTown.Server.Services.Users
             if (!IsUserValid(user, oldUser))
                 return false;
 
-            oldUser.Age = user.Age;
             oldUser.About = user.About;
             oldUser.Hometown = user.Hometown;
             oldUser.Job = user.Job;
@@ -50,13 +56,17 @@ namespace LightTown.Server.Services.Users
         public async Task<bool> TryModifyUserAvatar(User user, Stream fileStream, long? contentLength,
             string contentType)
         {
-            if (contentLength > 8000000)
+            if (contentLength < 1 || contentLength > 8000000)
                 return false;
 
             if (contentType != "image/jpeg" && contentType != "image/png")
                 return false;
 
-            string extension = contentType == "image/jpeg" ? ".jpg" : ".png";
+            string extension = contentType == "image/jpeg" ? ".jpg" : 
+                contentType == "image/jpeg" ? ".png" : null;
+
+            if (extension == null)
+                return false;
 
             if (user.HasAvatar)
                 File.Delete(Path.Combine(Config.UserAvatarPath, $"{user.AvatarFilename}"));
@@ -108,6 +118,48 @@ namespace LightTown.Server.Services.Users
         }
 
         /// <summary>
+        /// Modify the user's tags and add the tags if they don't exist.
+        /// Return the user's tags.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public List<Tag> ModifyUserTags(User user, List<Core.Models.Tags.Tag> tags)
+        {
+            var userTags = _userTagRepository.Table.Where(userTag => userTag.UserId == user.Id)
+                .Include(userTag => userTag.Tag).ToList();
+
+            var removedTags = userTags.Where(userTag => tags.All(tag => tag.Id != userTag.TagId)).ToList();
+
+            var addedTags = tags.Where(tag => userTags.All(userTag => tag.Id != userTag.TagId)).ToList();
+
+            foreach (Core.Models.Tags.Tag tag in addedTags)
+            {
+                if (tag.Id == 0 || _tagRepository.GetById(tag.Id) == null)
+                {
+                    tag.Id = 0;
+                    tag.Id = _tagService.InsertTag(tag).Id;
+                }
+            }
+
+            _userTagRepository.Delete(removedTags);
+
+            var addedUserTagEntities = addedTags.Select(tag => new UserTag
+            {
+                UserId = user.Id,
+                TagId = tag.Id
+            });
+
+            userTags.RemoveAll(userTag => removedTags.Contains(userTag));
+
+            var addedUserTags = addedUserTagEntities.Select(userTag => _userTagRepository.Insert(userTag)).ToList();
+
+            userTags.AddRange(addedUserTags);
+
+            return userTags.Select(userTag => userTag.Tag).ToList();
+        }
+
+        /// <summary>
         /// Returns if the user model is considered valid, assuming the user id's are correct.
         /// </summary>
         /// <param name="user"></param>
@@ -116,8 +168,6 @@ namespace LightTown.Server.Services.Users
         private bool IsUserValid(Core.Models.Users.User user, User oldUser)
         {
             if (user.Username != oldUser.UserName)
-                return false;
-            if (user.Age < 0)
                 return false;
 
             return true;

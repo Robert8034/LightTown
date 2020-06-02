@@ -19,7 +19,6 @@ namespace LightTown.Core.Models.Users
         public bool HasAvatar { get; set; }
         public string Fullname { get; set; }
         public string About { get; set; }
-        public int Age { get; set; }
         public string Hometown { get; set; }
         public string Job { get; set; }
         public string AvatarFilename { get; set; }

@@ -26,6 +26,9 @@ namespace LightTown.Core
             Data = value == null ? null : JToken.FromObject(value);
         }
 
+        public ApiResult()
+        { }
+
         /// <summary>
         /// Get the JSON data from the ApiResult response.
         /// <para>
