@@ -1,7 +1,6 @@
 ﻿.form-group {
     display: flex;
     margin-bottom: 0;
-    flex-direction: column;
 }
 
 .form-group-content-right {

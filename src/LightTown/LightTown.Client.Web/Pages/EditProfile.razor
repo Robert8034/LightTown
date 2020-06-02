@@ -34,23 +34,25 @@ else if (_user != null)
                     <TextArea Placeholder="About" Title="About" Text="Tell everyone something about yourself." Value="@_user.About" OnChange="@((value) => OnAboutChange(value))"></TextArea>
                 </FormGroup>
                 <FormGroup>
-                    <span class="text-title w-100">Tags</span>
-                    <div class="d-inline mb-2">
-                        @foreach (var tag in _tags)
-                        {
-                            <Tag Text="@tag.Name" Removable="true" OnRemove="@(() => RemoveTag(tag))"></Tag>
-                        }
-                        @foreach (var tag in _newTags.Keys)
-                        {
-                            <Tag Text="@tag.Name" Removable="true" OnRemove="@(() => RemoveTag(tag))"></Tag>
-                        }
-                    </div>
-                    <Input Placeholder="Add tags..." Type="text" OnChange="@((value) => OnAddTagChange(value))" />
-                    <div class="d-inline mb-2">
-                        @foreach (var tag in _recommendedTags)
-                        {
-                            <Tag Text="@tag.Key.Name" Clickable="true" OnClick="@(() => AddTag(tag.Key, tag.Value))"></Tag>
-                        }
+                    <div class="d-flex flex-column">
+                        <span class="text-title w-100">Tags</span>
+                        <div class="d-inline mb-2">
+                            @foreach (var tag in _tags)
+                            {
+                                <Tag Text="@tag.Name" Removable="true" OnRemove="@(() => RemoveTag(tag))"></Tag>
+                            }
+                            @foreach (var tag in _newTags.Keys)
+                            {
+                                <Tag Text="@tag.Name" Removable="true" OnRemove="@(() => RemoveTag(tag))"></Tag>
+                            }
+                        </div>
+                        <Input Placeholder="Add tags..." Type="text" OnChange="@((value) => OnAddTagChange(value))"/>
+                        <div class="d-inline mb-2">
+                            @foreach (var tag in _recommendedTags)
+                            {
+                                <Tag Text="@tag.Key.Name" Clickable="true" OnClick="@(() => AddTag(tag.Key, tag.Value))"></Tag>
+                            }
+                        </div>
                     </div>
                 </FormGroup>
                 <FormGroup AlignContent="AlignContent.Right">
