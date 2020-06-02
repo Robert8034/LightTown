@@ -63,7 +63,7 @@ namespace LightTown.Server.Services.Users
                 return false;
 
             string extension = contentType == "image/jpeg" ? ".jpg" : 
-                contentType == "image/jpeg" ? ".png" : null;
+                contentType == "image/png" ? ".png" : null;
 
             if (extension == null)
                 return false;
