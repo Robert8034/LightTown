@@ -30,6 +30,10 @@ namespace LightTown.Client.Tests.Services.Users
             };
         }
 
+        /// <summary>
+        /// Tests searching for a list of users with a given search string
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task SearchUsersTest()
         {
