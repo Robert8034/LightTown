@@ -44,7 +44,7 @@ namespace LightTown.Server.Tests.Services.Projects
                 options.Insert(project3);
             });
             
-            var projectService = new ProjectService(_projectRepositoryMock.Object, null);
+            var projectService = new ProjectService(_projectRepositoryMock.Object, null, null, null, null);
 
             //Act
             var actualProject = projectService.GetProject(2);
@@ -79,7 +79,7 @@ namespace LightTown.Server.Tests.Services.Projects
                 project3
             };
 
-            var projectService = new ProjectService(_projectRepositoryMock.Object, null);
+            var projectService = new ProjectService(_projectRepositoryMock.Object, null, null, null, null);
 
             //Act
             List<Project> actualProjects = projectService.GetProjects().ToList();
@@ -106,7 +106,7 @@ namespace LightTown.Server.Tests.Services.Projects
 
             });
 
-            var projectService = new ProjectService(_projectRepositoryMock.Object, null);
+            var projectService = new ProjectService(_projectRepositoryMock.Object, null, null, null, null);
 
             //Act
             var actualProject = projectService.CreateProject("Project1", "ProjectDescription", 1);
