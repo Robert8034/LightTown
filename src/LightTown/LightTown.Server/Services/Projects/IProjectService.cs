@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using LightTown.Core.Domain.Projects;
+using LightTown.Core.Domain.Tags;
 using LightTown.Core.Domain.Users;
 
 namespace LightTown.Server.Services.Projects
@@ -82,5 +85,9 @@ namespace LightTown.Server.Services.Projects
         /// <param name="searchValue"></param>
         /// <returns></returns>
         List<Project> SearchProjects(string searchValue);
+
+        Task<bool> TryModifyProjectImage(int projectId, Stream fileStream, long? contentLength, string contentType);
+        bool TryGetProjectImage(string imageFilename, out byte[] imageBytes);
+        List<Tag> ModifyProjectTags(int projectId, List<Core.Models.Tags.Tag> tags);
     }
 }

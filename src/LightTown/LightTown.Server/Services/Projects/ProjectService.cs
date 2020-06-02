@@ -1,9 +1,13 @@
 ﻿using System;
 using LightTown.Core.Domain.Projects;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using LightTown.Core.Data;
+using LightTown.Core.Domain.Tags;
 using LightTown.Core.Domain.Users;
+using LightTown.Server.Services.Tags;
 using Microsoft.EntityFrameworkCore;
 
 namespace LightTown.Server.Services.Projects
@@ -12,11 +16,17 @@ namespace LightTown.Server.Services.Projects
     {
         private readonly IRepository<Project> _projectRepository;
         private readonly IRepository<ProjectMember> _projectMemberRepository;
+        private readonly IRepository<ProjectTag> _projectTagRepository;
+        private readonly IRepository<Tag> _tagRepository;
+        private readonly ITagService _tagService;
 
-        public ProjectService(IRepository<Project> projectRepository, IRepository<ProjectMember> projectMemberRepository)
+        public ProjectService(IRepository<Project> projectRepository, IRepository<ProjectMember> projectMemberRepository, IRepository<ProjectTag> projectTagRepository, IRepository<Tag> tagRepository, ITagService tagService)
         {
             _projectRepository = projectRepository;
             _projectMemberRepository = projectMemberRepository;
+            _projectTagRepository = projectTagRepository;
+            _tagRepository = tagRepository;
+            _tagService = tagService;
         }
 
         public IEnumerable<Project> GetProjects()
@@ -114,6 +124,87 @@ namespace LightTown.Server.Services.Projects
                 return _projectRepository.TableNoTracking.Where(e => EF.Functions.Like(e.ProjectName, $"%{searchValue}%")).ToList();
             }
             return new List<Project>();
+        }
+
+        public async Task<bool> TryModifyProjectImage(int projectId, Stream fileStream, long? contentLength, string contentType)
+        {
+            if (contentLength < 1 || contentLength > 8000000)
+                return false;
+
+            if (contentType != "image/jpeg" && contentType != "image/png")
+                return false;
+
+            string extension = contentType == "image/jpeg" ? ".jpg" :
+                contentType == "image/png" ? ".png" : null;
+
+            if (extension == null)
+                return false;
+
+            var project = GetProject(projectId);
+
+            if (project.HasImage)
+                File.Delete(Path.Combine(Config.ProjectImagePath, $"{project.ImageFilename}"));
+
+            using (var stream = File.Create(Path.Combine(Config.ProjectImagePath, $"{project.Id}{extension}")))
+            {
+                await fileStream.CopyToAsync(stream);
+            }
+
+            project.HasImage = true;
+            project.ImageFilename = $"{project.Id}{extension}";
+
+            PutProject(project);
+
+            return true;
+        }
+
+        public bool TryGetProjectImage(string imageFilename, out byte[] imageBytes)
+        {
+            imageBytes = new byte[0];
+
+            if (File.Exists(Path.Combine(Config.ProjectImagePath, imageFilename)))
+            {
+                imageBytes = File.ReadAllBytes(Path.Combine(Config.ProjectImagePath, imageFilename));
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public List<Tag> ModifyProjectTags(int projectId, List<Core.Models.Tags.Tag> tags)
+        {
+            var projectTags = _projectTagRepository.Table.Where(projectTag => projectTag.ProjectId == projectId)
+                .Include(projectTag => projectTag.Tag).ToList();
+
+            var removedTags = projectTags.Where(projectTag => tags.All(tag => tag.Id != projectTag.TagId)).ToList();
+
+            var addedTags = tags.Where(tag => projectTags.All(projectTag => tag.Id != projectTag.TagId)).ToList();
+
+            foreach (Core.Models.Tags.Tag tag in addedTags)
+            {
+                if (tag.Id == 0 || _tagRepository.GetById(tag.Id) == null)
+                {
+                    tag.Id = 0;
+                    tag.Id = _tagService.InsertTag(tag).Id;
+                }
+            }
+
+            _projectTagRepository.Delete(removedTags);
+
+            var addedProjectTagEntities = addedTags.Select(tag => new ProjectTag
+            {
+                ProjectId = projectId,
+                TagId = tag.Id
+            });
+
+            projectTags.RemoveAll(projectTag => removedTags.Contains(projectTag));
+
+            var addedProjectTags = addedProjectTagEntities.Select(projectTag => _projectTagRepository.Insert(projectTag)).ToList();
+
+            projectTags.AddRange(addedProjectTags);
+
+            return projectTags.Select(projectTag => projectTag.Tag).ToList();
         }
     }
 }

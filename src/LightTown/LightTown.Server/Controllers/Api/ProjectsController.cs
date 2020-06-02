@@ -223,7 +223,31 @@ namespace LightTown.Server.Controllers.Api
             var projectsModel = _mapper.Map<List<Core.Models.Projects.Project>>(projects);
 
             return ApiResult.Success(projectsModel); 
-        } 
+        }
 
+        [HttpPut]
+        [Route("{projectId}/image")]
+        [Authorization(Permissions.NONE)]
+        public async Task<ApiResult> ModifyProjectImage(int projectId)
+        {
+            if (await _projectService.TryModifyProjectImage(projectId, Request.Body, Request.ContentLength, Request.ContentType))
+            {
+                return ApiResult.NoContent();
+            }
+
+            return ApiResult.BadRequest();
+        }
+
+        [HttpPut]
+        [Route("{projectId}/tags")]
+        [Authorization(Permissions.NONE)]
+        public ApiResult ModifyProjectTags([FromBody] List<Tag> tags, int projectId)
+        {
+            var newTags = _projectService.ModifyProjectTags(projectId, tags);
+
+            var newTagsModels = _mapper.Map<List<Tag>>(newTags);
+
+            return ApiResult.Success(newTagsModels);
+        }
     }
 }

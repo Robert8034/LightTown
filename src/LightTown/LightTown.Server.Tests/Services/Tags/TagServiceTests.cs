@@ -56,6 +56,33 @@ namespace LightTown.Server.Tests.Services.Tags
         }
 
         /// <summary>
+        /// Test to get a specific tag and check if the database returns the correct tag.
+        /// </summary>
+        [Fact]
+        public void GetSingleTagTest()
+        {
+            //Arrange
+            var tag1 = new Tag { Id = 1, Name = "Tag1" };
+            var tag2 = new Tag { Id = 2, Name = "Tag2" };
+            var tag3 = new Tag { Id = 3, Name = "Tag3" };
+
+            _tagRepositoryMock.SetupRepositoryMock(options =>
+            {
+                options.Insert(tag1);
+                options.Insert(tag2);
+                options.Insert(tag3);
+            });
+
+            var tagService = new TagService(_tagRepositoryMock.Object);
+
+            //Act
+            var actualTag = tagService.GetTag(2);
+
+            Assert.Equal(tag2.Id, actualTag.Id);
+            Assert.Equal(tag2.Name, actualTag.Name);
+        }
+
+        /// <summary>
         /// Test the GetTag method and see if it return the right tag in the database.
         /// </summary>
         [Theory]

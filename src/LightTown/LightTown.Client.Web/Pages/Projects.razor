@@ -19,9 +19,14 @@
                             <GridColumn ColumnSize="ColumnSize.Small">
                                 <div class="content-vertical">
                                     <GridItem>
-
-                                        <img class="img-overview" src="https://www.expert.nl/media/frontend/catalog/products/372569585/630x630/372569585-3216374.jpg" />
-
+                                        @if (project.HasImage)
+                                        {
+                                            <img class="img-overview" src="@($"/projects/images/{project.ImageFilename}")"/>
+                                        }
+                                        else
+                                        {
+                                            <img class="img-overview" src="https://www.expert.nl/media/frontend/catalog/products/372569585/630x630/372569585-3216374.jpg" />
+                                        }
                                     </GridItem>
                                 </div>
                             </GridColumn>

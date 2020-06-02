@@ -63,7 +63,14 @@
             <GridColumn ColumnSize="ColumnSize.Small">
                 <div>
                     <GridItem>
-                        <img class="img-detail" src="https://www.expert.nl/media/frontend/catalog/products/372569585/630x630/372569585-3216374.jpg" />
+                        @if (_project.HasImage)
+                        {
+                            <img class="img-detail" src="@($"/projects/images/{_project.ImageFilename}")"/>
+                        }
+                        else
+                        {
+                            <img class="img-detail" src="https://www.expert.nl/media/frontend/catalog/products/372569585/630x630/372569585-3216374.jpg" />
+                        }
                     </GridItem>
                 </div>
             </GridColumn>

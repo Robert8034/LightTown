@@ -32,6 +32,12 @@ namespace LightTown.Server.Data.Migrations
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("HasImage")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ImageFilename")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("LastModifiedDateTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -153,9 +159,6 @@ namespace LightTown.Server.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Age")
                         .HasColumnType("integer");
 
                     b.Property<string>("AvatarFilename")

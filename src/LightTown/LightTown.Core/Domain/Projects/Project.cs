@@ -18,5 +18,7 @@ namespace LightTown.Core.Domain.Projects
         //public List<Tag> Tags { get; set; }
         public DateTime CreationDateTime { get; set; }
         public DateTime LastModifiedDateTime { get; set; }
+        public bool HasImage { get; set; }
+        public string ImageFilename { get; set; }
     }
 }

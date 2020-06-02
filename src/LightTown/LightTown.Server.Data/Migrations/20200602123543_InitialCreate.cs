@@ -48,7 +48,6 @@ namespace LightTown.Server.Data.Migrations
                     Fullname = table.Column<string>(nullable: true),
                     About = table.Column<string>(nullable: true),
                     HasAvatar = table.Column<bool>(nullable: false),
-                    Age = table.Column<int>(nullable: false),
                     Hometown = table.Column<string>(nullable: true),
                     Job = table.Column<string>(nullable: true),
                     AvatarFilename = table.Column<string>(nullable: true)
@@ -187,7 +186,9 @@ namespace LightTown.Server.Data.Migrations
                     ProjectDescription = table.Column<string>(nullable: true),
                     CreatorId = table.Column<int>(nullable: false),
                     CreationDateTime = table.Column<DateTime>(nullable: false),
-                    LastModifiedDateTime = table.Column<DateTime>(nullable: false)
+                    LastModifiedDateTime = table.Column<DateTime>(nullable: false),
+                    HasImage = table.Column<bool>(nullable: false),
+                    ImageFilename = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
