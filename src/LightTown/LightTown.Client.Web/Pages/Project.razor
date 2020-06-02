@@ -39,7 +39,7 @@
             </GridColumn>
             <GridColumn ColumnSize="ColumnSize.Small">
                 <GridItem>
-                    <Button class="button-join" Enabled="@true" Text="Join" Size="ButtonSize.Big"></Button> 
+                    <Button Enabled="@_joinBtnEnabled" OnClick="@(() => AddMemberToProject(UserDataService.GetCurrentUser().Id))" Text="Join" Size="ButtonSize.Big"></Button> 
                 </GridItem>
             </GridColumn>
         </Grid>
@@ -71,15 +71,12 @@
                 <GridItem>
                     <p1>
                         @_project.ProjectDescription
-                        <br />Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tristique aliquet turpis ac ultrices. Sed porttitor ipsum quis nisi feugiat, a porttitor lacus cursus. Aliquam fringilla molestie dignissim. Vestibulum non finibus metus. Morbi eget justo non leo convallis mattis id non nisl. Nulla scelerisque facilisis neque, ut luctus purus pretium nec. Aliquam at nunc erat. Pellentesque pharetra risus sem, a fermentum eros dignissim in. Nunc finibus tempor lorem sed lobortis.
-
-                        Phasellus porttitor vitae metus et gravida. Nam sed metus neque. Vivamus at sapien risus. Maecenas facilisis lacus ut ligula viverra, nec facilisis elit maximus. Sed ut rutrum velit, id faucibus eros. Proin porta porta diam. Donec ultrices, enim nec pharetra scelerisque, magna augue tincidunt velit, a vestibulum erat lectus eget ipsum. Aenean convallis quis lectus et pulvinar. Vivamus sed molestie arcu. Ut aliquam lobortis est. <br />
                     </p1>
                     <div class="d-inline">
                         <br />
                         @foreach (var tag in _project.Tags) //return List<int> at the moment. Need to be strings?
                         {
-                            <Tag Text="" />
+                            <Tag Text="@tag.Name" />
                         }
                     </div>
                 </GridItem>
@@ -88,8 +85,22 @@
     </GridColumn>
 </Grid>
 
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Small">
+    </GridColumn>
+    <GridColumn ColumnSize="ColumnSize.Medium">
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Full">
+                <GridItem>
+                    <h2><br />Messages</h2>
+                </GridItem>
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Small">
+            </GridColumn>
+        </Grid>
+    </GridColumn>
+</Grid>
 
-<h2><br />Messages</h2>
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Small">
     </GridColumn>
@@ -124,6 +135,7 @@
     private LightTown.Core.Models.Projects.Project _project;
 
     private bool active;
+    private bool _joinBtnEnabled;
 
     private List<User> users = new List<User>();
 
@@ -135,8 +147,9 @@
             return;
         }
 
-
         _project = await UserDataService.GetProject(ProjectId);
+
+        await DisableJoinButton();
     }
 
     private async Task RemoveMemberFromProject(int userId)
@@ -144,21 +157,25 @@
         await ProjectService.RemoveMember(ProjectId, userId);
     }
 
-    @*@if (_project?.Members != null)
+    private async Task AddMemberToProject(int userId)
+    {
+        await ProjectService.AddMember(userId, ProjectId);
+
+        _project.Members = await ProjectService.GetProjectMembers(ProjectId);
+
+        StateHasChanged();
+    }
+
+    private async Task DisableJoinButton()
+    {
+        if (_project.Members.Contains(UserDataService.GetCurrentUser()))
         {
-            foreach (var member in _project.Members)
-            {
-            <GridItem>
-            <FormGroup>
-            <p1>Name: @member.Username</p1>
-            </FormGroup>
-            <FormGroup>
-            <p1>Email: @member.Email</p1>
-            </FormGroup>
-            <FormGroup>
-            <Button Enabled="@true" Text="Remove From Project" OnClick="@(() => RemoveMemberFromProject(member.Id))" Size="ButtonSize.Full"></Button>
-            </FormGroup>
-            </GridItem>
-            }
-        }*@
+            _joinBtnEnabled = false;
+        }
+        else
+        {
+            _joinBtnEnabled = true;
+        }
+        
+    }
 }
