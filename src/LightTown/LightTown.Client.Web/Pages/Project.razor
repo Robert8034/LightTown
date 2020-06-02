@@ -76,7 +76,7 @@
                         <br />
                         @foreach (var tag in _project.Tags) //return List<int> at the moment. Need to be strings?
                         {
-                            <Tag Text="" />
+                            <Tag Text="@tag.Name" />
                         }
                     </div>
                 </GridItem>
@@ -149,9 +149,7 @@
 
         _project = await UserDataService.GetProject(ProjectId);
 
-        DisableJoinButton();
-
-
+        await DisableJoinButton();
     }
 
     private async Task RemoveMemberFromProject(int userId)
@@ -178,5 +176,6 @@
         {
             _joinBtnEnabled = true;
         }
+        
     }
 }
