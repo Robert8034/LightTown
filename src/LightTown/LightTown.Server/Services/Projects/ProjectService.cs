@@ -109,9 +109,9 @@ namespace LightTown.Server.Services.Projects
 
         public List<Project> SearchProjects(string searchValue)
         {
-            if (_projectRepository.TableNoTracking.Any(e => e.ProjectName == searchValue))
+            if (_projectRepository.TableNoTracking.Any(e => EF.Functions.Like(e.ProjectName, $"%{searchValue}%")))
             {
-                return _projectRepository.TableNoTracking.Where(e => e.ProjectName == searchValue).ToList();
+                return _projectRepository.TableNoTracking.Where(e => EF.Functions.Like(e.ProjectName, $"%{searchValue}%")).ToList();
             }
             return new List<Project>();
         }

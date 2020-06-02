@@ -128,6 +128,8 @@ namespace LightTown.Client.Services.Projects
         /// </summary>
         public async Task<List<Project>> SearchProjects(string searchValue)
         {
+            if (string.IsNullOrEmpty(searchValue)) return new List<Project>();
+
             ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/search/" + searchValue);
 
             return result.GetData<List<Project>>();
