@@ -1,0 +1,81 @@
+﻿@using LightTown.Client.Services.Popups
+
+@inject IPopupService<BlazorPopupService.Popup> PopupService
+
+<div class="popup-outer">
+    <div class="popup @(Showing ? "popup-showing" : "") @(_hiding ? "popup-hiding" : "")
+         @(PopupData.PopupType == PopupType.Error ? "popup-error" :
+            PopupData.PopupType == PopupType.Success ? "popup-success" :
+            PopupData.PopupType == PopupType.Warning ? "popup-warning" :
+            "popup-standard")">
+        <div class="popup-text @(Showing ? "popup-text-showing" : "") @(_hiding ? "popup-text-hiding" : "")">
+            @if (!string.IsNullOrEmpty(PopupData.Title))
+            {
+                <span class="popup-title font-weight-bold @(Showing ? "popup-texts-showing" : "") @(_hiding ? "popup-texts-hiding" : "")">@PopupData.Title</span>
+            }
+            <span class="popup-body @(Showing ? "popup-texts-showing" : "") @(_hiding ? "popup-texts-hiding" : "")">@PopupData.Body</span>
+        </div>
+        @if (PopupData.Closable)
+        {
+            <div class="popup-close @(Showing ? "popup-texts-showing" : "") @(_hiding ? "popup-texts-hiding" : "")" @onclick="ClosePopup">
+                <span aria-hidden="true">&times;</span>
+            </div>
+        }
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public bool Showing { get; set; }
+
+    [Parameter]
+    public BlazorPopupService.Popup PopupData { get; set; }
+
+    private bool _hiding;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (PopupData.ClosesAfter.HasValue)
+            {
+                Task closeTask = new Task(async () =>
+                {
+                    await Task.Delay((int)PopupData.ClosesAfter.Value.TotalMilliseconds);
+
+                    await ClosePopup();
+                });
+
+                closeTask.Start();
+            }
+
+            await Task.Delay(1000);
+
+            Showing = false;
+
+            StateHasChanged();
+        }
+        else
+        {
+            await base.OnAfterRenderAsync(firstRender);
+        }
+    }
+
+    private async Task ClosePopup()
+    {
+        if(_hiding)
+            return;
+
+        _hiding = true;
+
+        StateHasChanged();
+
+        await Task.Delay(1000);
+
+        PopupService.Popups.Remove(PopupData);
+
+        PopupService.OnClosePopup.Invoke(PopupData);
+    }
+}

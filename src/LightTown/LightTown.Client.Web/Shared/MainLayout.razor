@@ -1,0 +1,57 @@
+﻿@using LightTown.Client.Services.Popups
+@inherits LayoutComponentBase
+
+@inject IPopupService<BlazorPopupService.Popup> PopupService
+
+<Navigation />
+
+<div class="main">
+    <div class="content container">
+        @Body
+    </div>
+</div>
+
+@for (int i = 0; i < _popups.Count; i++)
+{
+    var popup = _popups.ElementAt(i);
+
+    //if "already shown" is true, we set isShowing to false, if isShowing is true it will do the animation in the Popup component.
+    bool isShowing = !popup.Value;
+
+    <Popup PopupData="@popup.Key" Showing="@isShowing"></Popup>
+
+    //set "already shown" to true
+    _popups[popup.Key] = true;
+}
+
+@code
+{
+    //cache of popups and a bool whether they are already shown (animated).
+    private Dictionary<BlazorPopupService.Popup, bool> _popups;
+
+
+    public MainLayout()
+    {
+        _popups = new Dictionary<BlazorPopupService.Popup, bool>();
+    }
+
+    protected override void OnInitialized()
+    {
+        PopupService.OnShowPopup = OnShowPopup;
+        PopupService.OnClosePopup = OnClosePopup;
+    }
+
+    private void OnClosePopup(BlazorPopupService.Popup popup)
+    {
+        _popups.Remove(popup);
+
+        StateHasChanged();
+    }
+
+    private void OnShowPopup(BlazorPopupService.Popup popup)
+    {
+        _popups[popup] = false;
+
+        StateHasChanged();
+    }
+}

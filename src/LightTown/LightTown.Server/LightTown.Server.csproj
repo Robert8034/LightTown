@@ -8,17 +8,24 @@
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.0-preview3.20168.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="5.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LightTown.Core\LightTown.Core.csproj" />
     <ProjectReference Include="..\LightTown.Server.Data\LightTown.Server.Data.csproj" />
-    <ProjectReference Include="..\LightTown.Server.Services\LightTown.Server.Services.csproj" />
-    <ProjectReference Include="..\LightTown.Web\LightTown.Web.csproj" />
+    <ProjectReference Include="..\LightTown.Client.Web\LightTown.Client.Web.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
 
 </Project>

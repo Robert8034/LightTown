@@ -1,0 +1,13 @@
+﻿.form-group {
+    display: flex;
+    margin-bottom: 0;
+}
+
+.form-group-content-right {
+    justify-content: end;
+    flex-direction: row;
+}
+
+.form-group-content-center {
+    justify-content: center;
+}

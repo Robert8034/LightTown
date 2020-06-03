@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="NewFile1.txt" />
+    <None Remove="NewFile2.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="2.1.5" />
+    <PackageReference Include="Microsoft.JSInterop" Version="5.0.0-preview.2.20167.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LightTown.Core\LightTown.Core.csproj" />
+  </ItemGroup>
+
+</Project>

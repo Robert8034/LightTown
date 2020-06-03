@@ -20,7 +20,7 @@ namespace LightTown.Server.Data
         {
             using (var scope = applicationBuilder.ApplicationServices.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetService<LightTownServerContext>();
+                var dbContext = scope.ServiceProvider.GetService<LightTownContext>();
 
                 var relationalDatabaseCreator =
                     (RelationalDatabaseCreator) dbContext.Database.GetService<IDatabaseCreator>();
@@ -42,6 +42,9 @@ namespace LightTown.Server.Data
 
                     UserManager<User> userManager = scope.ServiceProvider.GetService<UserManager<User>>();
                     userManager.CreateAsync(new User("admin"), "admin").Wait();
+
+                    var admin = userManager.FindByNameAsync("admin").Result;
+                    userManager.AddToRoleAsync(admin, "Administrator").Wait();
                 }
             }
         }

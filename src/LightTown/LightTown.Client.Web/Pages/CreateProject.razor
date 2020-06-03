@@ -1,0 +1,298 @@
+﻿@page "/projects/create"
+
+@using System.IO
+@using LightTown.Client.Services.Validation
+@using LightTown.Client.Services.Projects
+@using LightTown.Client.Services.Users
+@using LightTown.Client.Web.Services
+@using LightTown.Core
+@using Tag = LightTown.Core.Models.Tags.Tag
+
+@inject IValidationService ValidationService
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
+@inject IUserDataService UserDataService
+@inject HttpClient HttpClient 
+
+<Grid Class="mt-4">
+    <GridColumn ColumnSize="ColumnSize.Full">
+        <Form Class="w-100">
+            <FormGroup>
+                <Input Title="Name" Type="text" Placeholder="Project Name..." OnChange="@OnProjectNameChange" />
+            </FormGroup>
+            <FormGroup>
+                <TextArea Title="Description" Placeholder="Project description..." OnChange="@OnDescriptionChange"></TextArea>
+            </FormGroup>
+            <FormGroup>
+                <FormGroup>
+                    <div class="d-flex flex-column">
+                        <div class="d-inline mb-2">
+                            @foreach (var tag in _newTags.Keys)
+                            {
+                                <Tag Text="@tag.Name" Removable="true" OnRemove="@(() => RemoveTag(tag))"></Tag>
+                            }
+                        </div>
+                        <Input Title="Tags" Placeholder="Add tags..." Type="text" OnChange="@((value) => OnAddTagChange(value))" />
+                        <div class="d-inline mb-2">
+                            @foreach (var tag in _recommendedTags)
+                            {
+                                <Tag Text="@tag.Key.Name" Clickable="true" OnClick="@(() => AddTag(tag.Key, tag.Value))"></Tag>
+                            }
+                        </div>
+                    </div>
+                </FormGroup>
+            </FormGroup>
+            <FormGroup>
+                <ImageFileSelect Class="mw-300" Src="@_projectImageSource" OnChange="@(file => OnProjectImageChange(file))" CanSave="false"></ImageFileSelect>
+            </FormGroup>
+            <FormGroup>
+                <Button Enabled="@_buttonEnabled" Text="Create" OnClick="@CreateProjectAsync" Size="ButtonSize.Full"></Button>
+            </FormGroup>
+            <FormGroup>
+                <p1>@_creationResult</p1>
+            </FormGroup>
+            @if (_sameProjects != null)
+            {
+                <Grid>
+                    <GridColumn ColumnSize="ColumnSize.Full">
+                        <h3>Found @_sameProjects.Count Similar Projects</h3>
+                        <br />
+                        @foreach (var project in _sameProjects)
+                        {
+                            <Card>
+                                <p1>Name: @project.ProjectName</p1><br />
+                                <p1>Description: @project.ProjectDescription</p1>
+                            </Card>
+                        }
+                    </GridColumn>
+                </Grid>
+            }
+        </Form>
+        @if (!string.IsNullOrEmpty(_imageErrorMessage))
+        {
+            <span class="text text-danger">@_imageErrorMessage</span>
+        }
+    </GridColumn>
+</Grid>
+
+
+@code {
+
+    private bool _buttonEnabled;
+    private bool _projectCreationSuccess = true;
+
+    private string _projectName;
+    private string _description;
+    private string _creationResult;
+    private List<Core.Models.Projects.Project> _sameProjects = new List<Core.Models.Projects.Project>();
+
+    private string _projectImageSource;
+    private FileListEntry _newProjectImage;
+    private string _imageErrorMessage;
+
+    private Dictionary<Tag, bool> _newTags = new Dictionary<Tag, bool>();
+    private Dictionary<Tag, bool> _recommendedTags = new Dictionary<Tag, bool>();
+    private string _newTagInputValue;
+
+    protected override void OnInitialized()
+    {
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        _projectImageSource = "/libs/fontawesome-free-5.13.0/sprites/solid.svg#user";
+    }
+
+    public async Task OnProjectNameChange(string value)
+    {
+        _projectName = value;
+
+        ValidateInput();
+
+        _sameProjects = await ProjectService.SearchProjects(value);
+
+        StateHasChanged();
+
+    }
+
+    public Task OnDescriptionChange(string value)
+    {
+        _description = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
+
+    public void OnProjectImageChange(FileListEntry file)
+    {
+        _newProjectImage = file;
+
+        CanSaveImage();
+
+        StateHasChanged();
+    }
+
+    private bool CanSaveProject()
+    {
+        if (!string.IsNullOrEmpty(_projectName)) return true;
+        return !string.IsNullOrEmpty(_description);
+    }
+
+    private bool CanSaveImage()
+    {
+        if (_newProjectImage == null)
+            return false;
+
+        if (_newProjectImage.Size > 8000000)
+        {
+            _imageErrorMessage = "Image cannot be larger than 8MB";
+            return false;
+        }
+
+        _imageErrorMessage = null;
+        return true;
+    }
+
+    private bool CanSaveTags()
+    {
+        return _newTags.Count > 0;
+    }
+
+    private void ValidateInput()
+    {
+        _buttonEnabled = ValidationService.ValidateProjectCreationInput(_projectName, _description);
+
+        StateHasChanged();
+    }
+
+    private async Task CreateProjectAsync()
+    {
+        var newProject = new Core.Models.Projects.Project();
+
+        if (CanSaveProject())
+        {
+            newProject = await ProjectService.CreateProject(_projectName, _description);
+        }
+
+        if (CanSaveImage())
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                await _newProjectImage.Data.CopyToAsync(stream);
+
+                byte[] bytes = stream.ToArray();
+
+                var byteContent = new ByteArrayContent(bytes);
+
+                byteContent.Headers.Remove("Content-Type");
+                byteContent.Headers.Add("Content-Type", _newProjectImage.Type);
+
+                var result = await HttpClient.PutAsync("api/projects/" + newProject.Id + "/image", byteContent);
+
+                if (result.IsSuccessStatusCode)
+                    _newProjectImage = null;
+                else
+                    _imageErrorMessage = "Error saving image: " + (int)result.StatusCode + " " + result.StatusCode;
+            }
+        }
+
+        if (CanSaveTags())
+        {
+            var allTags = _newTags.Keys.ToList();
+
+            var result = await HttpClient.PutJson<ApiResult>("api/projects/" + newProject.Id + "/tags", allTags);
+
+            var tags = result.GetData<List<Tag>>();
+
+            var newTags = UserDataService.SetTags(tags).ToList();
+
+            _newTags.Clear();
+        }
+
+        _projectCreationSuccess = newProject != null;
+
+        if (_projectCreationSuccess)
+        {
+            _creationResult = "Successfully created the new project";
+            StateHasChanged();
+            NavigationManager.NavigateTo("/projects");
+        }
+        else
+        {
+            _creationResult = "Something went wrong during creation";
+            StateHasChanged();
+        }
+    }
+
+    private Task RemoveTag(Tag tag)
+    {
+        _newTags.Remove(tag);
+
+        SetRecommendedTags();
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnAddTagChange(string value)
+    {
+        _newTagInputValue = value;
+
+        SetRecommendedTags();
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private void SetRecommendedTags()
+    {
+        _recommendedTags.Clear();
+
+        if (!string.IsNullOrEmpty(_newTagInputValue))
+        {
+            var excludeList = new List<Tag>(_newTags.Keys);
+
+            var tags = UserDataService.SearchTags(_newTagInputValue, excludeList);
+
+            //if none of the existing tags have the exact search name we add it as a new tag, otherwise we simply add the search results
+            if(_newTags.Keys.All(tag => tag.Name != _newTagInputValue))
+            {
+                _recommendedTags.Add(new Tag { Name = _newTagInputValue }, true);
+
+                //add all tags with "isNew" set to false
+                foreach (Tag tag in tags)
+                {
+                    _recommendedTags.Add(tag, false);
+                }
+            }
+            else
+            {
+                //if tags has 10 results we remove the last result because the new tag has replaced it
+                if(tags.Count == 10)
+                    tags.RemoveAt(9);
+
+                foreach (Tag tag in tags)
+                {
+                    _recommendedTags.Add(tag, false);
+                }
+            }
+        }
+    }
+
+    private Task AddTag(Tag tag, bool isNew)
+    {
+        _newTags.Add(tag, isNew);
+
+        SetRecommendedTags();
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+}

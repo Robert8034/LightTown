@@ -1,0 +1,88 @@
+﻿@page "/projects"
+
+@using LightTown.Client.Services.Users
+@using LightTown.Client.Web.Services
+
+@inject IUserDataService UserDataService
+@inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
+
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Full">
+        @if (_projects != null)
+        {
+            @foreach (var project in _projects)
+            {
+                <GridItem>
+                    <Card>
+                        <Grid>
+                            <GridColumn ColumnSize="ColumnSize.Small">
+                                <div class="content-vertical">
+                                    <GridItem>
+                                        @if (project.HasImage)
+                                        {
+                                            <img class="img-overview" src="@($"/projects/images/{project.ImageFilename}")"/>
+                                        }
+                                        else
+                                        {
+                                            <img class="img-overview" src="https://www.expert.nl/media/frontend/catalog/products/372569585/630x630/372569585-3216374.jpg" />
+                                        }
+                                    </GridItem>
+                                </div>
+                            </GridColumn>
+                            <GridColumn ColumnSize="ColumnSize.Full">
+                                <div class="content-vertical">
+                                    <GridItem>
+                                        <h4>@project.ProjectName</h4>
+                                    </GridItem>
+                                </div>
+                            </GridColumn>
+                            <GridColumn ColumnSize="ColumnSize.Medium">
+                                <div class="content-vertical">
+                                    <GridItem>
+                                        <div class="d-inline">
+                                            @foreach (var tag in project.Tags)
+                                            {
+                                                <Tag Text="@tag.Name" Id="@tag.Id"/>
+                                            }
+                                        </div>
+                                    </GridItem>
+                                </div>
+                            </GridColumn>
+                            <GridColumn ColumnSize="ColumnSize.Small">
+                                <div class="content-vertical">
+                                    <GridItem>
+                                        <Button Enabled="@true" Text="View" OnClick="@(() => ViewProject(project.Id))" Size="ButtonSize.Big"></Button>
+                                    </GridItem>
+                                </div>
+                            </GridColumn>
+                        </Grid>
+                    </Card>
+                </GridItem>
+            }
+        }
+    </GridColumn>
+</Grid>
+
+@code {
+
+    List<Core.Models.Projects.Project> _projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        _projects = await UserDataService.GetProjects();
+    }
+
+    private Task ViewProject(int projectId)
+    {
+        NavigationManager.NavigateTo("/projects/" + projectId);
+
+        return Task.CompletedTask;
+    }
+}

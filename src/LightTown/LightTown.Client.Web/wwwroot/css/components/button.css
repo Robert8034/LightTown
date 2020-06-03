@@ -1,0 +1,102 @@
+﻿:root {
+    /* button colors */
+    --primary-button-color: #298ecc;
+    --success-button-color: #00b000;
+    /* TODO change colors of buttons below */
+    --error-button-color: red;
+    --warning-button-color: orange;
+    /* button colors when hovered */
+    --primary-button-color-hover: #317caa;
+    --success-button-color-hover: #090;
+    /* TODO change colors of buttons below */
+    --error-button-color-hover: red;
+    --warning-button-color-hover: orange;
+    /* button colors when disabled */
+    --primary-button-color-disabled: #2a668a;
+    --success-button-color-disabled: #007900;
+    /* TODO change colors of buttons below */
+    --error-button-color-disabled: red;
+    --warning-button-color-disabled: orange;
+}
+
+.form-group {
+}
+
+.button {
+    color: var(--primary-text-color-dark);
+    background: var(--primary-button-color);
+    border: 0px;
+    border-radius: 6px;
+    height: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button:hover {
+    cursor: pointer;
+    background: var(--primary-button-color-hover);
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    background: var(--primary-button-color-disabled);
+}
+
+.button-success {
+    background: var(--success-button-color);
+}
+
+.button-success:hover {
+    cursor: pointer;
+    background: var(--success-button-color-hover);
+}
+
+.button-success:disabled {
+    cursor: not-allowed;
+    background: var(--success-button-color-disabled);
+}
+
+.button-error {
+    background: var(--error-button-color);
+}
+
+.button-error:hover {
+    cursor: pointer;
+    background: var(--error-button-color-hover);
+}
+
+.button-error:disabled {
+    cursor: not-allowed;
+    background: var(--error-button-color-disabled);
+}
+
+.button-warning {
+    background: var(--warning-button-color);
+}
+
+.button-warning:hover {
+    cursor: pointer;
+    background: var(--warning-button-color-hover);
+}
+
+.button-warning:disabled {
+    cursor: not-allowed;
+    background: var(--warning-button-color-disabled);
+}
+
+.button-small {
+    width: 64px;
+}
+
+.button-medium {
+    width: 96px;
+}
+
+.button-big {
+    width: 128px;
+}
+
+.button-full {
+    width: 100%;
+}

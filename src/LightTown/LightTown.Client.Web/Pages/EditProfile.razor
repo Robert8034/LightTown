@@ -1,0 +1,360 @@
+﻿@page "/profile/edit"
+@page "/profile/{ProfileId:int}/edit"
+
+@using LightTown.Client.Services.Projects
+@using LightTown.Client.Services.Users
+@using LightTown.Client.Web.Services
+@using LightTown.Core
+@using User = LightTown.Core.Models.Users.User
+@using System.IO
+@using Tag = LightTown.Core.Models.Tags.Tag
+
+@inject IUserDataService UserDataService
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
+@inject HttpClient HttpClient
+
+@if (_isError)
+{
+    <h5>Whoops! Something went wrong while trying to display the page, are you sure the URL is correct?</h5>
+}
+else if (_user != null)
+{
+    <Grid Class="mt-4">
+        <GridColumn ColumnSize="ColumnSize.Medium">
+            <Form Class="w-100">
+                <FormGroup>
+                    <Input Placeholder="Job" Title="Job" Text="What is your job called?" Type="text" Value="@_user.Job" OnChange="@((value) => OnJobChange(value))"/>
+                </FormGroup>
+                <FormGroup>
+                    <Input Placeholder="Hometown" Title="Hometown" Text="Where do you live?" Type="text" Value="@_user.Hometown" OnChange="@((value) => OnHometownChange(value))"/>
+                </FormGroup>
+                <FormGroup>
+                    <TextArea Placeholder="About" Title="About" Text="Tell everyone something about yourself." Value="@_user.About" OnChange="@((value) => OnAboutChange(value))"></TextArea>
+                </FormGroup>
+                <FormGroup>
+                    <div class="d-flex flex-column">
+                        <span class="text-title w-100">Tags</span>
+                        <div class="d-inline mb-2">
+                            @foreach (var tag in _tags)
+                            {
+                                <Tag Text="@tag.Name" Removable="true" OnRemove="@(() => RemoveTag(tag))"></Tag>
+                            }
+                            @foreach (var tag in _newTags.Keys)
+                            {
+                                <Tag Text="@tag.Name" Removable="true" OnRemove="@(() => RemoveTag(tag))"></Tag>
+                            }
+                        </div>
+                        <Input Placeholder="Add tags..." Type="text" OnChange="@((value) => OnAddTagChange(value))"/>
+                        <div class="d-inline mb-2">
+                            @foreach (var tag in _recommendedTags)
+                            {
+                                <Tag Text="@tag.Key.Name" Clickable="true" OnClick="@(() => AddTag(tag.Key, tag.Value))"></Tag>
+                            }
+                        </div>
+                    </div>
+                </FormGroup>
+                <FormGroup AlignContent="AlignContent.Right">
+                    @if (!string.IsNullOrEmpty(_userErrorMessage))
+                    {
+                        <span class="text text-danger d-flex align-items-center mr-2">@_userErrorMessage</span>
+                    }
+                    @if (!string.IsNullOrEmpty(_userSuccessMessage))
+                    {
+                        <span class="text text-success d-flex align-items-center mr-2">@_userSuccessMessage</span>
+                    }
+                    <Button Text="Save" Enabled="@(CanSave() || CanSaveAvatar() || CanSaveTags())" OnClick="@(async () => await SaveUser())"></Button>
+                </FormGroup>
+            </Form>
+        </GridColumn>
+        <GridColumn Class="d-flex align-items-center" ColumnSize="ColumnSize.Small">
+            <ImageFileSelect Class="mw-300" Src="@_avatarSource" OnChange="@(file => OnAvatarChange(file))" CanSave="false"></ImageFileSelect>
+            @if (!string.IsNullOrEmpty(_avatarErrorMessage))
+            {
+                <span class="text text-danger">@_avatarErrorMessage</span>
+            }
+        </GridColumn>
+    </Grid>
+}
+
+@code {
+    [Parameter]
+    public int? ProfileId { get; set; }
+
+    private bool _isError = false;
+
+    private string _avatarSource;
+    private User _user;
+    private User _newUser;
+    private List<Tag> _tags = new List<Tag>();
+    private Dictionary<Tag, bool> _newTags = new Dictionary<Tag, bool>();
+    private Dictionary<Tag, bool> _recommendedTags = new Dictionary<Tag, bool>();
+    private string _newTagInputValue;
+    private FileListEntry _newAvatar;
+
+    private string _userErrorMessage;
+    private string _userSuccessMessage;
+    private string _avatarErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        ProfileId ??= UserDataService.GetCurrentUser().Id;
+
+        _user = await UserDataService.GetUser(ProfileId.Value);
+
+        if (_user == null)
+        {
+            _isError = true;
+        }
+        else
+        {
+            _tags = (await UserDataService.GetUserTags(_user.Id))
+                .OrderBy(tag => tag.Name)
+                .ToList();
+
+            _newUser = new User
+            {
+                About = _user.About,
+                Hometown = _user.Hometown,
+                HasAvatar = _user.HasAvatar,
+                Username = _user.Username,
+                Email = _user.Email,
+                IsEmailConfirmed = _user.IsEmailConfirmed,
+                Job = _user.Job,
+                Fullname = _user.Fullname,
+                TagIds = _user.TagIds,
+                Id = _user.Id
+            };
+
+            if (_user.HasAvatar)
+                _avatarSource = $"/users/avatars/{_user.AvatarFilename}";
+            else
+                _avatarSource = "/libs/fontawesome-free-5.13.0/sprites/solid.svg#user";
+        }
+    }
+
+    private async Task SaveUser()
+    {
+        bool saved = false;
+
+        if (CanSave())
+        {
+            var result = await HttpClient.PatchJsonAsync<ApiResult>("api/users/@me", _newUser);
+
+            UserDataService.SetCurrentUser(result.GetData<User>());
+
+            _user = await UserDataService.GetUser(ProfileId.Value);
+
+            saved = true;
+        }
+
+        if(CanSaveTags())
+        {
+            var allTags = _tags.ToList();
+            allTags.AddRange(_newTags.Keys);
+
+            var result = await HttpClient.PutJson<ApiResult>("api/users/@me/tags", allTags);
+
+            var tags = result.GetData<List<Tag>>();
+
+            var newTags = UserDataService.SetTags(tags).ToList();
+
+            _user.Tags = newTags;
+
+            _newTags.Clear();
+
+            _tags = _user.Tags
+                .OrderBy(tag => tag.Name)
+                .ToList(); ;
+
+            saved = true;
+        }
+
+        if (CanSaveAvatar())
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                await _newAvatar.Data.CopyToAsync(stream);
+
+                byte[] bytes = stream.ToArray();
+
+                var byteContent = new ByteArrayContent(bytes);
+
+                byteContent.Headers.Remove("Content-Type");
+                byteContent.Headers.Add("Content-Type", _newAvatar.Type);
+
+                var result = await HttpClient.PutAsync("api/users/@me/avatar", byteContent);
+
+                if (result.IsSuccessStatusCode)
+                    _newAvatar = null;
+                else
+                    _avatarErrorMessage = "Error saving avatar: " + (int)result.StatusCode + " " + result.StatusCode;
+            }
+
+            saved = true;
+        }
+
+        _userSuccessMessage = saved ? "Profile successfully saved." : null;
+
+        StateHasChanged();
+    }
+
+    private bool CanSave()
+    {
+        //cant save if both values are null or empty or both values are the same
+        if (_user.Job != _newUser.Job && (!string.IsNullOrEmpty(_user.Job) || !string.IsNullOrEmpty(_newUser.Job)))
+            return true;
+        if (_user.Hometown != _newUser.Hometown && (!string.IsNullOrEmpty(_user.Hometown) || !string.IsNullOrEmpty(_newUser.Hometown)))
+            return true;
+        if (_user.About != _newUser.About && (!string.IsNullOrEmpty(_user.About) || !string.IsNullOrEmpty(_newUser.About)))
+            return true;
+
+        return false;
+    }
+
+    private bool CanSaveTags()
+    {
+        if (_newTags.Count > 0)
+            return true;
+
+        foreach (var tag in _user.Tags)
+        {
+            //the tag has been removed.
+            if (!_tags.Contains(tag))
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool CanSaveAvatar()
+    {
+        if (_newAvatar == null)
+            return false;
+
+        if (_newAvatar.Size > 8000000)
+        {
+            _avatarErrorMessage = "Avatar cannot be larger than 8MB";
+            return false;
+        }
+
+        _avatarErrorMessage = null;
+        return true;
+    }
+
+    private Task OnJobChange(string value)
+    {
+        _newUser.Job = value;
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnHometownChange(string value)
+    {
+        _newUser.Hometown = value;
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnAboutChange(string value)
+    {
+        _newUser.About = value;
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private void OnAvatarChange(FileListEntry file)
+    {
+        _newAvatar = file;
+
+        CanSaveAvatar();
+
+        StateHasChanged();
+    }
+
+    private Task RemoveTag(Tag tag)
+    {
+        _tags.Remove(tag);
+        _newTags.Remove(tag);
+
+        SetRecommendedTags();
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnAddTagChange(string value)
+    {
+        _newTagInputValue = value;
+
+        SetRecommendedTags();
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private void SetRecommendedTags()
+    {
+        _recommendedTags.Clear();
+
+        if (!string.IsNullOrEmpty(_newTagInputValue))
+        {
+            var excludeList = new List<Tag>(_tags);
+            excludeList.AddRange(_newTags.Keys);
+
+            var tags = UserDataService.SearchTags(_newTagInputValue, excludeList);
+
+            //if none of the existing tags have the exact search name we add it as a new tag, otherwise we simply add the search results
+            if(_tags.All(tag => tag.Name != _newTagInputValue) && _newTags.Keys.All(tag => tag.Name != _newTagInputValue))
+            {
+                _recommendedTags.Add(new Tag { Name = _newTagInputValue }, true);
+
+                //add all tags with "isNew" set to false
+                foreach (Tag tag in tags)
+                {
+                    _recommendedTags.Add(tag, false);
+                }
+            }
+            else
+            {
+                //if tags has 10 results we remove the last result because the new tag has replaced it
+                if(tags.Count == 10)
+                    tags.RemoveAt(9);
+
+                foreach (Tag tag in tags)
+                {
+                    _recommendedTags.Add(tag, false);
+                }
+            }
+        }
+    }
+
+    private Task AddTag(Tag tag, bool isNew)
+    {
+        if(_user.Tags.Contains(tag))
+            _tags.Add(tag);
+        else
+            _newTags.Add(tag, isNew);
+
+        SetRecommendedTags();
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+}

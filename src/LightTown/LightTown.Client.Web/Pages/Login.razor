@@ -1,0 +1,97 @@
+﻿@page "/login"
+
+@using LightTown.Client.Services.Validation
+@using LightTown.Client.Services.Authentication
+@using LightTown.Client.Services.Users
+
+@inject NavigationManager NavigationManager
+@inject IValidationService ValidationService
+@inject IAuthenticationService AuthenticationService
+@inject IUserDataService UserDataService
+@inject IJSRuntime JsRuntime
+
+<Form Id="form-login">
+    @if (!_loginSuccess)
+    {
+        <div class="alert alert-danger">
+            Error logging in, make sure your credentials are correct.
+        </div>
+    }
+    <FormGroup>
+        <Input Type="text" Placeholder="Username" OnChange="@OnUsernameChange" />
+    </FormGroup>
+    <FormGroup>
+        <Input Type="password" Placeholder="Password" OnChange="@OnPasswordChange" />
+    </FormGroup>
+    <FormGroup>
+        <Checkbox Text="Remember Me" OnChange="@OnRememberMeChange" />
+        <div class="d-flex flex-shrink-0">
+            <a class="text" href="recover">Forgot password?</a>
+        </div>
+    </FormGroup>
+    <FormGroup>
+        <Button Enabled="@_buttonEnabled" Text="Login" OnClick="@(async () => await LoginAsync())" Size="ButtonSize.Full"></Button>
+    </FormGroup>
+</Form>
+
+@code {
+
+    private bool _buttonEnabled;
+    private bool _loginSuccess = true;
+
+    private string _username;
+    private string _password;
+    private bool _rememberMe;
+
+    private async Task LoginAsync()
+    {
+        _loginSuccess = await AuthenticationService.Login(_username, _password, _rememberMe);
+
+        if (_loginSuccess)
+        {
+            await UserDataService.LoadData();
+
+            StateHasChanged();
+
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            StateHasChanged();
+        }
+    }
+
+    private void ValidateInput()
+    {
+        _buttonEnabled = ValidationService.ValidateLoginInput(_username, _password);
+
+        StateHasChanged();
+    }
+
+    public Task OnUsernameChange(string value)
+    {
+        _username = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
+
+    public Task OnPasswordChange(string value)
+    {
+        _password = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
+
+    public Task OnRememberMeChange(bool value)
+    {
+        _rememberMe = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
+}

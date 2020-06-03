@@ -1,0 +1,86 @@
+﻿@{
+    var size = Size == ButtonSize.Small ?
+        "button-small" : Size == ButtonSize.Big ?
+        "button-big" : Size == ButtonSize.Full ?
+        "button-full" : "button-medium";
+
+    var type = Type == ButtonType.Error ?
+        "button-error" : Type == ButtonType.Success ?
+        "button-success" : Type == ButtonType.Warning ?
+        "button-warning" : "";
+}
+
+@if (!Enabled)
+{
+    <button class="button @Class @size @type" @onclick="@Click" disabled>
+        @if (_loading)
+        {
+            <div class="spinner-border" role="status">
+            </div>
+        }
+        else
+        {
+            @Text
+        }
+    </button>
+}
+else
+{
+    <button class="button @Class @size @type" @onclick="@Click">
+        @if (_loading)
+        {
+            <div class="spinner-border" role="status">
+            </div>
+        }
+        else
+        {
+            @Text
+        }
+    </button>
+}
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "";
+
+    [Parameter]
+    public string Class { get; set; } = "";
+
+    [Parameter]
+    public ButtonSize Size { get; set; } = ButtonSize.Medium;
+
+    [Parameter]
+    public ButtonType Type { get; set; } = ButtonType.Primary;
+
+    [Parameter]
+    public Func<Task> OnClick { get; set; }
+
+    [Parameter]
+    public bool Enabled { get; set; } = true;
+
+    private bool _loading;
+
+    private async Task Click()
+    {
+        if (OnClick != null && Enabled)
+        {
+            Enabled = false;
+
+            StateHasChanged();
+
+            _loading = true;
+
+            StateHasChanged();
+
+            await OnClick.Invoke();
+
+            Enabled = true;
+
+            StateHasChanged();
+
+            _loading = false;
+
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,22 @@
+﻿:root {
+    /* main colors */
+    --primary-color: #0167bb;
+    /* background colors & blending colors that blend with primary and secondary background colors */
+    --primary-bg-color: var(--primary-bg-color-dark);
+    --secondary-bg-color: var(--secondary-bg-color-dark);
+    --blending-bg-color: var(--blending-bg-color-dark);
+    --primary-bg-color-dark: #20262b;
+    --secondary-bg-color-dark: #293137;
+    --blending-bg-color-dark: #1d2124;
+    --primary-bg-color-light: #ffffff;
+    --secondary-bg-color-light: #eeeeee;
+    --blending-bg-color-light: #f2f2f2;
+    /* text colors */
+    --primary-text-color: var(--primary-text-color-dark);
+    --secondary-text-color: var(--secondary-text-color-dark);
+    --primary-text-color-dark: white;
+    /* TODO fix colors below */
+    --secondary-text-color-dark: gray;
+    --primary-text-color-light: black;
+    --secondary-text-color-light: gray;
+}
