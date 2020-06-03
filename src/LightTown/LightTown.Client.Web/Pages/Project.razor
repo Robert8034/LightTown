@@ -139,7 +139,7 @@
     [Parameter]
     public int ProjectId { get; set; }
 
-    private LightTown.Core.Models.Projects.Project _project;
+    private LightTown.Core.Models.Projects.Project _project = new Core.Models.Projects.Project();
 
     private bool active;
     private bool _joinBtnEnabled;
@@ -177,12 +177,14 @@
     {
         if (_project.Members.Contains(UserDataService.GetCurrentUser()))
         {
+            Console.WriteLine(_project.Members.Count);
             _joinBtnEnabled = false;
         }
         else
         {
+            Console.WriteLine(_project.Members.Count);
             _joinBtnEnabled = true;
         }
-        
+
     }
 }
