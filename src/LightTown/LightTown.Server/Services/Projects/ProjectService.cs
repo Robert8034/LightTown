@@ -66,7 +66,7 @@ namespace LightTown.Server.Services.Projects
             {
                 ProjectName = projectName,
                 ProjectDescription = projectDescription ?? "",
-                CreationDateTime = DateTime.Now,
+                CreationDateTime = DateTime.Now.Date,
                 CreatorId = creatorId,
                 ProjectMembers = new List<ProjectMember>(new []
                 {
