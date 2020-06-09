@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LightTown.Client.Services.Popups;
 using LightTown.Core;
 using LightTown.Core.Models.Projects;
+using LightTown.Core.Models.Roles;
 using LightTown.Core.Models.Tags;
 using LightTown.Core.Models.Users;
 
@@ -27,6 +28,7 @@ namespace LightTown.Client.Services.Users
 
         private User _currentUser;
         private Dictionary<int, Project> _projects;
+        private Dictionary<int, Role> _roles;
         private Dictionary<int, User> _users;
         private Dictionary<int, Tag> _tags;
 
@@ -35,6 +37,7 @@ namespace LightTown.Client.Services.Users
         private readonly SemaphoreSlim _usersLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _projectsLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _tagsLock = new SemaphoreSlim(1,1);
+        private readonly SemaphoreSlim _rolesLock = new SemaphoreSlim(1,1);
 
         public UserDataService(HttpClient httpClient, IPopupService<BlazorPopupService.Popup> alertService)
         {
@@ -43,6 +46,7 @@ namespace LightTown.Client.Services.Users
             _projects = new Dictionary<int, Project>();
             _users = new Dictionary<int, User>();
             _tags = new Dictionary<int, Tag>();
+            _roles = new Dictionary<int, Role>();
         }
 
         /// <summary>
@@ -420,6 +424,36 @@ namespace LightTown.Client.Services.Users
                 if (tag != null)
                     user.Tags.Add(tag);
             }
+        }
+
+        /// <summary>
+        /// Get the list of roles.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<Role>> GetRoles()
+        {
+            if (_roles.Count == 0)
+            {
+                await _rolesLock.WaitAsync();
+
+                try
+                {
+                    ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/roles");
+
+                    _roles = result.GetData<List<Role>>()
+                        .ToDictionary(role => role.Id, role => role);
+                }
+                catch (Exception e)
+                {
+                    _alertService?.ShowErrorPopup(true, null, "Error getting roles: " + e.Message);
+                }
+                finally
+                {
+                    _rolesLock.Release();
+                }
+            }
+
+            return _roles?.Values.ToList();
         }
     }
 }

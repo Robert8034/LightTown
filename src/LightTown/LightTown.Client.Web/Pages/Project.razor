@@ -10,8 +10,6 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationService AuthenticationService
 
-<Grid>
-    <GridColumn ColumnSize="ColumnSize.Full">
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Small">
@@ -51,6 +49,7 @@
                 <ListGroupHeader Text="@_project.ProjectName"></ListGroupHeader>
                 <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}")" Text="Overview"></ListGroupItem>
                 <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/members")" Text="Members" Active="true"></ListGroupItem>
+                <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/timeline")" Text="Messages"></ListGroupItem>
             </ListGroup>
         </GridItem>
     </GridColumn>
@@ -104,35 +103,6 @@
         </Grid>
     </GridColumn>
 </Grid>
-
-<Grid>
-    <GridColumn ColumnSize="ColumnSize.Small">
-    </GridColumn>
-    <GridColumn ColumnSize="ColumnSize.Medium">
-        <hr class="underLine" style="border:solid;color:#298ECC" />
-        <Grid>
-            <GridColumn ColumnSize="ColumnSize.Small">
-                <GridItem>
-                    <h4>Message Title</h4>
-                </GridItem>
-            </GridColumn>
-            <GridColumn ColumnSize="ColumnSize.Medium">
-                <GridItem>
-                    <p>Here will be the message that was posted. It can be a long message, or a short message. Are we going to give it a maximum amount of characters, 
-                    before you would have to expand it yourself to see the entire message? Might be nice for both the timeline ánd the project view. Keep it structured.
-                    Love penguins, they are the best. Also arctic foxes.</p>
-                </GridItem>
-            </GridColumn>
-            <GridColumn ColumnSize="ColumnSize.Small">
-                <Button Enabled="@true" Text="View" Size="ButtonSize.Big"></Button>
-            </GridColumn>
-        </Grid>
-    </GridColumn>
-</Grid>
-        </GridColumn>
-    </Grid>
-
-
 
 @code {
     [Parameter]

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LightTown.Core.Data;
+using LightTown.Core.Domain.Messages;
 using LightTown.Core.Domain.Tags;
 using LightTown.Core.Domain.Users;
 using LightTown.Server.Services.Tags;
@@ -18,15 +19,17 @@ namespace LightTown.Server.Services.Projects
         private readonly IRepository<ProjectMember> _projectMemberRepository;
         private readonly IRepository<ProjectTag> _projectTagRepository;
         private readonly IRepository<Tag> _tagRepository;
+        private readonly IRepository<Message> _messageRepository;
         private readonly ITagService _tagService;
 
-        public ProjectService(IRepository<Project> projectRepository, IRepository<ProjectMember> projectMemberRepository, IRepository<ProjectTag> projectTagRepository, IRepository<Tag> tagRepository, ITagService tagService)
+        public ProjectService(IRepository<Project> projectRepository, IRepository<ProjectMember> projectMemberRepository, IRepository<ProjectTag> projectTagRepository, IRepository<Tag> tagRepository, ITagService tagService, IRepository<Message> messageRepository)
         {
             _projectRepository = projectRepository;
             _projectMemberRepository = projectMemberRepository;
             _projectTagRepository = projectTagRepository;
             _tagRepository = tagRepository;
             _tagService = tagService;
+            _messageRepository = messageRepository;
         }
 
         public IEnumerable<Project> GetProjects()
@@ -205,6 +208,12 @@ namespace LightTown.Server.Services.Projects
             projectTags.AddRange(addedProjectTags);
 
             return projectTags.Select(projectTag => projectTag.Tag).ToList();
+        }
+
+        public IEnumerable<Message> GetMessages(int projectId)
+        {
+            return _messageRepository.TableNoTracking
+                .Where(e => e.ProjectId == projectId);
         }
     }
 }

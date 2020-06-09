@@ -1,4 +1,5 @@
-﻿using LightTown.Server.Services.Projects;
+﻿using LightTown.Server.Services.Messages;
+using LightTown.Server.Services.Projects;
 using LightTown.Server.Services.Tags;
 using LightTown.Server.Services.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ namespace LightTown.Server.Services
             serviceCollection.AddScoped<IProjectMemberService, ProjectMemberService>();
             serviceCollection.AddScoped<ITagService, TagService>();
             serviceCollection.AddScoped<IUserService, UserService>();
+            serviceCollection.AddScoped<IMessageService, MessageService>();
         }
     }
 }
