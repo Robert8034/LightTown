@@ -50,6 +50,7 @@
                             <ListGroupHeader Text="@_project.ProjectName"></ListGroupHeader>
                             <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}")" Text="Overview"></ListGroupItem>
                             <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/members")" Text="Members" Active="true"></ListGroupItem>
+                            <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/timeline")" Text="Messages"></ListGroupItem>
                         </ListGroup>
                     </GridItem>
                 </GridColumn>
