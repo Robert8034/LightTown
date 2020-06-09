@@ -249,5 +249,44 @@ namespace LightTown.Server.Controllers.Api
 
             return ApiResult.Success(newTagsModels);
         }
+
+        [HttpGet]
+        [Route("{projectId}/messages")]
+        [Authorization(Permissions.NONE)]
+        public async Task<ApiResult> GetProjectMessages(int projectId)
+        {
+            var projectExists = _projectService.ProjectExists(projectId);
+
+            if (!projectExists)
+                return ApiResult.BadRequest("Project does not exist");
+
+            var messageCreator = await _userManager.GetUserAsync(User);
+
+            var userIsMember = _projectService.UserIsMember(projectId, messageCreator.Id);
+
+            if (!userIsMember)
+                return ApiResult.BadRequest("User is not a member");
+
+            //_projectMemberService.CreateProjectMember(projectId);
+
+            return ApiResult.NoContent();
+        }
+
+        [HttpPut]
+        [Route("{projectId}/messages")]
+        [Authorization(Permissions.NONE)]
+        public ApiResult PostProjectMessage(int projectId, string title, string message)
+        {
+            bool projectExists = _projectService.ProjectExists(projectId);
+
+            if (!projectExists)
+                return ApiResult.NotFound();
+
+            var messages = _projectService.GetMessages(projectId);
+
+            var messageModels = _mapper.Map<List<Core.Models.Messages.Message>>(messages);
+
+            return ApiResult.Success(messageModels);
+        }
     }
 }

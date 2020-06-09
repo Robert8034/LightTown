@@ -81,7 +81,7 @@
 
     private Task ViewProject(int projectId)
     {
-        NavigationManager.NavigateTo("/projects/" + projectId);
+        NavigationManager.NavigateTo("/projects/" + projectId + "/timeline");
 
         return Task.CompletedTask;
     }
