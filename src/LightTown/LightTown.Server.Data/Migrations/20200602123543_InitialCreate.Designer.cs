@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightTown.Server.Data.Migrations
 {
     [DbContext(typeof(LightTownContext))]
-    [Migration("20200526104607_InitialCreate")]
+    [Migration("20200602123543_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,12 @@ namespace LightTown.Server.Data.Migrations
 
                     b.Property<int>("CreatorId")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("HasImage")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ImageFilename")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("LastModifiedDateTime")
                         .HasColumnType("timestamp without time zone");
@@ -155,9 +161,6 @@ namespace LightTown.Server.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Age")
                         .HasColumnType("integer");
 
                     b.Property<string>("AvatarFilename")

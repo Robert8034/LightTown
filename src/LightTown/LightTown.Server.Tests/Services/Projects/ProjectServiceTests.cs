@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
+using LightTown.Core.Domain.Messages;
 using LightTown.Core.Domain.Tags;
 using Xunit;
 
@@ -17,6 +18,7 @@ namespace LightTown.Server.Tests.Services.Projects
         private readonly Mock<Repository<ProjectMember>> _projectMemberRepositoryMock;
         private readonly Mock<Repository<Tag>> _tagRepositoryMock;
         private readonly Mock<Repository<ProjectTag>> _projectTagRepositoryMock;
+        private readonly Mock<Repository<Message>> _messageRepositoryMock;
 
         public ProjectServiceTests()
         {
@@ -24,6 +26,7 @@ namespace LightTown.Server.Tests.Services.Projects
             _projectMemberRepositoryMock = new Mock<Repository<ProjectMember>>();
             _tagRepositoryMock = new Mock<Repository<Tag>>();
             _projectTagRepositoryMock = new Mock<Repository<ProjectTag>>();
+            _messageRepositoryMock = new Mock<Repository<Message>>();
         }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace LightTown.Server.Tests.Services.Projects
                 options.Insert(project3);
             });
             
-            var projectService = new ProjectService(_projectRepositoryMock.Object, null);
+            var projectService = new ProjectService(_projectRepositoryMock.Object, null, null, null, null, null);
 
             //Act
             var actualProject = projectService.GetProject(2);
@@ -79,7 +82,7 @@ namespace LightTown.Server.Tests.Services.Projects
                 project3
             };
 
-            var projectService = new ProjectService(_projectRepositoryMock.Object, null);
+            var projectService = new ProjectService(_projectRepositoryMock.Object, null, null, null, null, null);
 
             //Act
             List<Project> actualProjects = projectService.GetProjects().ToList();
@@ -106,7 +109,7 @@ namespace LightTown.Server.Tests.Services.Projects
 
             });
 
-            var projectService = new ProjectService(_projectRepositoryMock.Object, null);
+            var projectService = new ProjectService(_projectRepositoryMock.Object, null, null, null, null, null);
 
             //Act
             var actualProject = projectService.CreateProject("Project1", "ProjectDescription", 1);
@@ -118,55 +121,28 @@ namespace LightTown.Server.Tests.Services.Projects
 
         }
 
-        /// <summary>
-        /// Test the GetProjectsWithTagIdsAndMemberCount method and see if it returns the correct Projects with its Tag Ids and the correct MemberCount
-        /// </summary>
-        /*[Fact]
-        public void GetProjectTagIdsAndMemberCountTest()
+        [Fact]
+        public void GetProjectMessagesTest()
         {
-            //Arrange
-            Project project = new Project { Id = 1, ProjectName = "Project1", ProjectDescription = "ProjectDescription", CreatorId = 1 };
-            ProjectMember projectMember1 = new ProjectMember { Id = 1, MemberId = 1, ProjectId = 1 };
-            ProjectMember projectMember2 = new ProjectMember { Id = 2, MemberId = 2, ProjectId = 1 };
-            Tag tag1 = new Tag { Id = 1, Name = "Tag1" };
-            Tag tag2 = new Tag { Id = 2, Name = "Tag2" };
-            Tag tag3 = new Tag { Id = 3, Name = "Tag3" };
-            ProjectTag projectTag1 = new ProjectTag {Id = 1, ProjectId = 1, TagId = 1};
-            ProjectTag projectTag2 = new ProjectTag { Id = 2, ProjectId = 1, TagId = 2 };
-            ProjectTag projectTag3 = new ProjectTag { Id = 3, ProjectId = 1, TagId = 3 };
+            var message1 = new Message { Id = 1, Content = "MessageContent", ProjectId = 1, Title = "MessageTitle" };
+            var message2 = new Message { Id = 2, Content = "MessageContent", ProjectId = 1, Title = "MessageTitle" };
+            var message3 = new Message { Id = 3, Content = "MessageContent", ProjectId = 2, Title = "MessageTitle" };
 
-            _projectRepositoryMock.SetupRepositoryMock(options =>
+            _messageRepositoryMock.SetupRepositoryMock(options =>
             {
-                options.Insert(project);
+                options.Insert(message1);
+                options.Insert(message2);
+                options.Insert(message3);
             });
 
-            _projectMemberRepositoryMock.SetupRepositoryMock(options =>
-            {
-                options.Insert(projectMember1);
-                options.Insert(projectMember2);
-            });
+            var projectService = new ProjectService(null, null, null, null, null, _messageRepositoryMock.Object);
 
-            _tagRepositoryMock.SetupRepositoryMock(options =>
-            {
-                options.Insert(tag1);
-                options.Insert(tag2);
-                options.Insert(tag3);
-            });
+            var messages = projectService.GetMessages(1).ToList();
 
-            _projectTagRepositoryMock.SetupRepositoryMock(options =>
-            {
-                options.Insert(projectTag1);
-                options.Insert(projectTag2);
-                options.Insert(projectTag3);
-            });
+            Assert.Equal(2, messages.Count);
+            Assert.Equal(1, messages[0].Id);
+            Assert.Equal(2, messages[1].Id);
+        }
 
-            var projectService = new ProjectService(_projectRepositoryMock.Object, _projectMemberRepositoryMock.Object);
-
-            //Act
-            var actualProjects = projectService.GetProjectsWithTagIdsAndMemberCount(1);
-
-            //Assert
-
-        }*/
     }
 }

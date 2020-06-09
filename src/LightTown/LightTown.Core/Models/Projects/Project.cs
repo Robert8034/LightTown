@@ -19,6 +19,8 @@ namespace LightTown.Core.Models.Projects
         public int? MemberCount { get; set; }
         public DateTime CreationDateTime { get; set; }
         public DateTime LastModifiedDateTime { get; set; }
+        public bool HasImage { get; set; }
+        public string ImageFilename { get; set; }
     }
 }
  
