@@ -37,11 +37,6 @@
                     <p1>Creation Date: @_project?.CreationDateTime.ToString("dd/MM/yyyy") </p1>
                 </GridItem>
             </GridColumn>
-            <GridColumn ColumnSize="ColumnSize.Small">
-                <GridItem>
-                    <Button Enabled="@_joinBtnEnabled" OnClick="@(() => AddMemberToProject(UserDataService.GetCurrentUser().Id))" Text="Join" Size="ButtonSize.Big"></Button> 
-                </GridItem>
-            </GridColumn>
         </Grid>
     </GridColumn>
 </Grid>
@@ -142,7 +137,6 @@
     private LightTown.Core.Models.Projects.Project _project = new Core.Models.Projects.Project();
 
     private bool active;
-    private bool _joinBtnEnabled;
 
     private List<User> users = new List<User>();
 
@@ -156,7 +150,6 @@
 
         _project = await UserDataService.GetProject(ProjectId);
 
-        await DisableJoinButton();
     }
 
     private async Task RemoveMemberFromProject(int userId)
@@ -171,20 +164,5 @@
         _project.Members = await ProjectService.GetProjectMembers(ProjectId);
 
         StateHasChanged();
-    }
-
-    private async Task DisableJoinButton()
-    {
-        if (_project.Members.Contains(UserDataService.GetCurrentUser()))
-        {
-            Console.WriteLine(_project.Members.Count);
-            _joinBtnEnabled = false;
-        }
-        else
-        {
-            Console.WriteLine(_project.Members.Count);
-            _joinBtnEnabled = true;
-        }
-
     }
 }
