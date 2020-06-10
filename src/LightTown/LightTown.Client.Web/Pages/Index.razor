@@ -1,5 +1,66 @@
 ﻿@page "/"
+@using LightTown.Client.Services.Projects
+@using LightTown.Client.Services.Users
+@using LightTown.Client.Web.Services
 
-<h1>Hello, world!</h1>
+@inject IUserDataService UserDataService
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
 
-Welcome to your new app.
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Full">
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Full">
+                <p>
+
+                </p>
+            </GridColumn>
+        </Grid>
+        @*TODO: Get For loop here for all messages from all projects I'm in*@
+        <hr class="underLine" style="border-style:solid;border-width:thin;color:#298ECC" />
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Small">
+                <GridItem>
+                    <p>
+                        14 MAY @*Date posted here*@
+                    </p>
+                    <Button Enabled="true" Text="Like" Size="ButtonSize.Small"></Button>
+                    <p>54</p>
+                </GridItem>
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Full">
+                <GridItem>
+                    <h3 class="titletxt">Message Title</h3>
+                    <h5>By: @*Username posted here*@</h5>
+                    <h4 class="subtext">ProjectName here</h4>
+                    <p>
+                        Here will be the message that was posted. It can be a long message, or a short message. Are we going to give it a maximum amount of characters,
+                        before you would have to expand it yourself to see the entire message? Might be nice for both the timeline ánd the project view. Keep it structured.
+                        Love penguins, they are the best. Also arctic foxes.
+                    </p>
+                </GridItem>
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Small">
+                <Button Enabled="@true" Text="View" Size="ButtonSize.Big"></Button>
+            </GridColumn>
+        </Grid>
+        @*Till here*@
+
+    </GridColumn>
+</Grid>
+
+@code {
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+    }
+
+}
