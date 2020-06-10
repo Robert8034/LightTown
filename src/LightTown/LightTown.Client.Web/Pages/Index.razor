@@ -42,7 +42,7 @@
                 </GridItem>
             </GridColumn>
             <GridColumn ColumnSize="ColumnSize.Small">
-                <Button Enabled="@true" Text="View" Size="ButtonSize.Big"></Button>
+                <Button Enabled="@true" Text="View" Size="ButtonSize.Medium"></Button>
             </GridColumn>
         </Grid>
         @*Till here*@
@@ -52,7 +52,8 @@
 
 @code {
 
-    
+    List<Core.Models.Projects.Project> _projects;
+
     protected override async Task OnInitializedAsync()
     {
         if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
@@ -61,6 +62,7 @@
             return;
         }
 
+        _projects = await UserDataService.GetProjects();
     }
 
 }
