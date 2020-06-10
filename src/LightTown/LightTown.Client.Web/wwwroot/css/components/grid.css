@@ -23,3 +23,16 @@
 .grid-item {
     margin: 8px;
 }
+
+.grid-align-bottomright {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    margin-bottom: 25px;
+}
+
+.grid-align-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
