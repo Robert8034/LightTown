@@ -2,6 +2,7 @@
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
 @using LightTown.Client.Web.Services
+@using LightTown.Core.Models.Messages
 
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
@@ -41,25 +42,24 @@
             <GridColumn ColumnSize="ColumnSize.Medium">
                 <hr class="underLine" style="border: solid; color: #298ECC" />
                 <Grid>
-                    @*TODO: Get For loop here for all messages in project*@
-                    <GridColumn ColumnSize="ColumnSize.Small">
-                        <GridItem>
-                            <h4>Message Title</h4>
-                        </GridItem>
-                    </GridColumn>
-                    <GridColumn ColumnSize="ColumnSize.Medium">
-                        <GridItem>
-                            <p>
-                                Here will be the message that was posted. It can be a long message, or a short message. Are we going to give it a maximum amount of characters,
-                                before you would have to expand it yourself to see the entire message? Might be nice for both the timeline ánd the project view. Keep it structured.
-                                Love penguins, they are the best. Also arctic foxes.
-                            </p>
-                        </GridItem>
-                    </GridColumn>
-                    <GridColumn ColumnSize="ColumnSize.Small">
-                        <Button Enabled="@true" Text="View" Size="ButtonSize.Big"></Button>
-                    </GridColumn>
-                    @*Till here*@
+                    @foreach (var message in _projectMessages)
+                    {
+                        <GridColumn ColumnSize="ColumnSize.Small">
+                            <GridItem>
+                                <h4>@message.Title</h4>
+                            </GridItem>
+                        </GridColumn>
+                        <GridColumn ColumnSize="ColumnSize.Medium">
+                            <GridItem>
+                                <p>
+                                    @message.Content
+                                </p>
+                            </GridItem>
+                        </GridColumn>
+                        <GridColumn ColumnSize="ColumnSize.Small">
+                            <Button Enabled="@true" Text="View" Size="ButtonSize.Big"></Button>
+                        </GridColumn> 
+                    }
                 </Grid>
             </GridColumn>
         </Grid>
@@ -72,6 +72,7 @@
     public int ProjectId { get; set; }
 
     private LightTown.Core.Models.Projects.Project _project = new Core.Models.Projects.Project();
+    private List<Message> _projectMessages = new List<Message>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,6 +83,8 @@
         }
 
         _project = await UserDataService.GetProject(ProjectId);
+
+        _projectMessages = await UserDataService.GetProjectMessages(ProjectId);
     }
 
 }

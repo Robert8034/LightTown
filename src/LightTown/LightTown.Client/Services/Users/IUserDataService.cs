@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LightTown.Core.Models.Messages;
 using LightTown.Core.Models.Projects;
 using LightTown.Core.Models.Roles;
 using LightTown.Core.Models.Tags;
@@ -104,5 +105,7 @@ namespace LightTown.Client.Services.Users
         /// </summary>
         /// <returns></returns>
         Task<List<Role>> GetRoles();
+
+        Task<List<Message>> GetProjectMessages(int projectId);
     }
 }
