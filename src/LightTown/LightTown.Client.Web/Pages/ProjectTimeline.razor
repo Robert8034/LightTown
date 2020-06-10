@@ -21,10 +21,30 @@
                 <Grid>
                     <GridColumn ColumnSize="ColumnSize.Full">
                         <GridItem>
-                            <h1> <br /> Name: @_project?.ProjectName</h1>
+                            <h1> <br /> @_project?.ProjectName</h1>
                         </GridItem>
                     </GridColumn>
                     <GridColumn ColumnSize="ColumnSize.Small">
+                    </GridColumn>
+                </Grid>
+            </GridColumn>
+        </Grid>
+        
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Small">
+
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Medium">
+                <Grid>
+                    <GridColumn ColumnSize="ColumnSize.Full">
+                        <GridItem>
+                            <h2>Messages</h2>
+                        </GridItem>
+                    </GridColumn>
+                    <GridColumn ColumnSize="ColumnSize.Small">
+                        <GridItem>
+                            <Button OnClick="(() => ShowModal())" Text="Create message" Size="ButtonSize.Full"></Button>
+                        </GridItem>
                     </GridColumn>
                 </Grid>
             </GridColumn>
@@ -42,11 +62,11 @@
                 </GridItem>
             </GridColumn>
             <GridColumn ColumnSize="ColumnSize.Medium">
-                <Button OnClick="(() => ShowModal())" Text="Create Message"></Button>
-                <hr class="underLine" style="border: solid; color: #298ECC"/>
-                <Grid>
-                    @foreach (var message in _projectMessages)
-                    {
+                <hr class="underLine" style="border: solid; color: #298ECC" />
+
+                @foreach (var message in _projectMessages)
+                {
+                    <Grid>
                         <GridColumn ColumnSize="ColumnSize.Small">
                             <GridItem>
                                 <h4>@message.Title</h4>
@@ -62,27 +82,31 @@
                         <GridColumn ColumnSize="ColumnSize.Small">
                             <Button Enabled="@true" Text="View" Size="ButtonSize.Big"></Button>
                         </GridColumn>
-                    }
-                </Grid>
+                    </Grid>
+                }
             </GridColumn>
         </Grid>
     </GridColumn>
 </Grid>
 
 <Modal @ref="MessageModal">
-    <h2>Create a message</h2>
-    <FormGroup>
-        <Input Type="text" Placeholder="Title" OnChange="@OnTitleChange" />
-    </FormGroup>
-    <br/>
-    <FormGroup>
-        <Input Type="text" Placeholder="Content" OnChange="@OnContentChange" />
-    </FormGroup>
-    <br/>
-    <Button OnClick="(() => CreateProjectMessage())" Text="Post Message" Enabled="@_buttonEnabled"></Button>
-    <br />
-    <Button OnClick="(() => HideModal())" Text="Close Window"></Button>
-    <br />
+    <div class="m-4">
+        <Form Id="form-login">
+            <h2>Post a message to @_project.ProjectName</h2>
+            <FormGroup>
+                <Input Type="text" Placeholder="Title" Title="Title" OnChange="@OnTitleChange" />
+            </FormGroup>
+            <FormGroup>
+                <TextArea Placeholder="Content" Title="Message content" OnChange="@OnContentChange"></TextArea>
+            </FormGroup>
+            <FormGroup>
+                <Button OnClick="(() => CreateProjectMessage())" Text="Post Message" Enabled="@_buttonEnabled" Size="ButtonSize.Full"></Button>
+            </FormGroup>
+            <FormGroup>
+                <Button OnClick="(() => HideModal())" Text="Close Window" Size="ButtonSize.Full"></Button>
+            </FormGroup>
+        </Form>
+    </div>
 </Modal>
 
 @code {

@@ -470,9 +470,9 @@ namespace LightTown.Client.Services.Users
                 {
                     ApiResult result =
                         await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId + "/messages");
-                    Console.WriteLine("Here?");
+
                     var messages = result.GetData<List<Message>>();
-                    Console.WriteLine("Here too?");
+
                     foreach (Message message in messages)
                     {
                         _messages[message.Id] = message;
