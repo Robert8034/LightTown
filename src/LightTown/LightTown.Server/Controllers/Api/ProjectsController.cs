@@ -7,6 +7,7 @@ using LightTown.Core;
 using LightTown.Core.Domain.Projects;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
+using LightTown.Core.Models.Messages;
 using LightTown.Core.Models.Tags;
 using LightTown.Server.Models.Projects;
 using LightTown.Server.Services.Messages;
@@ -256,7 +257,7 @@ namespace LightTown.Server.Controllers.Api
         [HttpPut]
         [Route("{projectId}/messages")]
         [Authorization(Permissions.NONE)]
-        public async Task<ApiResult> PostProjectMessage(int projectId, string title, string content)
+        public async Task<ApiResult> PostProjectMessage(int projectId, [FromBody] MessagePost messagePost)
         {
             var projectExists = _projectService.ProjectExists(projectId);
 
@@ -270,7 +271,7 @@ namespace LightTown.Server.Controllers.Api
             if (!userIsMember)
                 return ApiResult.BadRequest("User is not a member");
 
-            _messageService.CreateProjectMessage(projectId, title, content);
+            _messageService.CreateProjectMessage(projectId, messagePost.Title, messagePost.Content, messageCreator.Id);
 
             return ApiResult.NoContent();
         }

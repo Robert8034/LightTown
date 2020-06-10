@@ -16,13 +16,14 @@ namespace LightTown.Server.Services.Messages
             _messageRepository = messageRepository;
         }
 
-        public void CreateProjectMessage(int projectId, string title, string content)
+        public void CreateProjectMessage(int projectId, string title, string content, int userId)
         {
             _messageRepository.Insert(new Message
             {
                 ProjectId = projectId,
                 Title = title,
-                Content = content
+                Content = content,
+                UserId = userId
             });
         }
 

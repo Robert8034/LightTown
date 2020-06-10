@@ -1,6 +1,7 @@
 ﻿@page "/projects/{ProjectId:int}/timeline"
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
+@using LightTown.Client.Services.Validation
 @using LightTown.Client.Web.Services
 @using LightTown.Core.Models.Messages
 
@@ -8,6 +9,7 @@
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
 @inject AuthenticationService AuthenticationService
+@inject IValidationService ValidationService
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Full">
@@ -40,7 +42,8 @@
                 </GridItem>
             </GridColumn>
             <GridColumn ColumnSize="ColumnSize.Medium">
-                <hr class="underLine" style="border: solid; color: #298ECC" />
+                <Button OnClick="(() => ShowModal())" Text="Create Message"></Button>
+                <hr class="underLine" style="border: solid; color: #298ECC"/>
                 <Grid>
                     @foreach (var message in _projectMessages)
                     {
@@ -58,13 +61,29 @@
                         </GridColumn>
                         <GridColumn ColumnSize="ColumnSize.Small">
                             <Button Enabled="@true" Text="View" Size="ButtonSize.Big"></Button>
-                        </GridColumn> 
+                        </GridColumn>
                     }
                 </Grid>
             </GridColumn>
         </Grid>
     </GridColumn>
 </Grid>
+
+<Modal @ref="MessageModal">
+    <h2>Create a message</h2>
+    <FormGroup>
+        <Input Type="text" Placeholder="Title" OnChange="@OnTitleChange" />
+    </FormGroup>
+    <br/>
+    <FormGroup>
+        <Input Type="text" Placeholder="Content" OnChange="@OnContentChange" />
+    </FormGroup>
+    <br/>
+    <Button OnClick="(() => CreateProjectMessage())" Text="Post Message" Enabled="@_buttonEnabled"></Button>
+    <br />
+    <Button OnClick="(() => HideModal())" Text="Close Window"></Button>
+    <br />
+</Modal>
 
 @code {
 
@@ -73,6 +92,11 @@
 
     private LightTown.Core.Models.Projects.Project _project = new Core.Models.Projects.Project();
     private List<Message> _projectMessages = new List<Message>();
+    private Modal MessageModal = new Modal();
+
+    private string _title;
+    private string _content;
+    private bool _buttonEnabled;
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,9 +106,62 @@
             return;
         }
 
+        MessageModal.Visible = false;
+
         _project = await UserDataService.GetProject(ProjectId);
 
         _projectMessages = await UserDataService.GetProjectMessages(ProjectId);
+    }
+
+    private async Task CreateProjectMessage()
+    {
+
+        await ProjectService.PostProjectMessage(ProjectId, _content, _title);
+
+        _projectMessages = await ProjectService.GetProjectMessages(ProjectId);
+
+        _title = "";
+        _content = "";
+
+        await HideModal();
+
+        StateHasChanged();
+
+    }
+
+    private async Task HideModal()
+    {
+        await MessageModal.Hide();
+    }
+
+    private async Task ShowModal()
+    {
+        await MessageModal.Show();
+    }
+
+    private void ValidateInput()
+    {
+        _buttonEnabled = ValidationService.ValidateLoginInput(_content, _title);
+
+        StateHasChanged();
+    }
+
+    public Task OnTitleChange(string value)
+    {
+        _title = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
+
+    public Task OnContentChange(string value)
+    {
+        _content = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
     }
 
 }
