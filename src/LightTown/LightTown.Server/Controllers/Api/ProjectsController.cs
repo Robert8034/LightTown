@@ -253,7 +253,7 @@ namespace LightTown.Server.Controllers.Api
             return ApiResult.Success(newTagsModels);
         }
 
-        [HttpGet]
+        [HttpPut]
         [Route("{projectId}/messages")]
         [Authorization(Permissions.NONE)]
         public async Task<ApiResult> PostProjectMessage(int projectId, string title, string content)
@@ -275,7 +275,7 @@ namespace LightTown.Server.Controllers.Api
             return ApiResult.NoContent();
         }
 
-        [HttpPut]
+        [HttpGet]
         [Route("{projectId}/messages")]
         [Authorization(Permissions.NONE)]
         public ApiResult GetProjectMessages(int projectId)
