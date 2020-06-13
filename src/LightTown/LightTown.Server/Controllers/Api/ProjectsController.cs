@@ -25,10 +25,11 @@ namespace LightTown.Server.Controllers.Api
         private readonly IProjectService _projectService;
         private readonly IMapper _mapper;
         private readonly IProjectMemberService _projectMemberService;
+        private readonly IProjectLikeService _projectLikeService;
         private readonly RoleManager<Role> _roleManager;
         private readonly IMessageService _messageService;
 
-        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IProjectMemberService projectMemberService, RoleManager<Role> roleManager, IMessageService messageService)
+        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IProjectLikeService projectLikeService, IProjectMemberService projectMemberService, RoleManager<Role> roleManager, IMessageService messageService)
         {
             _userManager = userManager;
             _projectService = projectService;
@@ -36,6 +37,7 @@ namespace LightTown.Server.Controllers.Api
             _projectMemberService = projectMemberService;
             _roleManager = roleManager;
             _messageService = messageService;
+            _projectLikeService = projectLikeService;
         }
 
         /// <summary>
@@ -291,6 +293,52 @@ namespace LightTown.Server.Controllers.Api
             var messageModels = _mapper.Map<List<Core.Models.Messages.Message>>(messages);
 
             return ApiResult.Success(messageModels);
+        }
+
+        [HttpPut]
+        [Route("{projectId}/likes")]
+        [Authorization(Permissions.NONE)]
+        public async Task<ApiResult> AddProjectLike(int projectId)
+        {
+            var projectExists = _projectService.ProjectExists(projectId);
+
+            if (!projectExists)
+                return ApiResult.BadRequest("Project does not exist");
+
+            var user = await _userManager.GetUserAsync(User);
+
+            var userIsMember = _projectService.UserIsMember(projectId, user.Id);
+
+            if (!userIsMember)
+                return ApiResult.BadRequest("User is not a member");
+
+            _projectLikeService.LikeProject(projectId, user.Id);
+
+            return ApiResult.NoContent();
+        }
+
+        [HttpDelete]
+        [Route("{projectId}/likes")]
+        [Authorization(Permissions.NONE)]
+        public async Task<ApiResult> RemoveProjectLike(int projectId)
+        {
+            var projectExists = _projectService.ProjectExists(projectId);
+
+            if (!projectExists)
+                return ApiResult.BadRequest("Project does not exist");
+
+            var user = await _userManager.GetUserAsync(User);
+
+            var likeExists = _projectLikeService.LikeExists(projectId, user.Id);
+
+            if (!likeExists) 
+                return ApiResult.BadRequest("Like does not exist");
+
+            var projectLike = _projectLikeService.GetProjectLike(projectId, user.Id);
+
+            _projectLikeService.RemoveProjectLike(projectLike);
+
+            return ApiResult.NoContent();
         }
     }
 }

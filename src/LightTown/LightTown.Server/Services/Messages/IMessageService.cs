@@ -8,7 +8,7 @@ namespace LightTown.Server.Services.Messages
 {
     public interface IMessageService
     {
-        public void CreateProjectMessage(int projectId, string title, string content, int userId);
+        void CreateProjectMessage(int projectId, string title, string content, int userId);
         Message GetMessage(int messageId, int projectId);
     }
 }

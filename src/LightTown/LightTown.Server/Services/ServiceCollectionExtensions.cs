@@ -15,6 +15,7 @@ namespace LightTown.Server.Services
             serviceCollection.AddScoped<ITagService, TagService>();
             serviceCollection.AddScoped<IUserService, UserService>();
             serviceCollection.AddScoped<IMessageService, MessageService>();
+            serviceCollection.AddScoped<IProjectLikeService, ProjectLikeService>();
         }
     }
 }

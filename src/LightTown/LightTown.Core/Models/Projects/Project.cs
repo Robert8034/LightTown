@@ -16,6 +16,7 @@ namespace LightTown.Core.Models.Projects
         public List<User> Members { get; set; }
         public List<int> TagIds { get; set; }
         public List<Tag> Tags { get; set; }
+        public List<ProjectLike> ProjectLikes { get; set; }
         public int? MemberCount { get; set; }
         public DateTime CreationDateTime { get; set; }
         public DateTime LastModifiedDateTime { get; set; }

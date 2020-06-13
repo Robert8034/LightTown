@@ -10,6 +10,7 @@ namespace LightTown.Server.Data.Mapping.Projects
             builder.HasKey(e => e.Id);
             builder.HasMany(e => e.ProjectMembers);
             builder.HasMany(e => e.ProjectTags);
+            builder.HasMany(e => e.ProjectLikes);
         }
     }
 }

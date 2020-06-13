@@ -96,7 +96,7 @@ namespace LightTown.Server.Tests.Services.Users
             var result = await userService.TryModifyUserAvatar(user, null, contentLength, contentType);
 
             //Assert
-            Assert.Equal(false, result);
+            Assert.False(result);
         }
 
         /// <summary>
