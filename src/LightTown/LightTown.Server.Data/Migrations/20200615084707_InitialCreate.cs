@@ -218,6 +218,26 @@ namespace LightTown.Server.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MessageLike",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MessageId = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MessageLike", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MessageLike_Message_MessageId",
+                        column: x => x.MessageId,
+                        principalTable: "Message",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserTag",
                 columns: table => new
                 {
@@ -333,6 +353,11 @@ namespace LightTown.Server.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_MessageLike_MessageId",
+                table: "MessageLike",
+                column: "MessageId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Project_CreatorId",
                 table: "Project",
                 column: "CreatorId");
@@ -386,7 +411,7 @@ namespace LightTown.Server.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Message");
+                name: "MessageLike");
 
             migrationBuilder.DropTable(
                 name: "ProjectMember");
@@ -399,6 +424,9 @@ namespace LightTown.Server.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Message");
 
             migrationBuilder.DropTable(
                 name: "Project");

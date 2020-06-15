@@ -32,5 +32,10 @@ namespace LightTown.Server.Services.Messages
             return _messageRepository.TableNoTracking.SingleOrDefault(e =>
                 e.ProjectId == projectId && e.Id == messageId);
         }
+
+        public bool MessageExists(int messageId)
+        {
+            return _messageRepository.Table.Any(e => e.Id == messageId);
+        }
     }
 }

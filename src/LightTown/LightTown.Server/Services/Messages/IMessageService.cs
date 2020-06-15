@@ -10,5 +10,6 @@ namespace LightTown.Server.Services.Messages
     {
         void CreateProjectMessage(int projectId, string title, string content, int userId);
         Message GetMessage(int messageId, int projectId);
+        bool MessageExists(int messageId);
     }
 }

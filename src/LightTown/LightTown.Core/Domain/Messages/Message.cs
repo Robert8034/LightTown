@@ -9,6 +9,7 @@ namespace LightTown.Core.Domain.Messages
     {
         public int ProjectId { get; set; }
         public string Title { get; set; }
+        public List<MessageLike> MessageLikes { get; set; }
         public string Content { get; set; }
         public int UserId { get; set; }
     }

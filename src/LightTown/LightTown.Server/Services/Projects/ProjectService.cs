@@ -56,7 +56,7 @@ namespace LightTown.Server.Services.Projects
 
             var projects = queryable
                 .Select(project => new Tuple<Project, int, IEnumerable<int>>(project, 
-                    project.ProjectMembers.Count(projectMember => projectMember.ProjectId == project.Id), 
+                    project.ProjectMembers.Count(projectMember => projectMember.ProjectId == project.Id),
                     project.ProjectTags.Select(projectTag => projectTag.TagId)).ToValueTuple())
                 .ToList();
 
@@ -213,7 +213,7 @@ namespace LightTown.Server.Services.Projects
         public IEnumerable<Message> GetMessages(int projectId)
         {
             return _messageRepository.TableNoTracking
-                .Where(e => e.ProjectId == projectId);
+                .Where(e => e.ProjectId == projectId).Include(e => e.MessageLikes);
         }
     }
 }
