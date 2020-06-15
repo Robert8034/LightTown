@@ -149,7 +149,7 @@ namespace LightTown.Server.Tests.Services.Messages
 
             var likeCountBefore = messageLikeService.GetMessageLikeCount(1);
 
-            messageLikeService.RemoveMessageLike(like2);
+            messageLikeService.RemoveMessageLike(1, 2);
 
             var likeCountAfter = messageLikeService.GetMessageLikeCount(1);
 
