@@ -1,15 +1,18 @@
 ﻿@page "/projects/{ProjectId:int}/timeline"
+@using LightTown.Client.Services.Messages
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
 @using LightTown.Client.Services.Validation
 @using LightTown.Client.Web.Services
 @using LightTown.Core.Models.Messages
+@using LightTown.Core.Models.Users
 
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
 @inject AuthenticationService AuthenticationService
 @inject IValidationService ValidationService
+@inject IMessageService MessageService
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Full">
@@ -80,7 +83,7 @@
                             </GridItem>
                         </GridColumn>
                         <GridColumn ColumnSize="ColumnSize.Small">
-                            <Button Enabled="@true" Text="View" Size="ButtonSize.Big"></Button>
+                            <Button Enabled="@true" Text="@message.MessageLikes.Count.ToString()" OnClick="@(() => LikeMessage(message.Id))" Size="ButtonSize.Big"></Button>
                         </GridColumn>
                     </Grid>
                 }
@@ -122,6 +125,8 @@
     private string _content;
     private bool _buttonEnabled;
 
+    private User _currentUser = new User();
+
     protected override async Task OnInitializedAsync()
     {
         if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
@@ -134,7 +139,9 @@
 
         _project = await UserDataService.GetProject(ProjectId);
 
-        _projectMessages = await UserDataService.GetProjectMessages(ProjectId);
+        _projectMessages = await ProjectService.GetProjectMessages(ProjectId);
+
+        _currentUser = UserDataService.GetCurrentUser();
     }
 
     private async Task CreateProjectMessage()
@@ -186,6 +193,23 @@
         ValidateInput();
 
         return Task.CompletedTask;
+    }
+
+    private async Task LikeMessage(int messageId)
+    {
+        var hasLiked = false;
+
+        foreach (var like in _projectMessages[messageId - 1].MessageLikes.Where(like => like.UserId == _currentUser.Id))
+        {
+            hasLiked = true;
+            await MessageService.RemoveMessageLike(messageId);
+        }
+
+        if (!hasLiked) await MessageService.LikeMessage(messageId);
+
+        _projectMessages = await ProjectService.GetProjectMessages(ProjectId);
+
+        StateHasChanged();
     }
 
 }

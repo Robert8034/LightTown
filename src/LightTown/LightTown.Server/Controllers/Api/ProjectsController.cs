@@ -290,50 +290,9 @@ namespace LightTown.Server.Controllers.Api
 
             var messages = _projectService.GetMessages(projectId);
 
-            var messageModels = _mapper.Map<List<Core.Models.Messages.Message>>(messages);
+            var messageModels = _mapper.Map<List<Message>>(messages);
 
             return ApiResult.Success(messageModels);
-        }
-
-        [HttpPut]
-        [Route("{projectId}/messages/{messageId}/likes")]
-        [Authorization(Permissions.NONE)]
-        public async Task<ApiResult> AddMessageLike(int projectId, int messageId)
-        {
-            var messageExists = _messageService.MessageExists(messageId);
-
-            if (!messageExists)
-                return ApiResult.BadRequest("Message does not exist");
-
-            var user = await _userManager.GetUserAsync(User);
-
-            _messageLikeService.LikeMessage(messageId, user.Id);
-
-            return ApiResult.NoContent();
-        }
-
-        [HttpDelete]
-        [Route("{projectId}/messages/{messageId}/likes")]
-        [Authorization(Permissions.NONE)]
-        public async Task<ApiResult> RemoveMessageLike(int projectId, int messageId)
-        {
-            var messageExists = _messageService.MessageExists(messageId);
-
-            if (!messageExists)
-                return ApiResult.BadRequest("Message does not exist");
-
-            var user = await _userManager.GetUserAsync(User);
-
-            var likeExists = _messageLikeService.LikeExists(messageId, user.Id);
-
-            if (!likeExists) 
-                return ApiResult.BadRequest("Like does not exist");
-
-            var messageLike = _messageLikeService.GetMessageLike(messageId, user.Id);
-
-            _messageLikeService.RemoveMessageLike(messageLike);
-
-            return ApiResult.NoContent();
         }
     }
 }

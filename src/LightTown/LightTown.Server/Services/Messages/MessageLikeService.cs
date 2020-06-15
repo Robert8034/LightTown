@@ -30,14 +30,14 @@ namespace LightTown.Server.Services.Messages
             });
         }
 
-        public void RemoveMessageLike(MessageLike messageLike)
+        public void RemoveMessageLike(int messageId, int userId)
         {
-            _messageLikeRepository.Delete(messageLike);
+            _messageLikeRepository.Delete(GetMessageLike(messageId, userId));
         }
 
         public MessageLike GetMessageLike(int messageId, int userId)
         {
-            return _messageLikeRepository.TableNoTracking.SingleOrDefault(e =>
+            return _messageLikeRepository.Table.SingleOrDefault(e =>
                 e.MessageId == messageId && e.UserId == userId);
         }
 
@@ -48,7 +48,7 @@ namespace LightTown.Server.Services.Messages
 
         public bool LikeExists(int messageId, int userId)
         {
-            return _messageLikeRepository.Table.Any(e => e.MessageId == messageId && e.UserId == userId);
+            return _messageLikeRepository.TableNoTracking.Any(e => e.MessageId == messageId && e.UserId == userId);
         }
     }
 }

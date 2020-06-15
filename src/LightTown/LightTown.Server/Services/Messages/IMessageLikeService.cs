@@ -10,7 +10,7 @@ namespace LightTown.Server.Services.Messages
     public interface IMessageLikeService
     {
         void LikeMessage(int messageId, int userId);
-        void RemoveMessageLike(MessageLike messageLike);
+        void RemoveMessageLike(int messageId, int userId);
         int GetMessageLikeCount(int messageId);
         MessageLike GetMessageLike(int messageId, int userId);
         List<MessageLike> GetMessageLikes(int messageId);
