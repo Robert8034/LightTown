@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LightTown.Core\LightTown.Core.csproj" />
+    <ProjectReference Include="..\LightTown.Server.Config\LightTown.Server.Config.csproj" />
   </ItemGroup>
 
 </Project>

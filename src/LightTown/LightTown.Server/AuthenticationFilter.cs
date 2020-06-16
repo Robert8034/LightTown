@@ -30,8 +30,12 @@ namespace LightTown.Server
             {
                 var user = _userManager.GetUserAsync(context.HttpContext.User).Result;
 
-                if(user == null)
+                if (user == null)
+                {
                     context.Result = new StatusCodeResult(401);
+
+                    return;
+                }
 
                 var roleNames = _userManager.GetRolesAsync(user).Result;
 

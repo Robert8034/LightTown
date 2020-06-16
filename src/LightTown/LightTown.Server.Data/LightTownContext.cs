@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using LightTown.Core.Domain.Users;
 using LightTown.Server.Data.Mapping;
+using LightTown.Server.Config;
 
 namespace LightTown.Server.Data
 {
@@ -30,9 +31,11 @@ namespace LightTown.Server.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //TODO Add credentials in config file
-
-            optionsBuilder.UseNpgsql("User ID=lighttown;Password=pHmGfPMJ8LpV4CnPxZRy6wKTqAXdxi8nUKHw;Host=localhost;Port=5432;Database=LightTown;");
+            optionsBuilder.UseNpgsql($"User ID={Config.Config.PostgresUserId};" +
+                                     $"Password={Config.Config.PostgresPassword};" +
+                                     $"Host={Config.Config.PostgresHost};" +
+                                     $"Port={Config.Config.PostgresPort};" +
+                                     $"Database={Config.Config.PostgresDatabase};");
 
             //TODO remove this?
             optionsBuilder.EnableDetailedErrors(true);

@@ -22,6 +22,9 @@ else if(_user != null)
         <span class="profile-header-name">
             @(_user.Fullname ?? _user.Username)
         </span>
+        @{
+            //TODO make sure only users with MANAGE_USERS permission can modify a profile (anyone should be able to manage their own profile)
+        }
         <Button Text="Edit profile" OnClick="@(() => EditProfile())"></Button>
     </div>
     <Grid>

@@ -1,9 +1,14 @@
-﻿namespace LightTown.Server.Models.Users
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LightTown.Server.Models.Users
 {
     public class UserPost
     {
+        [Required]
         public string Username { get; set; }
-        public string Password { get; set; }
-        public bool RememberMe { get; set; }
+        [Required]
+        public string Email { get; set; }
+        [Required]
+        public int RoleId { get; set; }
     }
 }

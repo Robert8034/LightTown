@@ -66,7 +66,6 @@
             </GridColumn>
             <GridColumn ColumnSize="ColumnSize.Medium">
                 <hr class="underLine" style="border: solid; color: #298ECC" />
-
                 @foreach (var message in _projectMessages)
                 {
                     <Grid>
@@ -83,7 +82,7 @@
                             </GridItem>
                         </GridColumn>
                         <GridColumn ColumnSize="ColumnSize.Small">
-                            <Button Enabled="@true" Text="@message.MessageLikes.Count.ToString()" OnClick="@(() => LikeMessage(message.Id))" Size="ButtonSize.Big"></Button>
+                            <Button Enabled="@true" Text="@message.MessageLikes.Count.ToString()" OnClick="@(() => LikeMessage(message.ProjectMessageId, message.Id))" Size="ButtonSize.Big"></Button>
                         </GridColumn>
                     </Grid>
                 }
@@ -195,15 +194,20 @@
         return Task.CompletedTask;
     }
 
-    private async Task LikeMessage(int messageId)
+    private async Task LikeMessage(int projectMessageCount, int messageId)
     {
         var hasLiked = false;
 
-        foreach (var like in _projectMessages[messageId - 1].MessageLikes.Where(like => like.UserId == _currentUser.Id))
+        Console.WriteLine(projectMessageCount);
+        foreach (var like in _projectMessages[projectMessageCount].MessageLikes)
         {
-            hasLiked = true;
-            await MessageService.RemoveMessageLike(messageId);
+            if (like.UserId == _currentUser.Id)
+            {
+                hasLiked = true;
+                await MessageService.RemoveMessageLike(messageId);
+            }
         }
+        
 
         if (!hasLiked) await MessageService.LikeMessage(messageId);
 

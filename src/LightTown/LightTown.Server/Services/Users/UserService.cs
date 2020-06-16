@@ -69,9 +69,9 @@ namespace LightTown.Server.Services.Users
                 return false;
 
             if (user.HasAvatar)
-                File.Delete(Path.Combine(Config.UserAvatarPath, $"{user.AvatarFilename}"));
+                File.Delete(Path.Combine(Config.Config.UserAvatarPath, $"{user.AvatarFilename}"));
 
-            using (var stream = File.Create(Path.Combine(Config.UserAvatarPath, $"{user.Id}{extension}")))
+            using (var stream = File.Create(Path.Combine(Config.Config.UserAvatarPath, $"{user.Id}{extension}")))
             {
                 await fileStream.CopyToAsync(stream);
             }
@@ -94,9 +94,9 @@ namespace LightTown.Server.Services.Users
         {
             avatarBytes = new byte[0];
 
-            if (File.Exists(Path.Combine(Config.UserAvatarPath, avatarFilename)))
+            if (File.Exists(Path.Combine(Config.Config.UserAvatarPath, avatarFilename)))
             {
-                avatarBytes = File.ReadAllBytes(Path.Combine(Config.UserAvatarPath, avatarFilename));
+                avatarBytes = File.ReadAllBytes(Path.Combine(Config.Config.UserAvatarPath, avatarFilename));
 
                 return true;
             }
