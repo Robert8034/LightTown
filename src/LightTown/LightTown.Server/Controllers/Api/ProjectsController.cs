@@ -25,11 +25,10 @@ namespace LightTown.Server.Controllers.Api
         private readonly IProjectService _projectService;
         private readonly IMapper _mapper;
         private readonly IProjectMemberService _projectMemberService;
-        private readonly IMessageLikeService _messageLikeService;
         private readonly RoleManager<Role> _roleManager;
         private readonly IMessageService _messageService;
 
-        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IMessageLikeService messageLikeService, IProjectMemberService projectMemberService, RoleManager<Role> roleManager, IMessageService messageService)
+        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IProjectMemberService projectMemberService, RoleManager<Role> roleManager, IMessageService messageService)
         {
             _userManager = userManager;
             _projectService = projectService;
@@ -37,7 +36,6 @@ namespace LightTown.Server.Controllers.Api
             _projectMemberService = projectMemberService;
             _roleManager = roleManager;
             _messageService = messageService;
-            _messageLikeService = messageLikeService;
         }
 
         /// <summary>
