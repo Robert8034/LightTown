@@ -21,9 +21,7 @@ namespace LightTown.Server.Config
         private static string _postgresUserId;
         private static string _postgresPassword;
 
-        [JsonProperty]
         public static string UserAvatarPath = Path.Combine(AppContext.BaseDirectory, "avatars", "users");
-        [JsonProperty]
         public static string ProjectImagePath = Path.Combine(AppContext.BaseDirectory, "images", "projects");
         
         [JsonProperty]
