@@ -28,7 +28,7 @@ namespace LightTown.Server.Controllers.Api
         /// <response code="403">Invalid credentials.</response>
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult> Login([FromBody] UserPost user)
+        public async Task<ActionResult> Login([FromBody] UserLoginPost user)
         {
             if (!ModelState.IsValid)
                 return ApiResult.BadRequest(ModelState.First(e => e.Value.Errors.Any()).Value.Errors.First().ErrorMessage);

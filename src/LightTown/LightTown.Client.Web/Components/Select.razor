@@ -1,0 +1,53 @@
+﻿<div class="select-group @(Class)">
+    <span class="select-title">@Title</span>
+    <span class="input-text">@Text</span>
+    <select @onchange="@(uiChangeEventArgs => Change((string) uiChangeEventArgs.Value))" class="select">
+        @if (string.IsNullOrEmpty(SelectedItem))
+        {
+            <option hidden disabled selected value>@PlaceHolder</option>
+        }
+
+        @foreach (KeyValuePair<string, string> item in Items)
+        {
+            if (SelectedItem == item.Key)
+            {
+                <option value="@item.Value" selected>@item.Key</option>
+            }
+            else
+            {
+                <option value="@item.Value">@item.Key</option>
+            }
+        }
+    </select>
+</div>
+
+@code {
+    [Parameter]
+    public string Class { get; set; } = "";
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public Dictionary<string, string> Items { get; set; } = new Dictionary<string, string>();
+
+    [Parameter]
+    public string SelectedItem { get; set; }
+
+    [Parameter]
+    public string PlaceHolder { get; set; } = "Select...";
+
+    [Parameter]
+    public Action<string> OnChange { get; set; }
+
+    private void Change(string value)
+    {
+        SelectedItem = value;
+
+        OnChange?.Invoke(value);
+    }
+
+}

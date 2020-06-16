@@ -1,0 +1,140 @@
+﻿@page "/users/create"
+
+@using LightTown.Client.Services.Validation
+@using LightTown.Client.Services.Projects
+@using LightTown.Client.Services.Users
+@using LightTown.Client.Web.Services
+@using LightTown.Core
+@using LightTown.Core.Models.Roles
+@using Newtonsoft.Json
+@using System.Text
+
+@inject IValidationService ValidationService
+@inject IProjectService ProjectService
+@inject NavigationManager NavigationManager
+@inject AuthenticationService AuthenticationService
+@inject IUserDataService UserDataService
+@inject HttpClient HttpClient
+
+<Form Class="w-100">
+    <FormGroup>
+        <Input Type="text" Title="Username" Text="The username of the new user." Placeholder="Username" OnChange="@OnUsernameChange" />
+    </FormGroup>
+    <FormGroup>
+        <Input Type="text" Title="E-mail" Text="The confirmation link will be sent to this email." Placeholder="E-mail" OnChange="@OnEmailChange" />
+    </FormGroup>
+    @if (_roles != null)
+    {
+        <FormGroup>
+            <Select Items="@(_roles?.ToDictionary(role => role.Name, role => role.Id.ToString()))" Title="Role" Text="The role this user will have." OnChange="@OnRoleChange"></Select>
+        </FormGroup>
+    }
+    <FormGroup AlignContent="AlignContent.Right">
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <span class="text text-danger d-flex align-items-center mr-2">@_errorMessage</span>
+        }
+        @if (!string.IsNullOrEmpty(_successMessage))
+        {
+            <span class="text text-success d-flex align-items-center mr-2">@_successMessage</span>
+        }
+        <Button Enabled="@CanSendConfirmation()" Text="Send confirmation" OnClick="@SendConfirmationAsync" Size="ButtonSize.Big"></Button>
+    </FormGroup>
+</Form>
+
+@code {
+    private string _username;
+    private string _email;
+    private Role _role;
+    private string _errorMessage;
+    private string _successMessage;
+
+    private List<Role> _roles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        _roles = await UserDataService.GetRoles();
+        //todo only show roles below the current user (when user is a manager they can't create an admin account for example)
+    }
+
+    public bool CanSendConfirmation()
+    {
+        if (string.IsNullOrEmpty(_username))
+            return false;
+
+        if (string.IsNullOrEmpty(_email))
+            return false;
+
+        if (_role == null)
+            return false;
+
+        try
+        {
+            if (new System.Net.Mail.MailAddress(_email).Address != _email)
+                return false;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public Task OnUsernameChange(string value)
+    {
+        _username = value;
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    public Task OnEmailChange(string value)
+    {
+        _email = value;
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    public void OnRoleChange(string value)
+    {
+        _role = _roles.FirstOrDefault(role => role.Id == int.Parse(value));
+
+        StateHasChanged();
+    }
+
+    private async Task SendConfirmationAsync()
+    {
+        var json = JsonConvert.SerializeObject(new
+        {
+            userName = _username,
+            email = _email,
+            roleId = _role.Id
+        });
+
+        var result = await HttpClient.PostAsync("api/users", new StringContent(json, Encoding.UTF8, "application/json"));
+
+        if (result.IsSuccessStatusCode)
+        {
+            _successMessage = "Success! Check your email to confirm your account.";
+            _errorMessage = null;
+        }
+        else
+        {
+            _errorMessage = "Whoops! Seems like something went wrong when trying to create your account." +
+                            "Make sure the username doesn't already exist and that the fields are filled in correctly.";
+            _successMessage = null;
+        }
+
+        StateHasChanged();
+    }
+}

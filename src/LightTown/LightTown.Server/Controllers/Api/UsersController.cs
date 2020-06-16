@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using LightTown.Core;
 using LightTown.Core.Domain.Roles;
-using LightTown.Core.Domain.Tags;
 using LightTown.Core.Domain.Users;
+using LightTown.Server.Models.Users;
 using LightTown.Server.Services.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +20,16 @@ namespace LightTown.Server.Controllers.Api
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
+        private readonly RoleManager<Role> _roleManager;
+        private readonly IUserInviteService _userInviteService;
 
-        public UsersController(UserManager<User> userManager, IMapper mapper, IUserService userService)
+        public UsersController(UserManager<User> userManager, IMapper mapper, IUserService userService, RoleManager<Role> roleManager, IUserInviteService userInviteService)
         {
             _userManager = userManager;
             _mapper = mapper;
             _userService = userService;
+            _roleManager = roleManager;
+            _userInviteService = userInviteService;
         }
 
         /// <summary>
@@ -224,6 +229,11 @@ namespace LightTown.Server.Controllers.Api
             return ApiResult.Success(newTagsModels);
         }
 
+        /// <summary>
+        /// Search for users based on their username.
+        /// </summary>
+        /// <response code="200">Valid response with a list of user objects.</response>
+        /// <response code="401">The user isn't authorized.</response>
         [HttpGet]
         [Route("search/{searchValue}")]
         [Authorization(Permissions.NONE)]
@@ -234,6 +244,45 @@ namespace LightTown.Server.Controllers.Api
             var usersModel = _mapper.Map<List<Core.Models.Users.User>>(users);
 
             return ApiResult.Success(usersModel);
+        }
+
+        /// <summary>
+        /// Create a new user and send the invite link to the email.
+        /// </summary>
+        /// <response code="200">Valid response with a user object.</response>
+        /// <response code="400">Invalid request data.</response>
+        /// <response code="401">The user isn't authorized.</response>
+        /// <response code="403">The user doesn't have the right permissions.</response>
+        [HttpPost]
+        [Route("")]
+        [Authorization(Permissions.MANAGE_USERS)]
+        public async Task<ApiResult> PostUser([FromBody] UserPost userPost)
+        {
+            var role = await _roleManager.FindByIdAsync(userPost.RoleId.ToString());
+
+            if(role == null)
+                return ApiResult.BadRequest();
+
+            var user = await _userManager.FindByNameAsync(userPost.Username);
+
+            //user with that username already exists
+            if (user != null)
+                return ApiResult.BadRequest();
+
+            try
+            {
+                //check if the email is valid
+                if (new System.Net.Mail.MailAddress(userPost.Email).Address != userPost.Email)
+                    return ApiResult.BadRequest();
+            }
+            catch (Exception)
+            {
+                return ApiResult.BadRequest();
+            }
+
+            _userInviteService.CreateInvite(userPost.Username, userPost.Email, userPost.RoleId);
+
+            return ApiResult.NoContent();
         }
     }
 }

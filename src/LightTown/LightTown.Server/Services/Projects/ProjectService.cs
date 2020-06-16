@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LightTown.Core.Data;
+using LightTown.Core.Domain.Messages;
 using LightTown.Core.Domain.Tags;
 using LightTown.Core.Domain.Users;
 using LightTown.Server.Services.Tags;
@@ -18,15 +19,17 @@ namespace LightTown.Server.Services.Projects
         private readonly IRepository<ProjectMember> _projectMemberRepository;
         private readonly IRepository<ProjectTag> _projectTagRepository;
         private readonly IRepository<Tag> _tagRepository;
+        private readonly IRepository<Message> _messageRepository;
         private readonly ITagService _tagService;
 
-        public ProjectService(IRepository<Project> projectRepository, IRepository<ProjectMember> projectMemberRepository, IRepository<ProjectTag> projectTagRepository, IRepository<Tag> tagRepository, ITagService tagService)
+        public ProjectService(IRepository<Project> projectRepository, IRepository<ProjectMember> projectMemberRepository, IRepository<ProjectTag> projectTagRepository, IRepository<Tag> tagRepository, ITagService tagService, IRepository<Message> messageRepository)
         {
             _projectRepository = projectRepository;
             _projectMemberRepository = projectMemberRepository;
             _projectTagRepository = projectTagRepository;
             _tagRepository = tagRepository;
             _tagService = tagService;
+            _messageRepository = messageRepository;
         }
 
         public IEnumerable<Project> GetProjects()
@@ -53,7 +56,7 @@ namespace LightTown.Server.Services.Projects
 
             var projects = queryable
                 .Select(project => new Tuple<Project, int, IEnumerable<int>>(project, 
-                    project.ProjectMembers.Count(projectMember => projectMember.ProjectId == project.Id), 
+                    project.ProjectMembers.Count(projectMember => projectMember.ProjectId == project.Id),
                     project.ProjectTags.Select(projectTag => projectTag.TagId)).ToValueTuple())
                 .ToList();
 
@@ -66,7 +69,7 @@ namespace LightTown.Server.Services.Projects
             {
                 ProjectName = projectName,
                 ProjectDescription = projectDescription ?? "",
-                CreationDateTime = DateTime.Now,
+                CreationDateTime = DateTime.Now.Date,
                 CreatorId = creatorId,
                 ProjectMembers = new List<ProjectMember>(new []
                 {
@@ -143,9 +146,9 @@ namespace LightTown.Server.Services.Projects
             var project = GetProject(projectId);
 
             if (project.HasImage)
-                File.Delete(Path.Combine(Config.ProjectImagePath, $"{project.ImageFilename}"));
+                File.Delete(Path.Combine(Config.Config.ProjectImagePath, $"{project.ImageFilename}"));
 
-            using (var stream = File.Create(Path.Combine(Config.ProjectImagePath, $"{project.Id}{extension}")))
+            using (var stream = File.Create(Path.Combine(Config.Config.ProjectImagePath, $"{project.Id}{extension}")))
             {
                 await fileStream.CopyToAsync(stream);
             }
@@ -162,9 +165,9 @@ namespace LightTown.Server.Services.Projects
         {
             imageBytes = new byte[0];
 
-            if (File.Exists(Path.Combine(Config.ProjectImagePath, imageFilename)))
+            if (File.Exists(Path.Combine(Config.Config.ProjectImagePath, imageFilename)))
             {
-                imageBytes = File.ReadAllBytes(Path.Combine(Config.ProjectImagePath, imageFilename));
+                imageBytes = File.ReadAllBytes(Path.Combine(Config.Config.ProjectImagePath, imageFilename));
 
                 return true;
             }
@@ -205,6 +208,12 @@ namespace LightTown.Server.Services.Projects
             projectTags.AddRange(addedProjectTags);
 
             return projectTags.Select(projectTag => projectTag.Tag).ToList();
+        }
+
+        public IEnumerable<Message> GetMessages(int projectId)
+        {
+            return _messageRepository.TableNoTracking
+                .Where(e => e.ProjectId == projectId).Include(e => e.MessageLikes);
         }
     }
 }

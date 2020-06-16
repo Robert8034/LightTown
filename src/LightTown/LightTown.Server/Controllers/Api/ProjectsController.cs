@@ -7,8 +7,10 @@ using LightTown.Core;
 using LightTown.Core.Domain.Projects;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
+using LightTown.Core.Models.Messages;
 using LightTown.Core.Models.Tags;
 using LightTown.Server.Models.Projects;
+using LightTown.Server.Services.Messages;
 using LightTown.Server.Services.Projects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,14 +26,16 @@ namespace LightTown.Server.Controllers.Api
         private readonly IMapper _mapper;
         private readonly IProjectMemberService _projectMemberService;
         private readonly RoleManager<Role> _roleManager;
+        private readonly IMessageService _messageService;
 
-        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IProjectMemberService projectMemberService, RoleManager<Role> roleManager)
+        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IProjectMemberService projectMemberService, RoleManager<Role> roleManager, IMessageService messageService)
         {
             _userManager = userManager;
             _projectService = projectService;
             _mapper = mapper;
             _projectMemberService = projectMemberService;
             _roleManager = roleManager;
+            _messageService = messageService;
         }
 
         /// <summary>
@@ -248,6 +252,52 @@ namespace LightTown.Server.Controllers.Api
             var newTagsModels = _mapper.Map<List<Tag>>(newTags);
 
             return ApiResult.Success(newTagsModels);
+        }
+
+        [HttpPut]
+        [Route("{projectId}/messages")]
+        [Authorization(Permissions.NONE)]
+        public async Task<ApiResult> PostProjectMessage(int projectId, [FromBody] MessagePost messagePost)
+        {
+            var projectExists = _projectService.ProjectExists(projectId);
+
+            if (!projectExists)
+                return ApiResult.BadRequest("Project does not exist");
+
+            var messageCreator = await _userManager.GetUserAsync(User);
+
+            var userIsMember = _projectService.UserIsMember(projectId, messageCreator.Id);
+
+            if (!userIsMember)
+                return ApiResult.BadRequest("User is not a member");
+
+            _messageService.CreateProjectMessage(projectId, messagePost.Title, messagePost.Content, messageCreator.Id);
+
+            return ApiResult.NoContent();
+        }
+
+        [HttpGet]
+        [Route("{projectId}/messages")]
+        [Authorization(Permissions.NONE)]
+        public ApiResult GetProjectMessages(int projectId)
+        {
+            bool projectExists = _projectService.ProjectExists(projectId);
+
+            if (!projectExists)
+                return ApiResult.NotFound();
+
+            var messages = _projectService.GetMessages(projectId);
+
+            var messageModels = _mapper.Map<List<Message>>(messages);
+
+            var id = 0;
+            foreach (var message in messageModels)
+            {
+                message.ProjectMessageId = id;
+                id++;
+            }
+
+            return ApiResult.Success(messageModels);
         }
     }
 }

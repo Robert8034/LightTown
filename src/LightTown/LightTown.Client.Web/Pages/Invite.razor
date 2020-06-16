@@ -1,0 +1,137 @@
+﻿@page "/invite/{InviteCode}"
+@using LightTown.Core.Models.Users
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using System.Text
+
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+@if (_loading)
+{
+    <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+    if (_validInvite)
+    {
+        <Form Class="w-100">
+            <FormGroup>
+                <Input Type="text" Title="Username" Text="The username you have chosen." Value="@_invite.Username" Disabled="true"/>
+            </FormGroup>
+            <FormGroup>
+                <Input Type="password" Title="Password" Text="Define your password below." Placeholder="Password" OnChange="@OnPasswordChange" />
+            </FormGroup>
+            <FormGroup>
+                <Input Type="password" Title="Confirm Password" Text="Define your password below for confirmation." Placeholder="Confirm Password" OnChange="@OnPasswordConfirmChange" />
+            </FormGroup>
+            <FormGroup AlignContent="AlignContent.Right">
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <span class="text text-danger d-flex align-items-center mr-2">@_errorMessage</span>
+                }
+                @if (!string.IsNullOrEmpty(_successMessage))
+                {
+                    <span class="text text-success d-flex align-items-center mr-2">@_successMessage</span>
+                }
+                else
+                {
+                    <Button Enabled="@CanCreateAccount()" Text="Create account" OnClick="@CreateAccountAsync" Size="ButtonSize.Big"></Button>
+                }
+            </FormGroup>
+        </Form>
+    }
+    else
+    {
+        <h5>Whoops! It seems like the invite is invalid or expired. Invites are valid for 1 day after they are created.</h5>
+    }
+}
+
+@code
+{
+    private bool _loading = true;
+    private bool _validInvite;
+
+    private string _password;
+    private string _passwordConfirm;
+    private string _errorMessage;
+    private string _successMessage;
+
+    private UserInvite _invite;
+
+    [Parameter]
+    public string InviteCode { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, NavigationManager.BaseUri + "api/invites/" + InviteCode));
+
+        _validInvite = result.IsSuccessStatusCode;
+
+        if (_validInvite)
+        {
+            var jObject = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+
+            _invite = jObject?["data"]?.ToObject<UserInvite>();
+        }
+
+        _loading = false;
+    }
+
+    public bool CanCreateAccount()
+    {
+        if (string.IsNullOrEmpty(_password))
+            return false;
+
+        if (string.IsNullOrEmpty(_passwordConfirm))
+            return false;
+
+        if (_password != _passwordConfirm)
+            return false;
+
+        return true;
+    }
+
+    public Task OnPasswordChange(string value)
+    {
+        _password = value;
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    public Task OnPasswordConfirmChange(string value)
+    {
+        _passwordConfirm = value;
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private async Task CreateAccountAsync()
+    {
+        var json = JsonConvert.SerializeObject(new
+        {
+            password = _password
+        });
+
+        var result = await HttpClient.PostAsync("api/invites/" + InviteCode, new StringContent(json, Encoding.UTF8, "application/json"));
+
+        if (result.IsSuccessStatusCode)
+        {
+            _successMessage = "Success! Your account has been created.";
+            _errorMessage = null;
+        }
+        else
+        {
+            _errorMessage = "Whoops! Something went wrong while trying to create your account.";
+            _successMessage = null;
+        }
+
+        StateHasChanged();
+    }
+}

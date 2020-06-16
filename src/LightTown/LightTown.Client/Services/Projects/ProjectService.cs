@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using LightTown.Client.Services.Users;
 using LightTown.Core;
+using LightTown.Core.Models.Messages;
 using LightTown.Core.Models.Projects;
 using LightTown.Core.Models.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -84,7 +85,8 @@ namespace LightTown.Client.Services.Projects
         /// </summary>
         public async Task<bool> RemoveMember(int projectId, int userId)
         {
-            ApiResult result = await _httpClient.DeleteJsonAsync<ApiResult>("api/projects/" + projectId + "/members/" + userId);
+            ApiResult result =
+                await _httpClient.DeleteJsonAsync<ApiResult>("api/projects/" + projectId + "/members/" + userId);
 
             return true;
             //TODO Check for return status codes
@@ -99,11 +101,12 @@ namespace LightTown.Client.Services.Projects
         /// </summary>
         public async Task<bool> AddMember(int userId, int projectId)
         {
-            ApiResult result = await _httpClient.PutJson<ApiResult>("api/projects/" + projectId + "/members/" + userId, new
-            {
-                userId,
-                projectId
-            });
+            ApiResult result = await _httpClient.PutJson<ApiResult>("api/projects/" + projectId + "/members/" + userId,
+                new
+                {
+                    userId,
+                    projectId
+                });
             return true;
         }
 
@@ -134,5 +137,30 @@ namespace LightTown.Client.Services.Projects
 
             return result.GetData<List<Project>>();
         }
+
+        public async Task<bool> PostProjectMessage(int projectId, string content, string title)
+        {
+            if (string.IsNullOrEmpty(content) || string.IsNullOrEmpty(title))
+            {
+                return false;
+            }
+
+            ApiResult result = await _httpClient.PutJson<ApiResult>("api/projects/" + projectId + "/messages", new
+            {
+                title,
+                content
+            });
+
+            return true;
+
+        }
+
+        public async Task<List<Message>> GetProjectMessages(int projectId)
+        {
+            ApiResult result = await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId + "/messages");
+
+            return result.GetData<List<Message>>();
+        }
+
     }
 }

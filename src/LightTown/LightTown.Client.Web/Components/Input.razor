@@ -1,7 +1,7 @@
 ﻿<div class="input-group @(Class)">
     <span class="input-title">@Title</span>
     <span class="input-text">@Text</span>
-    <input class="input" @oninput="@Change" type="@Type" placeholder="@Placeholder" value="@Value"/>
+    <input class="input" @oninput="@Change" type="@Type" placeholder="@Placeholder" value="@Value" disabled="@Disabled"/>
 </div>
 
 @code {
@@ -22,6 +22,9 @@
 
     [Parameter]
     public object Value { get; set; } = "";
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
 
     [Parameter]
     public Func<string, Task> OnChange { get; set; }
