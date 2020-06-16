@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using LightTown.Client.Services.Authentication;
+using LightTown.Client.Services.Messages;
 using LightTown.Client.Services.Popups;
 using LightTown.Client.Services.Projects;
 using LightTown.Client.Services.Users;
@@ -32,6 +33,7 @@ namespace LightTown.Client.Web
             builder.Services.AddSingleton<IUserAuthService, UserAuthService>();
             builder.Services.AddSingleton<IUserDataService, UserDataService>();
             builder.Services.AddSingleton<IUserService, UserService>();
+            builder.Services.AddSingleton<IMessageService, MessageService>();
             builder.Services.AddSingleton<IPopupService<BlazorPopupService.Popup>, BlazorPopupService>();
             builder.Services.AddSingleton<Services.AuthenticationService>();
             builder.Services.AddBaseAddressHttpClient();
