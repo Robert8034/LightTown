@@ -24,6 +24,15 @@
             </GridColumn>
         </Grid>
         <GridColumn ColumnSize="ColumnSize.Full">
+            @if(_projectMessages.Count == 0)
+            {
+                <Grid>
+                    <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Full">
+                        <h1>No messages</h1>
+                    </GridColumn>
+                </Grid>
+                
+            }
 
         @foreach(var message in _projectMessages) 
         { 
