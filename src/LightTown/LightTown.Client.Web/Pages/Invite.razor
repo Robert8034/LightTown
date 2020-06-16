@@ -36,7 +36,10 @@ else
                 {
                     <span class="text text-success d-flex align-items-center mr-2">@_successMessage</span>
                 }
-                <Button Enabled="@CanCreateAccount()" Text="Create account" OnClick="@CreateAccountAsync" Size="ButtonSize.Big"></Button>
+                else
+                {
+                    <Button Enabled="@CanCreateAccount()" Text="Create account" OnClick="@CreateAccountAsync" Size="ButtonSize.Big"></Button>
+                }
             </FormGroup>
         </Form>
     }
