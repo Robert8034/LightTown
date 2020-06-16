@@ -292,6 +292,13 @@ namespace LightTown.Server.Controllers.Api
 
             var messageModels = _mapper.Map<List<Message>>(messages);
 
+            var id = 0;
+            foreach (var message in messageModels)
+            {
+                message.ProjectMessageId = id;
+                id++;
+            }
+
             return ApiResult.Success(messageModels);
         }
     }
