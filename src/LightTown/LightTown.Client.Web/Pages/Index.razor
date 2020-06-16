@@ -34,7 +34,7 @@
                         <p class="text-center">
                             14 MAY @*Date posted here*@
                         </p>
-                        <Button Enabled="true" Text="Like" Size="ButtonSize.Small"></Button>
+                        <Button Enabled="true" Text="Like" OnClick="() => LikeMessage(message)" Size="ButtonSize.Small"></Button>
                         <p class="text-center">@message.MessageLikes.Count()</p>
                     </GridItem>
                 </GridColumn>
@@ -103,6 +103,22 @@
         _projectMessages.Sort((x, y) => y.Id.CompareTo(x.Id));
     }
 
-    
+    private async Task LikeMessage(Message message)
+    {
+        var hasLiked = false;
+        var projectId = message.ProjectId;
+
+        foreach (var like in message.MessageLikes.Where(like => like.UserId == _currentUser.Id))
+        {
+            hasLiked = true;
+            await MessageService.RemoveMessageLike(message.Id);
+        }
+
+        if (!hasLiked) await MessageService.LikeMessage(message.Id);
+
+        await getAllMessages();
+
+        StateHasChanged();
+    }
 
 }
