@@ -1,12 +1,18 @@
 ﻿@page "/"
+@using LightTown.Client.Services.Messages
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
+@using LightTown.Client.Services.Validation
 @using LightTown.Client.Web.Services
+@using LightTown.Core.Models.Messages
+@using LightTown.Core.Models.Users
 
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
 @inject AuthenticationService AuthenticationService
+@inject IValidationService ValidationService
+@inject IMessageService MessageService
 
 <Grid>
     <GridColumn ColumnSize="ColumnSize.Full">
@@ -17,35 +23,37 @@
                 </p>
             </GridColumn>
         </Grid>
-        @*TODO: Get For loop here for all messages from all projects I'm in*@
-        <hr class="underLine" style="border-style:solid;border-width:thin;color:#298ECC" />
-        <Grid>
-            <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
-                <GridItem>
-                    <p class="text-center">
-                        14 MAY @*Date posted here*@
-                    </p>
-                    <Button Enabled="true" Text="Like" Size="ButtonSize.Small"></Button>
-                    <p class="text-center">54</p>
-                </GridItem>
-            </GridColumn>
-            <GridColumn ColumnSize="ColumnSize.Full">
-                <GridItem>
-                    <h3 class="titletxt">Message Title</h3>
-                    <h5>By: @*Username posted here*@</h5>
-                    <h4 class="subtext">ProjectName here</h4>
-                    <p>
-                        Here will be the message that was posted. It can be a long message, or a short message. Are we going to give it a maximum amount of characters,
-                        before you would have to expand it yourself to see the entire message? Might be nice for both the timeline ánd the project view. Keep it structured.
-                        Love penguins, they are the best. Also arctic foxes.
-                    </p>
-                </GridItem>
-            </GridColumn>
-            <GridColumn Class="grid-align-bottomright" ColumnSize="ColumnSize.Small">
-                <Button Enabled="@true" Text="View" Size="ButtonSize.Medium"></Button>
-            </GridColumn>
-        </Grid>
-        @*Till here*@
+        <GridColumn ColumnSize="ColumnSize.Full">
+
+        @foreach(var message in _projectMessages) 
+        { 
+            <hr class="underLine" style="border-style:solid;border-width:thin;color:#298ECC" />
+            <Grid>
+                <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
+                    <GridItem>
+                        <p class="text-center">
+                            14 MAY @*Date posted here*@
+                        </p>
+                        <Button Enabled="true" Text="Like" Size="ButtonSize.Small"></Button>
+                        <p class="text-center">@message.MessageLikes.Count()</p>
+                    </GridItem>
+                </GridColumn>
+                <GridColumn ColumnSize="ColumnSize.Full">
+                    <GridItem>
+                        <h3 class="titletxt">@message.Title</h3>
+                        <h5>By: @message.UserId</h5>
+                        <h4 class="subtext">Get ProjectByID</h4>
+                        <p>
+                            @message.Content
+                        </p>
+                    </GridItem>
+                </GridColumn>
+                <GridColumn Class="grid-align-bottomright" ColumnSize="ColumnSize.Small">
+                    <Button Enabled="@true" Text="View" OnClick="() => ViewProject(message.ProjectId)" Size="ButtonSize.Medium"></Button>
+                </GridColumn>
+            </Grid>
+        }
+       </GridColumn>
 
     </GridColumn>
 </Grid>
@@ -53,7 +61,11 @@
 @code {
 
     List<Core.Models.Projects.Project> _projects;
+    private List<Message> _projectMessages = new List<Message>();
 
+    private User _currentUser = new User();
+
+    /*Sort by date/time posted*/
     protected override async Task OnInitializedAsync()
     {
         if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
@@ -63,6 +75,34 @@
         }
 
         _projects = await UserDataService.GetProjects();
+
+        await getAllMessages();
+
+        _currentUser = UserDataService.GetCurrentUser();
+
     }
+
+    private Task ViewProject(int projectId)
+    {
+        NavigationManager.NavigateTo("/projects/" + projectId + "/timeline");
+
+        return Task.CompletedTask;
+    }
+
+    private async Task getAllMessages()
+    {
+        _projectMessages.Clear();
+
+        List<Message> _projectMessage = new List<Message>();
+        foreach (var _project in _projects)
+        {
+            _projectMessage = await ProjectService.GetProjectMessages(_project.Id);
+            _projectMessages.AddRange(_projectMessage);
+        }
+
+        _projectMessages.Sort((x, y) => y.Id.CompareTo(x.Id));
+    }
+
+    
 
 }
