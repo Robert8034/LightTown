@@ -32,7 +32,7 @@
                 <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
                     <GridItem>
                         <p class="text-center">
-                            14 MAY @*Date posted here*@
+                            @*Date posted here*@
                         </p>
                         <Button Enabled="true" Text="Like" OnClick="() => LikeMessage(message)" Size="ButtonSize.Small"></Button>
                         <p class="text-center">@message.MessageLikes.Count()</p>
@@ -41,8 +41,8 @@
                 <GridColumn ColumnSize="ColumnSize.Full">
                     <GridItem>
                         <h3 class="titletxt">@message.Title</h3>
-                        <h5>By: @message.UserId</h5>
-                        <h4 class="subtext">Get ProjectByID</h4>
+                        <h5>By: @getUserName(message.UserId)</h5>
+                        <h4 class="subtext">@getProjectName(message.ProjectId)</h4>
                         <p>
                             @message.Content
                         </p>
@@ -119,6 +119,25 @@
         await getAllMessages();
 
         StateHasChanged();
+    }
+
+    private string getProjectName(int projectId)
+    {
+        foreach(var project in _projects)
+        {
+            if(project.Id == projectId)
+            {
+                return project.ProjectName;
+            }
+
+
+        }
+        return "Unknown";
+    }
+
+    private string getUserName(int userId)
+    {
+        return UserDataService.GetUser(userId).Result.Username;
     }
 
 }
