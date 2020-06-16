@@ -58,6 +58,21 @@ namespace LightTown.Server.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Message",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProjectId = table.Column<int>(nullable: false),
+                    Title = table.Column<string>(nullable: true),
+                    Content = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Message", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tag",
                 columns: table => new
                 {
@@ -68,6 +83,23 @@ namespace LightTown.Server.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tag", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserInvite",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Username = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    RoleId = table.Column<int>(nullable: false),
+                    InviteCode = table.Column<string>(nullable: false),
+                    CreationTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserInvite", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -370,10 +402,16 @@ namespace LightTown.Server.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Message");
+
+            migrationBuilder.DropTable(
                 name: "ProjectMember");
 
             migrationBuilder.DropTable(
                 name: "ProjectTag");
+
+            migrationBuilder.DropTable(
+                name: "UserInvite");
 
             migrationBuilder.DropTable(
                 name: "UserTag");

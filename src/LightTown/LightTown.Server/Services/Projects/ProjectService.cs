@@ -146,9 +146,9 @@ namespace LightTown.Server.Services.Projects
             var project = GetProject(projectId);
 
             if (project.HasImage)
-                File.Delete(Path.Combine(Config.ProjectImagePath, $"{project.ImageFilename}"));
+                File.Delete(Path.Combine(Config.Config.ProjectImagePath, $"{project.ImageFilename}"));
 
-            using (var stream = File.Create(Path.Combine(Config.ProjectImagePath, $"{project.Id}{extension}")))
+            using (var stream = File.Create(Path.Combine(Config.Config.ProjectImagePath, $"{project.Id}{extension}")))
             {
                 await fileStream.CopyToAsync(stream);
             }
@@ -165,9 +165,9 @@ namespace LightTown.Server.Services.Projects
         {
             imageBytes = new byte[0];
 
-            if (File.Exists(Path.Combine(Config.ProjectImagePath, imageFilename)))
+            if (File.Exists(Path.Combine(Config.Config.ProjectImagePath, imageFilename)))
             {
-                imageBytes = File.ReadAllBytes(Path.Combine(Config.ProjectImagePath, imageFilename));
+                imageBytes = File.ReadAllBytes(Path.Combine(Config.Config.ProjectImagePath, imageFilename));
 
                 return true;
             }

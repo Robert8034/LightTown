@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using LightTown.Core.Domain.Projects;
-using LightTown.Core.Domain.Tags;
 using Microsoft.AspNetCore.Identity;
 
 namespace LightTown.Core.Domain.Users

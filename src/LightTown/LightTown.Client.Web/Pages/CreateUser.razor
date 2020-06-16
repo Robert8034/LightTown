@@ -6,6 +6,8 @@
 @using LightTown.Client.Web.Services
 @using LightTown.Core
 @using LightTown.Core.Models.Roles
+@using Newtonsoft.Json
+@using System.Text
 
 @inject IValidationService ValidationService
 @inject IProjectService ProjectService
@@ -112,13 +114,16 @@
 
     private async Task SendConfirmationAsync()
     {
-        var result = await HttpClient.PostJsonAsync<ApiResult>("api/users", new
+        var json = JsonConvert.SerializeObject(new
         {
             userName = _username,
-            email = _email
+            email = _email,
+            roleId = _role.Id
         });
 
-        if (result.IsSuccess)
+        var result = await HttpClient.PostAsync("api/users", new StringContent(json, Encoding.UTF8, "application/json"));
+
+        if (result.IsSuccessStatusCode)
         {
             _successMessage = "Success! Check your email to confirm your account.";
             _errorMessage = null;

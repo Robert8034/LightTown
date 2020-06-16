@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Server.Tests", "L
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTown.Client.Tests", "LightTown.Client.Tests\LightTown.Client.Tests.csproj", "{6A854A2B-9495-457D-9590-F8A8028044FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightTown.Server.Config", "LightTown.Server.Config\LightTown.Server.Config.csproj", "{1DE6695D-AA81-4D90-9808-47B0DFD036A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{6A854A2B-9495-457D-9590-F8A8028044FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A854A2B-9495-457D-9590-F8A8028044FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A854A2B-9495-457D-9590-F8A8028044FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DE6695D-AA81-4D90-9808-47B0DFD036A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DE6695D-AA81-4D90-9808-47B0DFD036A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DE6695D-AA81-4D90-9808-47B0DFD036A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DE6695D-AA81-4D90-9808-47B0DFD036A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
