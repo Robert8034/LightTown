@@ -124,3 +124,7 @@ h5 {
 .titletxt {
     font-size: xx-large;
 }
+
+.text-center {
+    text-align: center;
+}
