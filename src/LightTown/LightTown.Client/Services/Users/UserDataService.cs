@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LightTown.Client.Services.Popups;
 using LightTown.Core;
+using LightTown.Core.Models.Messages;
 using LightTown.Core.Models.Projects;
 using LightTown.Core.Models.Roles;
 using LightTown.Core.Models.Tags;
@@ -31,6 +32,7 @@ namespace LightTown.Client.Services.Users
         private Dictionary<int, Role> _roles;
         private Dictionary<int, User> _users;
         private Dictionary<int, Tag> _tags;
+        private Dictionary<int, Message> _messages;
 
         //lock objects so a second thread cant access the object when it is being loaded (using httpclient) by another thread.
         private readonly SemaphoreSlim _currentUserLock = new SemaphoreSlim(1, 1);
@@ -38,6 +40,7 @@ namespace LightTown.Client.Services.Users
         private readonly SemaphoreSlim _projectsLock = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim _tagsLock = new SemaphoreSlim(1,1);
         private readonly SemaphoreSlim _rolesLock = new SemaphoreSlim(1,1);
+        private readonly SemaphoreSlim _messagesLock = new SemaphoreSlim(1,1);
 
         public UserDataService(HttpClient httpClient, IPopupService<BlazorPopupService.Popup> alertService)
         {
@@ -47,6 +50,7 @@ namespace LightTown.Client.Services.Users
             _users = new Dictionary<int, User>();
             _tags = new Dictionary<int, Tag>();
             _roles = new Dictionary<int, Role>();
+            _messages = new Dictionary<int, Message>();
         }
 
         /// <summary>
@@ -454,6 +458,38 @@ namespace LightTown.Client.Services.Users
             }
 
             return _roles?.Values.ToList();
+        }
+
+        public async Task<List<Message>> GetProjectMessages(int projectId)
+        {
+            if (_messages.Count == 0)
+            {
+                await _messagesLock.WaitAsync();
+
+                try
+                {
+                    ApiResult result =
+                        await _httpClient.GetJsonAsync<ApiResult>("api/projects/" + projectId + "/messages");
+
+                    var messages = result.GetData<List<Message>>();
+
+                    foreach (Message message in messages)
+                    {
+                        _messages[message.Id] = message;
+                    }
+                    
+                }
+                catch (Exception e)
+                {
+                    _alertService?.ShowErrorPopup(true, null, "Error getting messages: " + e.Message);
+                }
+                finally
+                {
+                    _messagesLock.Release();
+                }
+            }
+
+            return _messages?.Values.Where(e => e.ProjectId == projectId).ToList();
         }
     }
 }

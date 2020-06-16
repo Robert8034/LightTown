@@ -16,13 +16,14 @@ namespace LightTown.Server.Services.Messages
             _messageRepository = messageRepository;
         }
 
-        public void CreateProjectMessage(int projectId, string title, string content)
+        public void CreateProjectMessage(int projectId, string title, string content, int userId)
         {
             _messageRepository.Insert(new Message
             {
                 ProjectId = projectId,
                 Title = title,
-                Content = content
+                Content = content,
+                UserId = userId
             });
         }
 
@@ -30,6 +31,11 @@ namespace LightTown.Server.Services.Messages
         {
             return _messageRepository.TableNoTracking.SingleOrDefault(e =>
                 e.ProjectId == projectId && e.Id == messageId);
+        }
+
+        public bool MessageExists(int messageId)
+        {
+            return _messageRepository.Table.Any(e => e.Id == messageId);
         }
     }
 }

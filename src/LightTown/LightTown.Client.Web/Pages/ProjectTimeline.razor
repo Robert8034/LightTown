@@ -1,65 +1,115 @@
 ﻿@page "/projects/{ProjectId:int}/timeline"
+@using LightTown.Client.Services.Messages
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
+@using LightTown.Client.Services.Validation
 @using LightTown.Client.Web.Services
+@using LightTown.Core.Models.Messages
+@using LightTown.Core.Models.Users
 
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
 @inject AuthenticationService AuthenticationService
+@inject IValidationService ValidationService
+@inject IMessageService MessageService
 
-    <Grid>
-        <GridColumn ColumnSize="ColumnSize.Small">
-        </GridColumn>
-        <GridColumn ColumnSize="ColumnSize.Medium">
-            <Grid>
-                <GridColumn ColumnSize="ColumnSize.Full">
-                    <GridItem>
-                        <h1> <br /> Name: @_project?.ProjectName</h1>
-                    </GridItem>
-                </GridColumn>
-                <GridColumn ColumnSize="ColumnSize.Small">
-                </GridColumn>
-            </Grid>
-        </GridColumn>
-    </Grid>
+<Grid>
+    <GridColumn ColumnSize="ColumnSize.Full">
 
-    <Grid>
-        <GridColumn ColumnSize="ColumnSize.Small">
-            <GridItem>
-                <ListGroup Class="mw-300 m-auto">
-                    <ListGroupHeader Text="@_project.ProjectName"></ListGroupHeader>
-                    <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}")" Text="Overview"></ListGroupItem>
-                    <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/members")" Text="Members" Active="true"></ListGroupItem>
-                    <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/timeline")" Text="Messages"></ListGroupItem>
-                </ListGroup>
-            </GridItem>
-        </GridColumn>
-        <GridColumn ColumnSize="ColumnSize.Medium">
-            <hr class="underLine" style="border: solid; color: #298ECC" />
-            <Grid>
-                @*TODO: Get For loop here for all messages in project*@
-                <GridColumn ColumnSize="ColumnSize.Small">
-                    <GridItem>
-                        <h4>Message Title</h4>
-                    </GridItem>
-                </GridColumn>
-                <GridColumn ColumnSize="ColumnSize.Medium">
-                    <GridItem>
-                        <p>
-                            Here will be the message that was posted. It can be a long message, or a short message. Are we going to give it a maximum amount of characters,
-                            before you would have to expand it yourself to see the entire message? Might be nice for both the timeline ánd the project view. Keep it structured.
-                            Love penguins, they are the best. Also arctic foxes.
-                        </p>
-                    </GridItem>
-                </GridColumn>
-                <GridColumn ColumnSize="ColumnSize.Small">
-                    <Button Enabled="@true" Text="View" Size="ButtonSize.Big"></Button>
-                </GridColumn>
-                @*Till here*@
-            </Grid>
-        </GridColumn>
-    </Grid>
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Small">
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Medium">
+                <Grid>
+                    <GridColumn ColumnSize="ColumnSize.Full">
+                        <GridItem>
+                            <h1> <br /> @_project?.ProjectName</h1>
+                        </GridItem>
+                    </GridColumn>
+                    <GridColumn ColumnSize="ColumnSize.Small">
+                    </GridColumn>
+                </Grid>
+            </GridColumn>
+        </Grid>
+        
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Small">
+
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Medium">
+                <Grid>
+                    <GridColumn ColumnSize="ColumnSize.Full">
+                        <GridItem>
+                            <h2>Messages</h2>
+                        </GridItem>
+                    </GridColumn>
+                    <GridColumn ColumnSize="ColumnSize.Small">
+                        <GridItem>
+                            <Button OnClick="(() => ShowModal())" Text="Create message" Size="ButtonSize.Full"></Button>
+                        </GridItem>
+                    </GridColumn>
+                </Grid>
+            </GridColumn>
+        </Grid>
+
+        <Grid>
+            <GridColumn ColumnSize="ColumnSize.Small">
+                <GridItem>
+                    <ListGroup Class="mw-300 m-auto">
+                        <ListGroupHeader Text="@_project.ProjectName"></ListGroupHeader>
+                        <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}")" Text="Overview"></ListGroupItem>
+                        <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/members")" Text="Members" Active="true"></ListGroupItem>
+                        <ListGroupItem IsLink="true" Link="@($"/projects/{ProjectId}/timeline")" Text="Messages"></ListGroupItem>
+                    </ListGroup>
+                </GridItem>
+            </GridColumn>
+            <GridColumn ColumnSize="ColumnSize.Medium">
+                <hr class="underLine" style="border: solid; color: #298ECC" />
+                @foreach (var message in _projectMessages)
+                {
+                    <Grid>
+                        <GridColumn ColumnSize="ColumnSize.Small">
+                            <GridItem>
+                                <h4>@message.Title</h4>
+                            </GridItem>
+                        </GridColumn>
+                        <GridColumn ColumnSize="ColumnSize.Medium">
+                            <GridItem>
+                                <p>
+                                    @message.Content
+                                </p>
+                            </GridItem>
+                        </GridColumn>
+                        <GridColumn ColumnSize="ColumnSize.Small">
+                            <Button Enabled="@true" Text="@message.MessageLikes.Count.ToString()" OnClick="@(() => LikeMessage(message.ProjectMessageId, message.Id))" Size="ButtonSize.Big"></Button>
+                        </GridColumn>
+                    </Grid>
+                }
+            </GridColumn>
+        </Grid>
+    </GridColumn>
+</Grid>
+
+<Modal @ref="MessageModal">
+    <div class="m-4">
+        <Form Id="form-login">
+            <h2>Post a message to @_project.ProjectName</h2>
+            <FormGroup>
+                <Input Type="text" Placeholder="Title" Title="Title" OnChange="@OnTitleChange" />
+            </FormGroup>
+            <FormGroup>
+                <TextArea Placeholder="Content" Title="Message content" OnChange="@OnContentChange"></TextArea>
+            </FormGroup>
+            <FormGroup>
+                <Button OnClick="(() => CreateProjectMessage())" Text="Post Message" Enabled="@_buttonEnabled" Size="ButtonSize.Full"></Button>
+            </FormGroup>
+            <FormGroup>
+                <Button OnClick="(() => HideModal())" Text="Close Window" Size="ButtonSize.Full"></Button>
+            </FormGroup>
+        </Form>
+    </div>
+</Modal>
 
 @code {
 
@@ -67,6 +117,14 @@
     public int ProjectId { get; set; }
 
     private LightTown.Core.Models.Projects.Project _project = new Core.Models.Projects.Project();
+    private List<Message> _projectMessages = new List<Message>();
+    private Modal MessageModal = new Modal();
+
+    private string _title;
+    private string _content;
+    private bool _buttonEnabled;
+
+    private User _currentUser = new User();
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,7 +134,86 @@
             return;
         }
 
+        MessageModal.Visible = false;
+
         _project = await UserDataService.GetProject(ProjectId);
+
+        _projectMessages = await ProjectService.GetProjectMessages(ProjectId);
+
+        _currentUser = UserDataService.GetCurrentUser();
+    }
+
+    private async Task CreateProjectMessage()
+    {
+
+        await ProjectService.PostProjectMessage(ProjectId, _content, _title);
+
+        _projectMessages = await ProjectService.GetProjectMessages(ProjectId);
+
+        _title = "";
+        _content = "";
+
+        await HideModal();
+
+        StateHasChanged();
+
+    }
+
+    private async Task HideModal()
+    {
+        await MessageModal.Hide();
+    }
+
+    private async Task ShowModal()
+    {
+        await MessageModal.Show();
+    }
+
+    private void ValidateInput()
+    {
+        _buttonEnabled = ValidationService.ValidateLoginInput(_content, _title);
+
+        StateHasChanged();
+    }
+
+    public Task OnTitleChange(string value)
+    {
+        _title = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
+
+    public Task OnContentChange(string value)
+    {
+        _content = value;
+
+        ValidateInput();
+
+        return Task.CompletedTask;
+    }
+
+    private async Task LikeMessage(int projectMessageCount, int messageId)
+    {
+        var hasLiked = false;
+
+        Console.WriteLine(projectMessageCount);
+        foreach (var like in _projectMessages[projectMessageCount].MessageLikes)
+        {
+            if (like.UserId == _currentUser.Id)
+            {
+                hasLiked = true;
+                await MessageService.RemoveMessageLike(messageId);
+            }
+        }
+        
+
+        if (!hasLiked) await MessageService.LikeMessage(messageId);
+
+        _projectMessages = await ProjectService.GetProjectMessages(ProjectId);
+
+        StateHasChanged();
     }
 
 }

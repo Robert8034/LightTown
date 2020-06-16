@@ -7,6 +7,7 @@ using LightTown.Core;
 using LightTown.Core.Domain.Projects;
 using LightTown.Core.Domain.Roles;
 using LightTown.Core.Domain.Users;
+using LightTown.Core.Models.Messages;
 using LightTown.Core.Models.Tags;
 using LightTown.Server.Models.Projects;
 using LightTown.Server.Services.Messages;
@@ -24,10 +25,11 @@ namespace LightTown.Server.Controllers.Api
         private readonly IProjectService _projectService;
         private readonly IMapper _mapper;
         private readonly IProjectMemberService _projectMemberService;
+        private readonly IMessageLikeService _messageLikeService;
         private readonly RoleManager<Role> _roleManager;
         private readonly IMessageService _messageService;
 
-        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IProjectMemberService projectMemberService, RoleManager<Role> roleManager, IMessageService messageService)
+        public ProjectsController(IProjectService projectService, UserManager<User> userManager, IMapper mapper, IMessageLikeService messageLikeService, IProjectMemberService projectMemberService, RoleManager<Role> roleManager, IMessageService messageService)
         {
             _userManager = userManager;
             _projectService = projectService;
@@ -35,6 +37,7 @@ namespace LightTown.Server.Controllers.Api
             _projectMemberService = projectMemberService;
             _roleManager = roleManager;
             _messageService = messageService;
+            _messageLikeService = messageLikeService;
         }
 
         /// <summary>
@@ -253,10 +256,10 @@ namespace LightTown.Server.Controllers.Api
             return ApiResult.Success(newTagsModels);
         }
 
-        [HttpGet]
+        [HttpPut]
         [Route("{projectId}/messages")]
         [Authorization(Permissions.NONE)]
-        public async Task<ApiResult> PostProjectMessage(int projectId, string title, string content)
+        public async Task<ApiResult> PostProjectMessage(int projectId, [FromBody] MessagePost messagePost)
         {
             var projectExists = _projectService.ProjectExists(projectId);
 
@@ -270,12 +273,12 @@ namespace LightTown.Server.Controllers.Api
             if (!userIsMember)
                 return ApiResult.BadRequest("User is not a member");
 
-            _messageService.CreateProjectMessage(projectId, title, content);
+            _messageService.CreateProjectMessage(projectId, messagePost.Title, messagePost.Content, messageCreator.Id);
 
             return ApiResult.NoContent();
         }
 
-        [HttpPut]
+        [HttpGet]
         [Route("{projectId}/messages")]
         [Authorization(Permissions.NONE)]
         public ApiResult GetProjectMessages(int projectId)
@@ -287,7 +290,14 @@ namespace LightTown.Server.Controllers.Api
 
             var messages = _projectService.GetMessages(projectId);
 
-            var messageModels = _mapper.Map<List<Core.Models.Messages.Message>>(messages);
+            var messageModels = _mapper.Map<List<Message>>(messages);
+
+            var id = 0;
+            foreach (var message in messageModels)
+            {
+                message.ProjectMessageId = id;
+                id++;
+            }
 
             return ApiResult.Success(messageModels);
         }

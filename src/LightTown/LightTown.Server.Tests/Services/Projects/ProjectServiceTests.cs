@@ -143,6 +143,5 @@ namespace LightTown.Server.Tests.Services.Projects
             Assert.Equal(1, messages[0].Id);
             Assert.Equal(2, messages[1].Id);
         }
-
     }
 }

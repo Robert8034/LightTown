@@ -1,3 +1,7 @@
 ﻿.badge-primary {
-    background: var(--primary-button-color);
+    background: rgba(0, 0, 0, 0.0);
+    color: var(--primary-text-color);
+    border-style: solid;
+    border-width: 2px;
+    border-color: #298ecc;
 }
