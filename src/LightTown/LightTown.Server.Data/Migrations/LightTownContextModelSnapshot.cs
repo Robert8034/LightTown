@@ -29,6 +29,9 @@ namespace LightTown.Server.Data.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreationDateTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
