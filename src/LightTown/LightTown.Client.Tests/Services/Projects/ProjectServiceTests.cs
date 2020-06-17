@@ -40,7 +40,7 @@ namespace LightTown.Client.Tests.Services.Projects
                ProjectDescription = "TestDescription"
             }));
 
-            var projectService = new ProjectService(_httpClient, null);
+            var projectService = new ProjectService(_httpClient, null, null);
 
             //ACT
             Project project = await projectService.CreateProject("TestProject", "TestDescription");
@@ -100,7 +100,7 @@ namespace LightTown.Client.Tests.Services.Projects
             //ARRANGE
             _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Delete, "api/projects/1/members/1",HttpStatusCode.NoContent, ApiResult.NoContent());
 
-            var projectService = new ProjectService(_httpClient, null);
+            var projectService = new ProjectService(_httpClient, null, null);
 
             //ACT
             var result = await projectService.RemoveMember(1, 1);
@@ -123,7 +123,7 @@ namespace LightTown.Client.Tests.Services.Projects
             //ARRANGE
             _httpMessageHandlerMock.SetupHttpMessageHandlerMock(HttpMethod.Put, "api/projects/1/members/1", HttpStatusCode.OK, ApiResult.NoContent());
 
-            var projectService = new ProjectService(_httpClient, null);
+            var projectService = new ProjectService(_httpClient, null, null);
 
             //ACT
             var result = await projectService.AddMember(1, 1);
@@ -159,7 +159,7 @@ namespace LightTown.Client.Tests.Services.Projects
                     }
                 }));
 
-            var projectService = new ProjectService(_httpClient, null);
+            var projectService = new ProjectService(_httpClient, null, null);
 
             //ACT
             var result = await projectService.GetProjectMembers(1);
@@ -194,7 +194,7 @@ namespace LightTown.Client.Tests.Services.Projects
                    }
                 }));
 
-            var projectService = new ProjectService(_httpClient, null);
+            var projectService = new ProjectService(_httpClient, null, null);
 
             //ACT
             var result = await projectService.SearchProjects("Test");
