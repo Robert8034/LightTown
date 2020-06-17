@@ -130,7 +130,7 @@ namespace LightTown.Client.Services.Projects
             }
             catch (Exception e)
             {
-                _alertService?.ShowErrorPopup(true, null, "You are not allowed to create a new project.");
+                _alertService?.ShowErrorPopup(true, null, "You are not allowed to add new members to this project.");
             }
 
             return true;

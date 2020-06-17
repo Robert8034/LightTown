@@ -52,7 +52,7 @@
                 <GridColumn ColumnSize="ColumnSize.Full">
                     <GridItem>
                         <h3 class="titletxt">@message.Title</h3>
-                        <h5>By: @getUserName(message.UserId)</h5>
+                        @*<h5>By: @getUserName(message.UserId)</h5>*@
                         <h4 class="subtext">@getProjectName(message.ProjectId)</h4>
                         <p>
                             @message.Content
@@ -65,7 +65,6 @@
             </Grid>
         }
        </GridColumn>
-
     </GridColumn>
 </Grid>
 
@@ -76,7 +75,6 @@
 
     private User _currentUser = new User();
 
-    /*Sort by date/time posted*/
     protected override async Task OnInitializedAsync()
     {
         if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
@@ -100,6 +98,7 @@
         return Task.CompletedTask;
     }
 
+    /*Sort by date/time posted*/
     private async Task getAllMessages()
     {
         _projectMessages.Clear();
@@ -111,7 +110,7 @@
             _projectMessages.AddRange(_projectMessage);
         }
 
-        _projectMessages.Sort((x, y) => y.Id.CompareTo(x.Id));
+        _projectMessages.Sort((x, y) => y.CreationDateTime.CompareTo(x.CreationDateTime));
     }
 
     private async Task LikeMessage(Message message)
