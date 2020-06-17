@@ -33,18 +33,21 @@
                 </Grid>
              }
 
-        @foreach(var message in _projectMessages) 
-        { 
+        @foreach(var message in _projectMessages)
+        {
+            @if (message != _projectMessages[0])
+            {
             <hr class="underLine" />
+            }
             <Grid>
                 <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
                     <GridItem>
                         <p class="text-center">
-                            @*Date posted here*@
+                            @message.CreationDateTime.ToShortTimeString() <br />
+                            @message.CreationDateTime.ToString("dd/MM")
                         </p>
-                        <Button Enabled="true" Text="Like" OnClick="() => LikeMessage(message)" Size="ButtonSize.Small"></Button>
-                        <p class="text-center">@message.MessageLikes.Count()</p>
-                    </GridItem>
+                        <Button Enabled="true" Text="@message.MessageLikes.Count().ToString()" OnClick="() => LikeMessage(message)" Size="ButtonSize.Small"></Button>
+                        </GridItem>
                 </GridColumn>
                 <GridColumn ColumnSize="ColumnSize.Full">
                     <GridItem>

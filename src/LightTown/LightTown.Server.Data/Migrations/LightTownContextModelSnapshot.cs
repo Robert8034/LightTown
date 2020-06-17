@@ -25,12 +25,15 @@ namespace LightTown.Server.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
+                    
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+                    
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("CreationDateTime")
+                        .HasColumnType("DateTime");
 
                     b.Property<string>("Title")
                         .HasColumnType("text");
