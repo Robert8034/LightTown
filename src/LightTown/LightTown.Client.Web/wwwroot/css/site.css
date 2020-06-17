@@ -19,6 +19,11 @@ app {
     min-height: 100%;
 }
 
+h5 {
+    color: gray;
+    font-size: small;
+}
+
 .main {
     flex-grow: 1;
     display: flex;
@@ -110,4 +115,17 @@ app {
 
 .text-title {
     font-size: 24px;
+}
+
+.subtext {
+    font-weight: 300;
+    font-size: large;
+}
+
+.titletxt {
+    font-size: xx-large;
+}
+
+.text-center {
+    text-align: center;
 }

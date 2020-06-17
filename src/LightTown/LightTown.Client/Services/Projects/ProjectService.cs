@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using LightTown.Client.Services.Popups;
 using LightTown.Client.Services.Users;
 using LightTown.Core;
 using LightTown.Core.Models.Messages;
@@ -16,12 +17,14 @@ namespace LightTown.Client.Services.Projects
     public class ProjectService : IProjectService
     {
         private readonly HttpClient _httpClient;
+        private readonly IPopupService<BlazorPopupService.Popup> _alertService;
         private readonly IUserDataService _userDataService;
 
-        public ProjectService(HttpClient httpClient, IUserDataService userDataService)
+        public ProjectService(HttpClient httpClient, IUserDataService userDataService, IPopupService<BlazorPopupService.Popup> alertService)
         {
             _httpClient = httpClient;
             _userDataService = userDataService;
+            _alertService = alertService;
         }
 
         ///// <summary>
@@ -49,12 +52,21 @@ namespace LightTown.Client.Services.Projects
         /// </summary>
         public async Task<Project> CreateProject(string projectName, string projectDescription)
         {
-            ApiResult result = await _httpClient.PostJsonAsync<ApiResult>("api/projects", new
-                {
-                    projectName,
-                    projectDescription
-                }
-            );
+            ApiResult result;
+            try
+            {
+                result = await _httpClient.PostJsonAsync<ApiResult>("api/projects", new
+                    {
+                        projectName,
+                        projectDescription
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                _alertService?.ShowErrorPopup(true, null, "You are not allowed to create a new project.");
+                throw;
+            }
 
             return result.GetData<Project>();
         }
@@ -85,11 +97,17 @@ namespace LightTown.Client.Services.Projects
         /// </summary>
         public async Task<bool> RemoveMember(int projectId, int userId)
         {
-            ApiResult result =
-                await _httpClient.DeleteJsonAsync<ApiResult>("api/projects/" + projectId + "/members/" + userId);
+            try
+            {
+                ApiResult result =
+                    await _httpClient.DeleteJsonAsync<ApiResult>("api/projects/" + projectId + "/members/" + userId);
+            }
+            catch (Exception e)
+            {
+                _alertService?.ShowErrorPopup(true, null, "You are not allowed to remove members from this project.");
+            }
 
             return true;
-            //TODO Check for return status codes
         }
 
         /// <summary>
@@ -101,12 +119,20 @@ namespace LightTown.Client.Services.Projects
         /// </summary>
         public async Task<bool> AddMember(int userId, int projectId)
         {
-            ApiResult result = await _httpClient.PutJson<ApiResult>("api/projects/" + projectId + "/members/" + userId,
-                new
-                {
-                    userId,
-                    projectId
-                });
+            try
+            {
+                ApiResult result = await _httpClient.PutJson<ApiResult>("api/projects/" + projectId + "/members/" + userId,
+                    new
+                    {
+                        userId,
+                        projectId
+                    });
+            }
+            catch (Exception e)
+            {
+                _alertService?.ShowErrorPopup(true, null, "You are not allowed to create a new project.");
+            }
+
             return true;
         }
 
@@ -145,11 +171,19 @@ namespace LightTown.Client.Services.Projects
                 return false;
             }
 
-            ApiResult result = await _httpClient.PutJson<ApiResult>("api/projects/" + projectId + "/messages", new
+            try
             {
-                title,
-                content
-            });
+                ApiResult result = await _httpClient.PutJson<ApiResult>("api/projects/" + projectId + "/messages", new
+                {
+                    title,
+                    content
+                });
+            }
+            catch (Exception e)
+            {
+                _alertService?.ShowErrorPopup(true, null, "You are not a member of this project, so you can not create a new message.");
+                throw;
+            }
 
             return true;
 

@@ -23,7 +23,7 @@ namespace LightTown.Server.Services.Projects
         /// <returns>Returns a ProjectMember object or <see langword="null"/> if none is found.</returns>
         public ProjectMember GetProjectMember(int projectId, int memberId)
         {
-            return _projectMemberRepository.TableNoTracking.SingleOrDefault(e =>
+            return _projectMemberRepository.Table.SingleOrDefault(e =>
                 e.ProjectId == projectId && e.MemberId == memberId);
         }
 
