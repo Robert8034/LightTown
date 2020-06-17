@@ -16,7 +16,7 @@ namespace LightTown.Server.Services.Messages
             _messageRepository = messageRepository;
         }
 
-        public void CreateProjectMessage(int projectId, string title, string content, int userId)
+        public void CreateProjectMessage(int projectId, string title, string content, string userName)
         {
             _messageRepository.Insert(new Message
             {
@@ -24,7 +24,7 @@ namespace LightTown.Server.Services.Messages
                 Title = title,
                 Content = content,
                 CreationDateTime = DateTime.Now,
-                UserId = userId
+                UserName = userName
             });
         }
 
