@@ -20,7 +20,7 @@ namespace LightTown.Server.Services.Tags
         /// <returns>A list of all tags.</returns>
         public IEnumerable<Tag> GetTags()
         {
-            var tags = _tagRepository.TableNoTracking.ToList();
+            var tags = _tagRepository.Table.ToList();
 
             return tags;
         }
@@ -32,7 +32,7 @@ namespace LightTown.Server.Services.Tags
         /// <returns>One specific tag</returns>
         public Tag GetTag(int tagId)
         {
-            return _tagRepository.TableNoTracking.SingleOrDefault(e => e.Id == tagId);
+            return _tagRepository.Table.SingleOrDefault(e => e.Id == tagId);
         }
 
         public Tag InsertTag(Core.Models.Tags.Tag tag)
