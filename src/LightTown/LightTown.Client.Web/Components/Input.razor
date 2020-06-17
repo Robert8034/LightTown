@@ -32,6 +32,9 @@
     [Parameter]
     public Func<string, Task> OnChange { get; set; }
 
+    [Parameter]
+    public int MaxLength { get; set; } = int.MaxValue;
+
     private string _value;
 
     public async Task Change(ChangeEventArgs changeEventArgs)

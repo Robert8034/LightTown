@@ -88,7 +88,7 @@
         <Form Id="form-login">
             <h2>Post a message to @_project.ProjectName</h2>
             <FormGroup>
-                <Input Type="text" Placeholder="Title" Title="Title" OnChange="@OnTitleChange" />
+                <Input Type="text" Placeholder="Title" Title="Title" OnChange="@OnTitleChange" MaxLength="60"/>
             </FormGroup>
             <FormGroup>
                 <TextArea Placeholder="Content" Title="Message content" OnChange="@OnContentChange"></TextArea>
