@@ -23,6 +23,7 @@ namespace LightTown.Server.Services.Messages
                 ProjectId = projectId,
                 Title = title,
                 Content = content,
+                CreationDateTime = DateTime.Now,
                 UserId = userId
             });
         }

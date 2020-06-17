@@ -44,10 +44,22 @@ namespace LightTown.Server.Controllers.Api
         {
             var currentUser = await _userManager.GetUserAsync(User);
 
+            //get the roles of the current user.
+            var roles = (await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User)))
+                .Select(async roleName => await _roleManager.FindByNameAsync(roleName))
+                .Select(e => e.Result);
+
             var tagIds = _userService.GetUserTagIds(currentUser.Id);
 
             var userModel = _mapper.Map<Core.Models.Users.User>(currentUser);
             userModel.TagIds = tagIds;
+
+            userModel.Permissions = Permissions.NONE;
+
+            foreach (Role role in roles)
+            {
+                userModel.Permissions |= role.Permissions;
+            }
 
             return ApiResult.Success(userModel);
         }
