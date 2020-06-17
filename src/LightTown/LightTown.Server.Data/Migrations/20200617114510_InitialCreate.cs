@@ -65,7 +65,6 @@ namespace LightTown.Server.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ProjectId = table.Column<int>(nullable: false),
                     Title = table.Column<string>(nullable: true),
-                    CreationDateTime = table.Column<DateTime>(nullable: false),
                     Content = table.Column<string>(nullable: true),
                     CreationDateTime = table.Column<DateTime>(nullable: true),
                     UserId = table.Column<int>(nullable: false)
