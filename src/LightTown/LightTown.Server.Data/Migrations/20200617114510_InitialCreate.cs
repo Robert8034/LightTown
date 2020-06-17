@@ -67,6 +67,7 @@ namespace LightTown.Server.Data.Migrations
                     Title = table.Column<string>(nullable: true),
                     CreationDateTime = table.Column<DateTime>(nullable: false),
                     Content = table.Column<string>(nullable: true),
+                    CreationDateTime = table.Column<DateTime>(nullable: true),
                     UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
