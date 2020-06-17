@@ -12,6 +12,6 @@ namespace LightTown.Core.Domain.Messages
         public List<MessageLike> MessageLikes { get; set; }
         public DateTime CreationDateTime { get; set; }
         public string Content { get; set; }
-        public int UserId { get; set; }
+        public string UserName { get; set; }
     }
 }

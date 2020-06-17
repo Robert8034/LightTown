@@ -14,138 +14,149 @@
 @inject IValidationService ValidationService
 @inject IMessageService MessageService
 
-<Grid>
-    <GridColumn ColumnSize="ColumnSize.Full">
-        <Grid>
-            <GridColumn ColumnSize="ColumnSize.Full">
-                <p>
-
-                </p>
-            </GridColumn>
-        </Grid>
+@if (_loading)
+{
+    <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+}
+else
+{
+    <Grid>
         <GridColumn ColumnSize="ColumnSize.Full">
-            @if(_projectMessages.Count == 0)
-            {
-                <Grid>
-                    <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Full">
-                        <h1>No messages</h1>
-                    </GridColumn>
-                </Grid>
-             }
-
-        @foreach(var message in _projectMessages)
-        {
-            @if (message != _projectMessages[0])
-            {
-            <hr class="underLine" />
-            }
             <Grid>
-                <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
-                    <GridItem>
-                        <p class="text-center">
-                            @message.CreationDateTime.ToShortTimeString() <br />
-                            @message.CreationDateTime.ToString("dd/MM")
-                        </p>
-                        <Button Enabled="true" Text="@message.MessageLikes.Count().ToString()" OnClick="() => LikeMessage(message)" Size="ButtonSize.Small"></Button>
-                        </GridItem>
-                </GridColumn>
                 <GridColumn ColumnSize="ColumnSize.Full">
-                    <GridItem>
-                        <h3 class="titletxt">@message.Title</h3>
-                        @*<h5>By: @getUserName(message.UserId)</h5>*@
-                        <h4 class="subtext">@getProjectName(message.ProjectId)</h4>
-                        <p>
-                            @message.Content
-                        </p>
-                    </GridItem>
-                </GridColumn>
-                <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
-                    <Button Enabled="@true" Text="View" OnClick="() => ViewProject(message.ProjectId)" Size="ButtonSize.Medium"></Button>
+                    <p>
+
+                    </p>
                 </GridColumn>
             </Grid>
-        }
-       </GridColumn>
-    </GridColumn>
-</Grid>
+            <GridColumn ColumnSize="ColumnSize.Full">
+                @if (_projectMessages.Count == 0)
+                {
+                    <Grid>
+                        <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Full">
+                            <h1>No messages</h1>
+                        </GridColumn>
+                    </Grid>
+                }
 
-@code {
+                @foreach (var message in _projectMessages)
+                {
+                    @if (message != _projectMessages[0])
+                    {
+                        <hr class="underLine" />
+                    }
+                    <Grid>
+                        <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
+                            <GridItem>
+                                <p class="text-center">
+                                    @message.CreationDateTime.ToShortTimeString() <br />
+                                    @message.CreationDateTime.ToString("dd/MM")
+                                </p>
+                                <Button Enabled="true" Text="@message.MessageLikes.Count().ToString()" OnClick="() => LikeMessage(message)" Size="ButtonSize.Small"></Button>
+                            </GridItem>
+                        </GridColumn>
+                        <GridColumn ColumnSize="ColumnSize.Full">
+                            <GridItem>
+                                <h3 class="titletxt">@message.Title</h3>
+                                <h5>By: @message.UserName</h5>
+                                <h4 class="subtext">@getProjectName(message.ProjectId)</h4>
+                                <p>
+                                    @message.Content
+                                </p>
+                            </GridItem>
+                        </GridColumn>
+                        <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
+                            <Button Enabled="@true" Text="View" OnClick="() => ViewProject(message.ProjectId)" Size="ButtonSize.Medium"></Button>
+                        </GridColumn>
+                    </Grid>
+                }
+            </GridColumn>
 
-    List<Core.Models.Projects.Project> _projects;
-    private List<Message> _projectMessages = new List<Message>();
-
-    private User _currentUser = new User();
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
-        {
-            NavigationManager.NavigateTo("/login");
-            return;
-        }
-
-        _projects = await UserDataService.GetProjects();
-
-        await getAllMessages();
-
-        _currentUser = UserDataService.GetCurrentUser();
-
-    }
-
-    private Task ViewProject(int projectId)
-    {
-        NavigationManager.NavigateTo("/projects/" + projectId + "/timeline");
-
-        return Task.CompletedTask;
-    }
-
-    /*Sort by date/time posted*/
-    private async Task getAllMessages()
-    {
-        _projectMessages.Clear();
-
-        List<Message> _projectMessage = new List<Message>();
-        foreach (var _project in _projects)
-        {
-            _projectMessage = await ProjectService.GetProjectMessages(_project.Id);
-            _projectMessages.AddRange(_projectMessage);
-        }
-
-        _projectMessages.Sort((x, y) => y.CreationDateTime.CompareTo(x.CreationDateTime));
-    }
-
-    private async Task LikeMessage(Message message)
-    {
-        var hasLiked = false;
-        var projectId = message.ProjectId;
-
-        foreach (var like in message.MessageLikes.Where(like => like.UserId == _currentUser.Id))
-        {
-            hasLiked = true;
-            await MessageService.RemoveMessageLike(message.Id);
-        }
-
-        if (!hasLiked) await MessageService.LikeMessage(message.Id);
-
-        await getAllMessages();
-
-        StateHasChanged();
-    }
-
-    private string getProjectName(int projectId)
-    {
-        foreach(var project in _projects)
-        {
-            if(project.Id == projectId)
-            {
-                return project.ProjectName;
-            }
-        }
-        return "Unknown";
-    }
-
-    private string getUserName(int userId)
-    {
-        return UserDataService.GetUser(userId).Result.Username;
-    }
-
+        </GridColumn>
+    </Grid>
 }
+    @code {
+
+        List<Core.Models.Projects.Project> _projects;
+        private List<Message> _projectMessages = new List<Message>();
+        private bool _loading = true;
+
+        private User _currentUser = new User();
+
+        /*Sort by date/time posted*/
+        protected override async Task OnInitializedAsync()
+        {
+            if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
+            {
+                NavigationManager.NavigateTo("/login");
+                return;
+            }
+
+            _projects = await UserDataService.GetProjects();
+
+            await getAllMessages();
+
+            _currentUser = UserDataService.GetCurrentUser();
+
+            _loading = false;
+
+            StateHasChanged();
+        }
+
+        private Task ViewProject(int projectId)
+        {
+            NavigationManager.NavigateTo("/projects/" + projectId + "/timeline");
+
+            return Task.CompletedTask;
+        }
+
+        private async Task getAllMessages()
+        {
+            _projectMessages.Clear();
+
+            List<Message> _projectMessage = new List<Message>();
+            foreach (var _project in _projects)
+            {
+                _projectMessage = await ProjectService.GetProjectMessages(_project.Id);
+                _projectMessages.AddRange(_projectMessage);
+            }
+            _projectMessages.Sort((x, y) => y.Id.CompareTo(x.Id));
+        }
+
+        private async Task LikeMessage(Message message)
+        {
+            var hasLiked = false;
+            var projectId = message.ProjectId;
+
+            foreach (var like in message.MessageLikes.Where(like => like.UserId == _currentUser.Id))
+            {
+                hasLiked = true;
+                await MessageService.RemoveMessageLike(message.Id);
+            }
+
+            if (!hasLiked) await MessageService.LikeMessage(message.Id);
+
+            await getAllMessages();
+
+            StateHasChanged();
+        }
+
+        private string getProjectName(int projectId)
+        {
+            foreach (var project in _projects)
+            {
+                if (project.Id == projectId)
+                {
+                    return project.ProjectName;
+                }
+            }
+            return "Unknown";
+        }
+
+        private string getUserName(int userId)
+        {
+            return UserDataService.GetUser(userId).Result.Username;
+        }
+    }
