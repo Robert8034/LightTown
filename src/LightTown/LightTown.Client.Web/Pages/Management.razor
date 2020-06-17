@@ -33,6 +33,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine(UserAuthService.IsAuthorized());
+        Console.WriteLine(UserDataService.GetCurrentUser().Permissions.Value.HasFlag(Permissions.MANAGE_USERS));
+
         if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
         {
             NavigationManager.NavigateTo("/login");
