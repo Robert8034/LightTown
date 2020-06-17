@@ -15,18 +15,10 @@
     <Grid>
         <GridColumn ColumnSize="ColumnSize.Full">
             <Grid>
-                <GridColumn ColumnSize="ColumnSize.Small">
-                </GridColumn>
-                <GridColumn ColumnSize="ColumnSize.Medium">
-                    <Grid>
-                        <GridColumn ColumnSize="ColumnSize.Full">
-                            <GridItem>
-                                <h1> <br /> @_project?.ProjectName</h1>
-                            </GridItem>
-                        </GridColumn>
-                        <GridColumn ColumnSize="ColumnSize.Small">
-                        </GridColumn>
-                    </Grid>
+                <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Full">
+                    <GridItem>
+                        <h1> <br /> @_project?.ProjectName</h1>
+                    </GridItem>
                 </GridColumn>
             </Grid>
 
@@ -80,28 +72,12 @@
                                 </p1>
                                 <div class="d-inline">
                                     <br />
-                                    @foreach (var tag in _project.Tags) //return List<int> at the moment. Need to be strings?
+                                    @foreach (var tag in _project.Tags) 
                                     {
                                         <Tag Text="@tag.Name" />
                                     }
                                 </div>
                             </GridItem>
-                        </GridColumn>
-                    </Grid>
-                </GridColumn>
-            </Grid>
-
-            <Grid>
-                <GridColumn ColumnSize="ColumnSize.Small">
-                </GridColumn>
-                <GridColumn ColumnSize="ColumnSize.Medium">
-                    <Grid>
-                        <GridColumn ColumnSize="ColumnSize.Full">
-                            <GridItem>
-                                <h2><br />Messages</h2>
-                            </GridItem>
-                        </GridColumn>
-                        <GridColumn ColumnSize="ColumnSize.Small">
                         </GridColumn>
                     </Grid>
                 </GridColumn>

@@ -18,18 +18,10 @@
     <GridColumn ColumnSize="ColumnSize.Full">
 
         <Grid>
-            <GridColumn ColumnSize="ColumnSize.Small">
-            </GridColumn>
-            <GridColumn ColumnSize="ColumnSize.Medium">
-                <Grid>
-                    <GridColumn ColumnSize="ColumnSize.Full">
-                        <GridItem>
-                            <h1> <br /> @_project?.ProjectName</h1>
-                        </GridItem>
-                    </GridColumn>
-                    <GridColumn ColumnSize="ColumnSize.Small">
-                    </GridColumn>
-                </Grid>
+            <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Full">
+                <GridItem>
+                    <h1> <br /> @_project?.ProjectName</h1>
+                </GridItem>
             </GridColumn>
         </Grid>
         
