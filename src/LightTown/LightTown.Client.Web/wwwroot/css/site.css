@@ -19,6 +19,10 @@ app {
     min-height: 100%;
 }
 
+h3 {
+    
+}
+
 h5 {
     color: gray;
     font-size: small;
@@ -124,8 +128,18 @@ h5 {
 
 .titletxt {
     font-size: xx-large;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
 .text-center {
     text-align: center;
+}
+
+.underLine {
+    border-style:solid;
+    border-width:thin;
+    color:#298ECC
 }

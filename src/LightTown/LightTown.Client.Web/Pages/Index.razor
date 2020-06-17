@@ -35,7 +35,7 @@
 
         @foreach(var message in _projectMessages) 
         { 
-            <hr class="underLine" style="border-style:solid;border-width:thin;color:#298ECC" />
+            <hr class="underLine" />
             <Grid>
                 <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
                     <GridItem>
@@ -56,7 +56,7 @@
                         </p>
                     </GridItem>
                 </GridColumn>
-                <GridColumn Class="grid-align-bottomright" ColumnSize="ColumnSize.Small">
+                <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
                     <Button Enabled="@true" Text="View" OnClick="() => ViewProject(message.ProjectId)" Size="ButtonSize.Medium"></Button>
                 </GridColumn>
             </Grid>
