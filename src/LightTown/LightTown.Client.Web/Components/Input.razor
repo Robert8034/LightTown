@@ -27,9 +27,6 @@
     public bool Disabled { get; set; } = false;
 
     [Parameter]
-    public int MaxLength { get; set; } = 1000;
-
-    [Parameter]
     public Func<string, Task> OnChange { get; set; }
 
     [Parameter]
