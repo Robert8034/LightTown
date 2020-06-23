@@ -79,7 +79,7 @@ else
 }
     @code {
 
-        List<Core.Models.Projects.Project> _projects;
+            List<Core.Models.Projects.Project> _projects;
         private List<Message> _projectMessages = new List<Message>();
         private bool _loading = true;
 
@@ -96,9 +96,9 @@ else
 
             _projects = await UserDataService.GetProjects();
 
-            await getAllMessages();
-
             _currentUser = UserDataService.GetCurrentUser();
+
+            await getAllMessages();
 
             _loading = false;
 
@@ -119,8 +119,13 @@ else
             List<Message> _projectMessage = new List<Message>();
             foreach (var _project in _projects)
             {
-                _projectMessage = await ProjectService.GetProjectMessages(_project.Id);
-                _projectMessages.AddRange(_projectMessage);
+                List<User> _members = await UserDataService.GetProjectMembers(_project.Id);
+                foreach(var _member in _members.Where(_member => _member.Id == _currentUser.Id))
+                {
+                    _projectMessage = await ProjectService.GetProjectMessages(_project.Id);
+                    _projectMessages.AddRange(_projectMessage);
+                }
+
             }
             _projectMessages.Sort((x, y) => y.Id.CompareTo(x.Id));
         }
