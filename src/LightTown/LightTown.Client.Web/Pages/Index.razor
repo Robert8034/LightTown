@@ -54,7 +54,7 @@ else
                                     @message.CreationDateTime.ToShortTimeString() <br />
                                     @message.CreationDateTime.ToString("dd/MM")
                                 </p>
-                                <Button Enabled="true" Text="@message.MessageLikes.Count().ToString()" OnClick="() => LikeMessage(message)" Size="ButtonSize.Small"></Button>
+                                <Button Enabled="true" Text="@(message.MessageLikes.Count().ToString() + " like(s)")" OnClick="() => LikeMessage(message)" Size="ButtonSize.Medium"></Button>
                             </GridItem>
                         </GridColumn>
                         <GridColumn ColumnSize="ColumnSize.Full">
@@ -68,6 +68,7 @@ else
                             </GridItem>
                         </GridColumn>
                         <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
+                            <p1><br /><br /></p1>
                             <Button Enabled="@true" Text="View" OnClick="() => ViewProject(message.ProjectId)" Size="ButtonSize.Medium"></Button>
                         </GridColumn>
                     </Grid>

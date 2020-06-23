@@ -91,7 +91,7 @@
                                     @message.CreationDateTime.ToShortTimeString() <br />
                                     @message.CreationDateTime.ToString("dd/MM")
                                 </p>
-                                <Button Enabled="true" Text="@message.MessageLikes.Count().ToString()" OnClick="() => LikeMessage(message.ProjectMessageId, message.Id)" Size="ButtonSize.Small"></Button>
+                                <Button Enabled="true" Text="@(message.MessageLikes.Count().ToString() + " like(s)")" OnClick="() => LikeMessage(message.ProjectMessageId, message.Id)" Size="ButtonSize.Medium"></Button>
                             </GridItem>
                         </GridColumn>
                         <GridColumn ColumnSize="ColumnSize.Full">

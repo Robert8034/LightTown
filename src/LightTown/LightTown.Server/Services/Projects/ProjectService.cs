@@ -34,7 +34,7 @@ namespace LightTown.Server.Services.Projects
 
         public IEnumerable<Project> GetProjects()
         {
-            var projects = _projectRepository.TableNoTracking.ToList();
+            var projects = _projectRepository.Table.ToList();
 
             return projects;
         }
@@ -85,7 +85,7 @@ namespace LightTown.Server.Services.Projects
 
         public Project GetProject(int projectId)
         {
-            var project = _projectRepository.TableNoTracking.SingleOrDefault(e => e.Id == projectId);
+            var project = _projectRepository.Table.SingleOrDefault(e => e.Id == projectId);
 
             return project;
         }
@@ -212,7 +212,7 @@ namespace LightTown.Server.Services.Projects
 
         public IEnumerable<Message> GetMessages(int projectId)
         {
-            return _messageRepository.TableNoTracking
+            return _messageRepository.Table
                 .Where(e => e.ProjectId == projectId).Include(e => e.MessageLikes);
         }
     }
