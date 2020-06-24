@@ -3,9 +3,11 @@
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq
 @using System.Text
+@using LightTown.Client.Services.Users
 
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IUserAuthService UserAuthService
 
 @if (_loading)
 {
@@ -125,6 +127,11 @@ else
         {
             _successMessage = "Success! Your account has been created.";
             _errorMessage = null;
+
+            if (!UserAuthService.IsAuthorized())
+            {
+                NavigationManager.NavigateTo("/login");
+            }
         }
         else
         {

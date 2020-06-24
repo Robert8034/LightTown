@@ -271,7 +271,7 @@ namespace LightTown.Server.Controllers.Api
             if (!userIsMember)
                 return ApiResult.BadRequest("User is not a member");
 
-            _messageService.CreateProjectMessage(projectId, messagePost.Title, messagePost.Content, messageCreator.Id);
+            _messageService.CreateProjectMessage(projectId, messagePost.Title, messagePost.Content, messageCreator.UserName);
 
             return ApiResult.NoContent();
         }

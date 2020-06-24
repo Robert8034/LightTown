@@ -3,19 +3,27 @@
 @using LightTown.Client.Services.Projects
 @using LightTown.Client.Services.Users
 @using LightTown.Client.Web.Services
+@using LightTown.Core.Domain.Roles
 
 @inject IUserDataService UserDataService
 @inject IProjectService ProjectService
 @inject NavigationManager NavigationManager
 @inject AuthenticationService AuthenticationService
+@inject IUserAuthService UserAuthService
 
     <Grid>
         <GridColumn ColumnSize="ColumnSize.Full">
             <GridItem>
                 <ListGroup>
                     <ListGroupHeader Text="Management"></ListGroupHeader>
-                    <ListGroupItem IsLink="true" Link="@("/users/create")" Text="Create Account"></ListGroupItem>
-                    <ListGroupItem IsLink="true" Link="@("/projects/create")" Text="Create Project" Active="true"></ListGroupItem>
+                    @if (UserAuthService.IsAuthorized() && UserDataService.GetCurrentUser().Permissions.Value.HasFlag(Permissions.MANAGE_USERS))
+                    {
+                        <ListGroupItem IsLink="true" Link="@("/users/create")" Text="Create Account"></ListGroupItem>
+                    }
+                    @if (UserAuthService.IsAuthorized() && UserDataService.GetCurrentUser().Permissions.Value.HasFlag(Permissions.MANAGE_PROJECTS))
+                    {
+                        <ListGroupItem IsLink="true" Link="@("/projects/create")" Text="Create Project" Active="true"></ListGroupItem>
+                    }
                 </ListGroup>
             </GridItem>
         </GridColumn>
@@ -25,11 +33,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine(UserAuthService.IsAuthorized());
+        Console.WriteLine(UserDataService.GetCurrentUser().Permissions.Value.HasFlag(Permissions.MANAGE_USERS));
+
         if (!AuthenticationService.HasAccessToPage(NavigationManager.Uri))
         {
             NavigationManager.NavigateTo("/login");
             return;
         }
     }
-
 }

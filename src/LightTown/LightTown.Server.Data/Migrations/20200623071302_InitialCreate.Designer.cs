@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LightTown.Server.Data.Migrations
 {
     [DbContext(typeof(LightTownContext))]
-    [Migration("20200616114352_InitialCreate")]
+    [Migration("20200623071302_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,14 +31,17 @@ namespace LightTown.Server.Data.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreationDateTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .HasColumnType("text");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

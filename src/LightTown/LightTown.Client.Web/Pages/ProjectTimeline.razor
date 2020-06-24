@@ -18,18 +18,10 @@
     <GridColumn ColumnSize="ColumnSize.Full">
 
         <Grid>
-            <GridColumn ColumnSize="ColumnSize.Small">
-            </GridColumn>
-            <GridColumn ColumnSize="ColumnSize.Medium">
-                <Grid>
-                    <GridColumn ColumnSize="ColumnSize.Full">
-                        <GridItem>
-                            <h1> <br /> @_project?.ProjectName</h1>
-                        </GridItem>
-                    </GridColumn>
-                    <GridColumn ColumnSize="ColumnSize.Small">
-                    </GridColumn>
-                </Grid>
+            <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Full">
+                <GridItem>
+                    <h1> <br /> @_project?.ProjectName</h1>
+                </GridItem>
             </GridColumn>
         </Grid>
         
@@ -66,23 +58,51 @@
             </GridColumn>
             <GridColumn ColumnSize="ColumnSize.Medium">
                 <hr class="underLine" style="border: solid; color: #298ECC" />
+                @*@foreach (var message in _projectMessages)
+        {
+            <Grid>
+                <GridColumn ColumnSize="ColumnSize.Small">
+                    <GridItem>
+                        <h4>@message.Title</h4>
+                    </GridItem>
+                </GridColumn>
+                <GridColumn ColumnSize="ColumnSize.Medium">
+                    <GridItem>
+                        <p>
+                            @message.Content
+                        </p>
+                    </GridItem>
+                </GridColumn>
+                <GridColumn ColumnSize="ColumnSize.Small" class="grid-align-center">
+                    <Button Enabled="@true" Text="@message.MessageLikes.Count.ToString()" OnClick="@(() => LikeMessage(message.ProjectMessageId, message.Id))" Size="ButtonSize.Big"></Button>
+                </GridColumn>
+            </Grid>
+        }*@
                 @foreach (var message in _projectMessages)
                 {
+                    @if (message != _projectMessages[0])
+                    {
+                        <hr class="underLine" />
+                    }
                     <Grid>
-                        <GridColumn ColumnSize="ColumnSize.Small">
+                        <GridColumn Class="grid-align-center" ColumnSize="ColumnSize.Small">
                             <GridItem>
-                                <h4>@message.Title</h4>
+                                <p class="text-center">
+                                    @message.CreationDateTime.ToShortTimeString() <br />
+                                    @message.CreationDateTime.ToString("dd/MM")
+                                </p>
+                                <Button Enabled="true" Text="@(message.MessageLikes.Count().ToString() + " like(s)")" OnClick="() => LikeMessage(message.ProjectMessageId, message.Id)" Size="ButtonSize.Medium"></Button>
                             </GridItem>
                         </GridColumn>
-                        <GridColumn ColumnSize="ColumnSize.Medium">
+                        <GridColumn ColumnSize="ColumnSize.Full">
                             <GridItem>
+                                <h3 class="titletxt">@message.Title</h3>
+                                <h5>By: @message.UserName</h5>
+                                <h4 class="subtext">@_project.ProjectName</h4>
                                 <p>
                                     @message.Content
                                 </p>
                             </GridItem>
-                        </GridColumn>
-                        <GridColumn ColumnSize="ColumnSize.Small">
-                            <Button Enabled="@true" Text="@message.MessageLikes.Count.ToString()" OnClick="@(() => LikeMessage(message.ProjectMessageId, message.Id))" Size="ButtonSize.Big"></Button>
                         </GridColumn>
                     </Grid>
                 }
@@ -96,7 +116,7 @@
         <Form Id="form-login">
             <h2>Post a message to @_project.ProjectName</h2>
             <FormGroup>
-                <Input Type="text" Placeholder="Title" Title="Title" OnChange="@OnTitleChange" />
+                <Input Type="text" Placeholder="Title" Title="Title" OnChange="@OnTitleChange" MaxLength="40"/>
             </FormGroup>
             <FormGroup>
                 <TextArea Placeholder="Content" Title="Message content" OnChange="@OnContentChange"></TextArea>
@@ -140,6 +160,8 @@
 
         _projectMessages = await ProjectService.GetProjectMessages(ProjectId);
 
+        _projectMessages.Sort((x, y) => y.Id.CompareTo(x.Id));
+
         _currentUser = UserDataService.GetCurrentUser();
     }
 
@@ -149,6 +171,8 @@
         await ProjectService.PostProjectMessage(ProjectId, _content, _title);
 
         _projectMessages = await ProjectService.GetProjectMessages(ProjectId);
+
+        _projectMessages.Sort((x, y) => y.Id.CompareTo(x.Id));
 
         _title = "";
         _content = "";
@@ -207,11 +231,12 @@
                 await MessageService.RemoveMessageLike(messageId);
             }
         }
-        
 
         if (!hasLiked) await MessageService.LikeMessage(messageId);
 
         _projectMessages = await ProjectService.GetProjectMessages(ProjectId);
+
+        _projectMessages.Sort((x, y) => y.Id.CompareTo(x.Id));
 
         StateHasChanged();
     }

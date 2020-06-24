@@ -13,8 +13,9 @@ namespace LightTown.Core.Models.Messages
         public string Title { get; set; }
         public List<MessageLike> MessageLikes { get; set; }
         public string Content { get; set; }
+        public DateTime CreationDateTime { get; set; }
         public int ProjectMessageId { get; set; }
-        public int UserId { get; set; }
+        public string UserName { get; set; }
 
     }
 }

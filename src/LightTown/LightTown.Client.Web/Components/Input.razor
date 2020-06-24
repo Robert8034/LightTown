@@ -1,7 +1,7 @@
 ﻿<div class="input-group @(Class)">
     <span class="input-title">@Title</span>
     <span class="input-text">@Text</span>
-    <input class="input" @oninput="@Change" type="@Type" placeholder="@Placeholder" value="@Value" disabled="@Disabled"/>
+    <input class="input" @oninput="@Change" type="@Type" placeholder="@Placeholder" value="@Value" disabled="@Disabled" maxlength="@MaxLength"/>
 </div>
 
 @code {
@@ -28,6 +28,9 @@
 
     [Parameter]
     public Func<string, Task> OnChange { get; set; }
+
+    [Parameter]
+    public int MaxLength { get; set; } = int.MaxValue;
 
     private string _value;
 

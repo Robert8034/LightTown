@@ -29,14 +29,17 @@ namespace LightTown.Server.Data.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreationDateTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int>("ProjectId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .HasColumnType("text");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

@@ -15,7 +15,6 @@ namespace LightTown.Client.Web.Services
 
         private string[] noAuthPages = 
         {
-            "/",
             "/login"
         };
 
